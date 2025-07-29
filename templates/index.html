@@ -4,22 +4,22 @@
 
 {% block content %}
 <!-- Hero Section -->
-<section class="relative bg-gradient-to-br from-teal-50 to-coral-50 py-20">
+<section class="relative bg-gradient-to-br from-teal-50 to-coral-50 py-12 md:py-20 mobile-optimized">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center">
-            <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+            <h1 class="mobile-heading md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
                 Willkommen bei
                 <span class="gradient-text">Play & Jump</span>
             </h1>
-            <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+            <p class="mobile-text md:text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
                 Seit vielen Jahren bieten wir hochwertige Hüpfburgen, Gesellschaftsspiele und Unterhaltungsgeräte 
                 für alle Altersgruppen an. Wir sind Ihr Partner für unvergessliche Kinderfeste und Events.
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="/katalog/" class="bg-gradient-to-r from-teal-500 to-coral-500 text-white px-8 py-3 rounded-lg font-semibold hover-lift">
+                <a href="/katalog/" class="touch-button bg-gradient-to-r from-teal-500 to-coral-500 text-white px-8 py-3 rounded-lg font-semibold hover-lift btn-animate mobile-full">
                     Katalog entdecken
                 </a>
-                <a href="/kontakt/" class="border-2 border-teal-500 text-teal-600 px-8 py-3 rounded-lg font-semibold hover:bg-teal-500 hover:text-white transition-all duration-300">
+                <a href="/kontakt/" class="touch-button border-2 border-teal-500 text-teal-600 px-8 py-3 rounded-lg font-semibold hover:bg-teal-500 hover:text-white transition-all duration-300 mobile-full">
                     Kontakt aufnehmen
                 </a>
             </div>
@@ -28,94 +28,99 @@
 </section>
 
 <!-- Features Section -->
-<section class="py-20 bg-white">
+<section class="py-12 md:py-20 bg-white mobile-optimized">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-            <h2 class="text-4xl font-bold text-gray-900 mb-4">Warum Play & Jump?</h2>
-            <p class="text-xl text-gray-600">Unsere Vorteile</p>
+        <div class="text-center mb-12 md:mb-16">
+            <h2 class="mobile-heading md:text-4xl font-bold text-gray-900 mb-4">Warum Play & Jump?</h2>
+            <p class="mobile-text md:text-xl text-gray-600">Unsere Vorteile</p>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="mobile-grid md:grid md:grid-cols-3 gap-6 md:gap-8">
             <!-- Feature 1 -->
-            <div class="text-center p-6 rounded-xl bg-gradient-to-br from-teal-50 to-coral-50 hover-lift">
+            <div class="text-center p-6 rounded-xl bg-gradient-to-br from-teal-50 to-coral-50 hover-lift card-hover stagger-item">
                 <div class="w-16 h-16 bg-gradient-to-r from-teal-500 to-coral-500 rounded-lg flex items-center justify-center mx-auto mb-4">
                     <i class="fas fa-rocket text-white text-2xl"></i>
                 </div>
                 <h3 class="text-xl font-semibold text-gray-900 mb-2">Vielfalt</h3>
-                <p class="text-gray-600">Über 20 verschiedene Hüpfburgen und Spiele zur Auswahl</p>
+                <p class="text-gray-600 mobile-text">Über 20 verschiedene Hüpfburgen und Spiele zur Auswahl</p>
             </div>
             
             <!-- Feature 2 -->
-            <div class="text-center p-6 rounded-xl bg-gradient-to-br from-teal-50 to-coral-50 hover-lift">
+            <div class="text-center p-6 rounded-xl bg-gradient-to-br from-teal-50 to-coral-50 hover-lift card-hover stagger-item">
                 <div class="w-16 h-16 bg-gradient-to-r from-teal-500 to-coral-500 rounded-lg flex items-center justify-center mx-auto mb-4">
                     <i class="fas fa-shield-alt text-white text-2xl"></i>
                 </div>
                 <h3 class="text-xl font-semibold text-gray-900 mb-2">Sicherheit</h3>
-                <p class="text-gray-600">Sicherheit steht an erster Stelle</p>
+                <p class="text-gray-600 mobile-text">Sicherheit steht an erster Stelle</p>
             </div>
             
             <!-- Feature 3 -->
-            <div class="text-center p-6 rounded-xl bg-gradient-to-br from-teal-50 to-coral-50 hover-lift">
+            <div class="text-center p-6 rounded-xl bg-gradient-to-br from-teal-50 to-coral-50 hover-lift card-hover stagger-item">
                 <div class="w-16 h-16 bg-gradient-to-r from-teal-500 to-coral-500 rounded-lg flex items-center justify-center mx-auto mb-4">
                     <i class="fas fa-star text-white text-2xl"></i>
                 </div>
                 <h3 class="text-xl font-semibold text-gray-900 mb-2">Qualität</h3>
-                <p class="text-gray-600">Hochwertige Qualität und zuverlässiger Service</p>
+                <p class="text-gray-600 mobile-text">Hochwertige Qualität und zuverlässiger Service</p>
             </div>
         </div>
     </div>
 </section>
 
 <!-- Color Palette Demo -->
-<section class="py-20 bg-gray-50">
+<section class="py-12 md:py-20 bg-gray-50 mobile-optimized">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-            <h2 class="text-4xl font-bold text-gray-900 mb-4">Цветовая палитра</h2>
-            <p class="text-xl text-gray-600">Бирюзовый и коралловый - идеальное сочетание</p>
+        <div class="text-center mb-12 md:mb-16">
+            <h2 class="mobile-heading md:text-4xl font-bold text-gray-900 mb-4">Цветовая палитра</h2>
+            <p class="mobile-text md:text-xl text-gray-600">Бирюзовый и коралловый - идеальное сочетание</p>
         </div>
         
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="mobile-grid md:grid md:grid-cols-4 gap-6">
             <!-- Teal Primary -->
-            <div class="text-center">
-                <div class="w-24 h-24 bg-teal-500 rounded-lg mx-auto mb-4 shadow-lg"></div>
-                <h3 class="font-semibold text-gray-900">Бирюзовый</h3>
+            <div class="text-center stagger-item">
+                <div class="w-20 h-20 md:w-24 md:h-24 bg-teal-500 rounded-lg mx-auto mb-4 shadow-lg responsive-img"></div>
+                <h3 class="font-semibold text-gray-900 mobile-text">Бирюзовый</h3>
                 <p class="text-sm text-gray-600">#20B2AA</p>
             </div>
             
             <!-- Teal Light -->
-            <div class="text-center">
-                <div class="w-24 h-24 bg-teal-400 rounded-lg mx-auto mb-4 shadow-lg"></div>
-                <h3 class="font-semibold text-gray-900">Светло-бирюзовый</h3>
+            <div class="text-center stagger-item">
+                <div class="w-20 h-20 md:w-24 md:h-24 bg-teal-400 rounded-lg mx-auto mb-4 shadow-lg responsive-img"></div>
+                <h3 class="font-semibold text-gray-900 mobile-text">Светло-бирюзовый</h3>
                 <p class="text-sm text-gray-600">#48D1CC</p>
             </div>
             
             <!-- Coral -->
-            <div class="text-center">
-                <div class="w-24 h-24 bg-coral-500 rounded-lg mx-auto mb-4 shadow-lg"></div>
-                <h3 class="font-semibold text-gray-900">Коралловый</h3>
+            <div class="text-center stagger-item">
+                <div class="w-20 h-20 md:w-24 md:h-24 bg-coral-500 rounded-lg mx-auto mb-4 shadow-lg responsive-img"></div>
+                <h3 class="font-semibold text-gray-900 mobile-text">Коралловый</h3>
                 <p class="text-sm text-gray-600">#FF6B6B</p>
             </div>
             
             <!-- Coral Light -->
-            <div class="text-center">
-                <div class="w-24 h-24 bg-coral-400 rounded-lg mx-auto mb-4 shadow-lg"></div>
-                <h3 class="font-semibold text-gray-900">Светло-коралловый</h3>
+            <div class="text-center stagger-item">
+                <div class="w-20 h-20 md:w-24 md:h-24 bg-coral-400 rounded-lg mx-auto mb-4 shadow-lg responsive-img"></div>
+                <h3 class="font-semibold text-gray-900 mobile-text">Светло-коралловый</h3>
                 <p class="text-sm text-gray-600">#FF8E8E</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- CTA Section -->
-<section class="py-20 bg-gradient-to-r from-teal-500 to-coral-500">
+<!-- Call to Action -->
+<section class="py-12 md:py-20 bg-gradient-to-r from-teal-500 to-coral-500 text-white mobile-optimized">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 class="text-4xl font-bold text-white mb-4">Готовы начать?</h2>
-        <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Свяжитесь с нами сегодня и получите бесплатную консультацию по вашему проекту
+        <h2 class="mobile-heading md:text-4xl font-bold mb-6">Bereit für Ihr Event?</h2>
+        <p class="mobile-text md:text-xl mb-8 opacity-90">
+            Kontaktieren Sie uns noch heute und lassen Sie uns Ihr perfektes Event planen!
         </p>
-        <a href="/contact/" class="bg-white text-teal-600 px-8 py-3 rounded-lg font-semibold hover-lift">
-            Начать проект
-        </a>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/katalog/" class="touch-button bg-white text-teal-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition mobile-full">
+                Katalog durchsuchen
+            </a>
+            <a href="/kontakt/" class="touch-button border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-teal-600 transition mobile-full">
+                Jetzt kontaktieren
+            </a>
+        </div>
     </div>
 </section>
 {% endblock %} 
