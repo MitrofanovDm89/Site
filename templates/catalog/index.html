@@ -21,7 +21,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {% for category in categories %}
             <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
-                <a href="{% url 'category_detail' slug=category.slug %}" class="block">
+                <a href="{% url 'catalog:category_detail' slug=category.slug %}" class="block">
                     {% if category.image %}
                     <div class="relative overflow-hidden rounded-t-xl">
                         <img src="{{ category.image.url }}" alt="{{ category.name }}" 

@@ -10,7 +10,7 @@
         <nav class="flex mb-8" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
                 <li class="inline-flex items-center">
-                    <a href="{% url 'catalog_index' %}" class="text-gray-600 hover:text-teal-600 transition">
+                    <a href="{% url 'catalog:catalog_index' %}" class="text-gray-600 hover:text-teal-600 transition">
                         <i class="fas fa-home mr-2"></i>
                         Katalog
                     </a>
@@ -41,7 +41,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {% for product in products %}
             <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
-                <a href="{% url 'product_detail' slug=product.slug %}" class="block">
+                <a href="{% url 'catalog:product_detail' slug=product.slug %}" class="block">
                     {% if product.image %}
                     <div class="relative overflow-hidden rounded-t-xl">
                         <img src="{{ product.image.url }}" alt="{{ product.title }}" 
@@ -125,7 +125,7 @@
             <p class="text-gray-600 mb-6">
                 Aktuell sind keine Produkte in dieser Kategorie verfügbar.
             </p>
-            <a href="{% url 'catalog_index' %}" 
+            <a href="{% url 'catalog:catalog_index' %}" 
                class="inline-flex items-center bg-gradient-to-r from-teal-500 to-coral-500 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition">
                 <i class="fas fa-arrow-left mr-2"></i>
                 Zurück zum Katalog
@@ -135,7 +135,7 @@
 
         <!-- Back to Catalog -->
         <div class="mt-12 text-center">
-            <a href="{% url 'catalog_index' %}" 
+            <a href="{% url 'catalog:catalog_index' %}" 
                class="inline-flex items-center text-teal-600 hover:text-teal-700 font-semibold transition">
                 <i class="fas fa-arrow-left mr-2"></i>
                 Zurück zum Katalog
