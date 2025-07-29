@@ -21,6 +21,47 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {% for category in categories %}
             <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                {% if category.slug == 'hupfburgen' or category.slug == 'spiele-unterhaltung' or category.slug == 'vermietung' %}
+                <!-- Special card with slider -->
+                <div class="relative overflow-hidden rounded-t-xl">
+                    <div class="h-48 relative">
+                        <!-- Simple slider container -->
+                        <div id="{{ category.slug }}-slider" class="flex h-full">
+                            {% for product in category.products.all|slice:":5" %}
+                            <div class="w-full h-full flex-shrink-0 {% if forloop.first %}block{% else %}hidden{% endif %}" data-slide="{{ forloop.counter0 }}">
+                                {% if product.image %}
+                                <img src="{{ product.image.url }}" alt="{{ product.title }}" 
+                                     class="w-full h-full object-cover">
+                                {% else %}
+                                <div class="w-full h-full bg-gradient-to-br from-teal-500 to-coral-500 flex items-center justify-center">
+                                    <div class="text-center text-white">
+                                        <i class="fas fa-image text-4xl mb-2"></i>
+                                        <p class="text-sm">{{ product.title }}</p>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                                <div class="absolute bottom-4 left-4 text-white">
+                                    <h3 class="text-lg font-semibold">{{ product.title }}</h3>
+                                    <p class="text-sm opacity-90">{{ product.price }}€</p>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <!-- Fallback if no products -->
+                            <div class="w-full h-full flex-shrink-0">
+                                <div class="w-full h-full bg-gradient-to-br from-teal-500 to-coral-500 flex items-center justify-center">
+                                    <div class="text-center text-white">
+                                        <i class="fas fa-box-open text-4xl mb-2"></i>
+                                        <p class="text-sm">Keine Produkte verfügbar</p>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <!-- Regular card for other categories -->
                 <a href="{% url 'catalog:category_detail' slug=category.slug %}" class="block">
                     {% if category.image %}
                     <div class="relative overflow-hidden rounded-t-xl">
@@ -33,23 +74,28 @@
                         <i class="fas fa-cube text-white text-4xl"></i>
                     </div>
                     {% endif %}
-                    
-                    <div class="p-6">
-                        <h2 class="text-2xl font-bold text-gray-900 mb-3 hover:text-teal-600 transition">
-                            {{ category.name }}
-                        </h2>
-                        {% if category.description %}
-                        <p class="text-gray-600 leading-relaxed">
-                            {{ category.description|truncatewords:20 }}
-                        </p>
-                        {% endif %}
-                        
-                        <div class="mt-4 flex items-center text-teal-600 font-semibold">
-                            <span>Produkte anzeigen</span>
-                            <i class="fas fa-arrow-right ml-2 transition-transform group-hover:translate-x-1"></i>
-                        </div>
-                    </div>
                 </a>
+                {% endif %}
+                
+                <div class="p-6">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-3 hover:text-teal-600 transition">
+                        {{ category.name }}
+                    </h2>
+                    {% if category.description %}
+                    <p class="text-gray-600 leading-relaxed">
+                        {{ category.description|truncatewords:20 }}
+                    </p>
+                    {% endif %}
+                    
+                    <div class="mt-4 flex items-center text-teal-600 font-semibold">
+                        <span>Produkte anzeigen</span>
+                        <i class="fas fa-arrow-right ml-2 transition-transform group-hover:translate-x-1"></i>
+                    </div>
+                </div>
+                
+                {% if category.slug == 'hupfburgen' %}
+                <a href="{% url 'catalog:category_detail' slug=category.slug %}" class="block absolute inset-0"></a>
+                {% endif %}
             </div>
             {% endfor %}
         </div>
@@ -82,4 +128,56 @@
         </div>
     </div>
 </div>
+
+<!-- Slider JavaScript -->
+<script>
+let currentSlides = {};
+let slideIntervals = {};
+
+function initSlider(sliderId) {
+    currentSlides[sliderId] = 0;
+    const slider = document.getElementById(sliderId);
+    if (slider) {
+        const slides = slider.children;
+        if (slides.length > 1) {
+            // Auto-advance slides
+            slideIntervals[sliderId] = setInterval(() => {
+                changeSlide(sliderId);
+            }, 3000);
+        }
+    }
+}
+
+function changeSlide(sliderId) {
+    const slider = document.getElementById(sliderId);
+    if (!slider) return;
+    
+    const slides = slider.children;
+    const totalSlides = slides.length;
+    
+    if (totalSlides === 0) return;
+    
+    // Hide current slide
+    if (slides[currentSlides[sliderId]]) {
+        slides[currentSlides[sliderId]].classList.add('hidden');
+        slides[currentSlides[sliderId]].classList.remove('block');
+    }
+    
+    // Move to next slide
+    currentSlides[sliderId] = (currentSlides[sliderId] + 1) % totalSlides;
+    
+    // Show new slide
+    if (slides[currentSlides[sliderId]]) {
+        slides[currentSlides[sliderId]].classList.remove('hidden');
+        slides[currentSlides[sliderId]].classList.add('block');
+    }
+}
+
+// Initialize sliders when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    initSlider('hupfburgen-slider');
+    initSlider('spiele-unterhaltung-slider');
+    initSlider('vermietung-slider');
+});
+</script>
 {% endblock %} 
