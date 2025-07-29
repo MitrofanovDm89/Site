@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Kategorien – Play & Jump{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                <span class="gradient-text">Kategorien</span>
+            </h1>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Entdecken Sie unsere vielfältige Auswahl an Hüpfburgen, Gesellschaftsspielen und Unterhaltungsgeräten für alle Altersgruppen.
+            </p>
+        </div>
+
+        <!-- Categories Grid -->
+        {% if categories %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for category in categories %}
+            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                <a href="{% url 'category_detail' slug=category.slug %}" class="block">
+                    {% if category.image %}
+                    <div class="relative overflow-hidden rounded-t-xl">
+                        <img src="{{ category.image.url }}" alt="{{ category.name }}" 
+                             class="w-full h-48 object-cover transition-transform duration-300 hover:scale-105">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                    </div>
+                    {% else %}
+                    <div class="h-48 bg-gradient-to-br from-teal-500 to-coral-500 rounded-t-xl flex items-center justify-center">
+                        <i class="fas fa-cube text-white text-4xl"></i>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="p-6">
+                        <h2 class="text-2xl font-bold text-gray-900 mb-3 hover:text-teal-600 transition">
+                            {{ category.name }}
+                        </h2>
+                        {% if category.description %}
+                        <p class="text-gray-600 leading-relaxed">
+                            {{ category.description|truncatewords:20 }}
+                        </p>
+                        {% endif %}
+                        
+                        <div class="mt-4 flex items-center text-teal-600 font-semibold">
+                            <span>Produkte anzeigen</span>
+                            <i class="fas fa-arrow-right ml-2 transition-transform group-hover:translate-x-1"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-12">
+            <div class="w-24 h-24 bg-gradient-to-br from-teal-500 to-coral-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-box-open text-white text-3xl"></i>
+            </div>
+            <h3 class="text-2xl font-semibold text-gray-900 mb-2">Keine Kategorien verfügbar</h3>
+            <p class="text-gray-600">Aktuell sind keine Kategorien verfügbar. Bitte schauen Sie später wieder vorbei.</p>
+        </div>
+        {% endif %}
+
+        <!-- Call to Action -->
+        <div class="mt-16 text-center">
+            <div class="bg-gradient-to-r from-teal-500 to-coral-500 rounded-2xl p-8 text-white">
+                <h3 class="text-2xl font-bold mb-4">Benötigen Sie eine Beratung?</h3>
+                <p class="text-lg mb-6 opacity-90">
+                    Unsere Experten helfen Ihnen gerne bei der Auswahl der perfekten Produkte für Ihr Event.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="/kontakt/" class="bg-white text-teal-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+                        Kontakt aufnehmen
+                    </a>
+                    <a href="tel:015906787102" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-teal-600 transition">
+                        <i class="fas fa-phone mr-2"></i>0159 06787102
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

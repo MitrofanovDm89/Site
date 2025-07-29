@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Vermietung - Play & Jump{% endblock %}
+
+{% block content %}
+<!-- Vermietung Section -->
+<section class="py-20 bg-gradient-to-br from-teal-50 to-coral-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                <span class="gradient-text">Vermietung</span>
+            </h1>
+            <p class="text-xl text-gray-600">
+                Professionelle Vermietung von Hüpfburgen und Unterhaltungsgeräten für Ihr Event.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Service 1 -->
+            <div class="bg-white rounded-xl shadow-lg p-6 hover-lift">
+                <div class="w-16 h-16 bg-gradient-to-r from-teal-500 to-coral-500 rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-child text-white text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Hüpfburgen</h3>
+                <p class="text-gray-600 mb-4">Sichere und unterhaltsame Hüpfburgen für Kinderfeste</p>
+                <ul class="text-sm text-gray-600 space-y-1">
+                    <li>• Verschiedene Größen verfügbar</li>
+                    <li>• Sicherheitszertifiziert</li>
+                    <li>• Lieferung und Aufbau inklusive</li>
+                </ul>
+            </div>
+
+            <!-- Service 2 -->
+            <div class="bg-white rounded-xl shadow-lg p-6 hover-lift">
+                <div class="w-16 h-16 bg-gradient-to-r from-coral-500 to-teal-500 rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-gamepad text-white text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Unterhaltungsgeräte</h3>
+                <p class="text-gray-600 mb-4">Moderne Spiele und Unterhaltung für alle Altersgruppen</p>
+                <ul class="text-sm text-gray-600 space-y-1">
+                    <li>• Arcade-Spiele</li>
+                    <li>• VR-Erlebnisse</li>
+                    <li>• Professionelle Betreuung</li>
+                </ul>
+            </div>
+
+            <!-- Service 3 -->
+            <div class="bg-white rounded-xl shadow-lg p-6 hover-lift">
+                <div class="w-16 h-16 bg-gradient-to-r from-teal-500 to-coral-500 rounded-lg flex items-center justify-center mb-4">
+                    <i class="fas fa-users text-white text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Event-Pakete</h3>
+                <p class="text-gray-600 mb-4">Komplette Event-Lösungen für Firmen und Privatpersonen</p>
+                <ul class="text-sm text-gray-600 space-y-1">
+                    <li>• All-inclusive Pakete</li>
+                    <li>• Personal vor Ort</li>
+                    <li>• Flexible Dauer</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Pricing Section -->
+        <div class="mt-20">
+            <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">Preise und Pakete</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Basic Package -->
+                <div class="bg-white rounded-xl shadow-lg p-8 border-2 border-gray-200 hover:border-teal-500 transition-all">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Basic</h3>
+                    <div class="text-4xl font-bold text-teal-600 mb-6">€99<span class="text-lg text-gray-500">/Tag</span></div>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-teal-500 mr-3"></i>
+                            Hüpfburg (klein)
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-teal-500 mr-3"></i>
+                            Lieferung & Aufbau
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-teal-500 mr-3"></i>
+                            Sicherheitsausrüstung
+                        </li>
+                    </ul>
+                    <button class="w-full bg-teal-500 text-white py-3 rounded-lg font-semibold hover:bg-teal-600 transition">
+                        Jetzt buchen
+                    </button>
+                </div>
+
+                <!-- Premium Package -->
+                <div class="bg-white rounded-xl shadow-lg p-8 border-2 border-teal-500 relative">
+                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-teal-500 to-coral-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                        Beliebt
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Premium</h3>
+                    <div class="text-4xl font-bold text-teal-600 mb-6">€199<span class="text-lg text-gray-500">/Tag</span></div>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-teal-500 mr-3"></i>
+                            Hüpfburg (groß)
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-teal-500 mr-3"></i>
+                            2 Unterhaltungsgeräte
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-teal-500 mr-3"></i>
+                            Betreuung vor Ort
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-teal-500 mr-3"></i>
+                            Versicherung inklusive
+                        </li>
+                    </ul>
+                    <button class="w-full bg-gradient-to-r from-teal-500 to-coral-500 text-white py-3 rounded-lg font-semibold hover-lift">
+                        Jetzt buchen
+                    </button>
+                </div>
+
+                <!-- VIP Package -->
+                <div class="bg-white rounded-xl shadow-lg p-8 border-2 border-gray-200 hover:border-coral-500 transition-all">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">VIP</h3>
+                    <div class="text-4xl font-bold text-coral-600 mb-6">€399<span class="text-lg text-gray-500">/Tag</span></div>
+                    <ul class="space-y-3 mb-8">
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-teal-500 mr-3"></i>
+                            Komplettes Event-Paket
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-teal-500 mr-3"></i>
+                            Personal vor Ort
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-teal-500 mr-3"></i>
+                            Unbegrenzte Geräte
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check text-teal-500 mr-3"></i>
+                            Premium-Service
+                        </li>
+                    </ul>
+                    <button class="w-full bg-coral-500 text-white py-3 rounded-lg font-semibold hover:bg-coral-600 transition">
+                        Jetzt buchen
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="mt-20 text-center">
+            <div class="bg-gradient-to-r from-teal-500 to-coral-500 rounded-2xl p-8 text-white">
+                <h3 class="text-2xl font-bold mb-4">Benötigen Sie ein individuelles Angebot?</h3>
+                <p class="text-lg mb-6 opacity-90">
+                    Kontaktieren Sie uns für maßgeschneiderte Lösungen für Ihr Event.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="{% url 'main:kontakt' %}" class="bg-white text-teal-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+                        Kontakt aufnehmen
+                    </a>
+                    <a href="tel:015906787102" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-teal-600 transition">
+                        <i class="fas fa-phone mr-2"></i>0159 06787102
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %} 

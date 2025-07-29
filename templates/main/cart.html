@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Warenkorb – Play & Jump{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                <span class="gradient-text">Warenkorb</span>
+            </h1>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Überprüfen Sie Ihre ausgewählten Produkte und Services.
+            </p>
+        </div>
+
+        <!-- Empty Cart -->
+        <div class="bg-white rounded-xl shadow-lg p-8 text-center">
+            <div class="w-24 h-24 bg-gradient-to-br from-teal-500 to-coral-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-shopping-cart text-white text-3xl"></i>
+            </div>
+            <h3 class="text-2xl font-semibold text-gray-900 mb-2">Ihr Warenkorb ist leer</h3>
+            <p class="text-gray-600 mb-8">Fügen Sie Produkte aus unserem Katalog hinzu.</p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="/katalog/" class="bg-gradient-to-r from-teal-500 to-coral-500 text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition">
+                    <i class="fas fa-shopping-bag mr-2"></i>Zum Katalog
+                </a>
+                <a href="/kontakt/" class="border-2 border-teal-500 text-teal-600 px-8 py-3 rounded-lg font-semibold hover:bg-teal-500 hover:text-white transition">
+                    <i class="fas fa-phone mr-2"></i>Beratung anfordern
+                </a>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="mt-12 text-center">
+            <div class="bg-gradient-to-r from-teal-500 to-coral-500 rounded-2xl p-8 text-white">
+                <h3 class="text-2xl font-bold mb-4">Benötigen Sie Hilfe?</h3>
+                <p class="text-lg mb-6 opacity-90">
+                    Unsere Experten helfen Ihnen gerne bei der Auswahl der perfekten Produkte.
+                </p>
+                <a href="tel:015906787102" class="bg-white text-teal-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+                    <i class="fas fa-phone mr-2"></i>0159 06787102
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

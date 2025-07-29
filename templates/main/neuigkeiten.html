@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Neuigkeiten - Play & Jump{% endblock %}
+
+{% block content %}
+<!-- News Section -->
+<section class="py-20 bg-gradient-to-br from-teal-50 to-coral-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                <span class="gradient-text">Neuigkeiten</span>
+            </h1>
+            <p class="text-xl text-gray-600">
+                Bleiben Sie auf dem Laufenden mit unseren neuesten Angeboten und Events.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- News Item 1 -->
+            <article class="bg-white rounded-xl shadow-lg overflow-hidden hover-lift">
+                <div class="h-48 bg-gradient-to-br from-teal-500 to-coral-500 flex items-center justify-center">
+                    <i class="fas fa-star text-white text-4xl"></i>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center text-sm text-gray-500 mb-2">
+                        <i class="fas fa-calendar mr-2"></i>
+                        <span>15. Dezember 2024</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Neue Hüpfburgen verfügbar</h3>
+                    <p class="text-gray-600 mb-4">
+                        Wir haben unser Sortiment um neue, sichere Hüpfburgen erweitert. 
+                        Perfekt für Kinderfeste und Events.
+                    </p>
+                    <a href="#" class="text-teal-600 font-semibold hover:text-teal-700 transition">
+                        Weiterlesen →
+                    </a>
+                </div>
+            </article>
+
+            <!-- News Item 2 -->
+            <article class="bg-white rounded-xl shadow-lg overflow-hidden hover-lift">
+                <div class="h-48 bg-gradient-to-br from-coral-500 to-teal-500 flex items-center justify-center">
+                    <i class="fas fa-gift text-white text-4xl"></i>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center text-sm text-gray-500 mb-2">
+                        <i class="fas fa-calendar mr-2"></i>
+                        <span>10. Dezember 2024</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Weihnachts-Special</h3>
+                    <p class="text-gray-600 mb-4">
+                        Spezielle Angebote für Weihnachtsfeiern und Firmenevents. 
+                        Buchen Sie jetzt und sparen Sie 20%.
+                    </p>
+                    <a href="#" class="text-teal-600 font-semibold hover:text-teal-700 transition">
+                        Weiterlesen →
+                    </a>
+                </div>
+            </article>
+
+            <!-- News Item 3 -->
+            <article class="bg-white rounded-xl shadow-lg overflow-hidden hover-lift">
+                <div class="h-48 bg-gradient-to-br from-teal-500 to-coral-500 flex items-center justify-center">
+                    <i class="fas fa-users text-white text-4xl"></i>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center text-sm text-gray-500 mb-2">
+                        <i class="fas fa-calendar mr-2"></i>
+                        <span>5. Dezember 2024</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Team-Building Events</h3>
+                    <p class="text-gray-600 mb-4">
+                        Neue Team-Building Pakete für Firmen. 
+                        Fördern Sie den Zusammenhalt mit Spaß und Spiel.
+                    </p>
+                    <a href="#" class="text-teal-600 font-semibold hover:text-teal-700 transition">
+                        Weiterlesen →
+                    </a>
+                </div>
+            </article>
+
+            <!-- News Item 4 -->
+            <article class="bg-white rounded-xl shadow-lg overflow-hidden hover-lift">
+                <div class="h-48 bg-gradient-to-br from-coral-500 to-teal-500 flex items-center justify-center">
+                    <i class="fas fa-shield-alt text-white text-4xl"></i>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center text-sm text-gray-500 mb-2">
+                        <i class="fas fa-calendar mr-2"></i>
+                        <span>1. Dezember 2024</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Sicherheitszertifizierung</h3>
+                    <p class="text-gray-600 mb-4">
+                        Alle unsere Geräte haben die neuesten Sicherheitszertifizierungen erhalten. 
+                        Ihre Sicherheit steht an erster Stelle.
+                    </p>
+                    <a href="#" class="text-teal-600 font-semibold hover:text-teal-700 transition">
+                        Weiterlesen →
+                    </a>
+                </div>
+            </article>
+
+            <!-- News Item 5 -->
+            <article class="bg-white rounded-xl shadow-lg overflow-hidden hover-lift">
+                <div class="h-48 bg-gradient-to-br from-teal-500 to-coral-500 flex items-center justify-center">
+                    <i class="fas fa-truck text-white text-4xl"></i>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center text-sm text-gray-500 mb-2">
+                        <i class="fas fa-calendar mr-2"></i>
+                        <span>25. November 2024</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Erweiterter Lieferbereich</h3>
+                    <p class="text-gray-600 mb-4">
+                        Wir haben unseren Lieferbereich erweitert. 
+                        Jetzt auch in Ihrer Region verfügbar.
+                    </p>
+                    <a href="#" class="text-teal-600 font-semibold hover:text-teal-700 transition">
+                        Weiterlesen →
+                    </a>
+                </div>
+            </article>
+
+            <!-- News Item 6 -->
+            <article class="bg-white rounded-xl shadow-lg overflow-hidden hover-lift">
+                <div class="h-48 bg-gradient-to-br from-coral-500 to-teal-500 flex items-center justify-center">
+                    <i class="fas fa-heart text-white text-4xl"></i>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center text-sm text-gray-500 mb-2">
+                        <i class="fas fa-calendar mr-2"></i>
+                        <span>20. November 2024</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Kundenbewertungen</h3>
+                    <p class="text-gray-600 mb-4">
+                        Lesen Sie die neuesten Bewertungen unserer zufriedenen Kunden. 
+                        Wir sind stolz auf unser Feedback.
+                    </p>
+                    <a href="#" class="text-teal-600 font-semibold hover:text-teal-700 transition">
+                        Weiterlesen →
+                    </a>
+                </div>
+            </article>
+        </div>
+
+        <!-- Newsletter Section -->
+        <div class="mt-20">
+            <div class="bg-gradient-to-r from-teal-500 to-coral-500 rounded-2xl p-8 text-white text-center">
+                <h3 class="text-2xl font-bold mb-4">Newsletter abonnieren</h3>
+                <p class="text-lg mb-6 opacity-90">
+                    Bleiben Sie informiert über neue Angebote und Events.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+                    <input type="email" placeholder="Ihre E-Mail-Adresse" 
+                           class="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-white">
+                    <button class="bg-white text-teal-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+                        Abonnieren
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %} 
