@@ -93,7 +93,7 @@
                     </div>
                 </div>
                 
-                {% if category.slug == 'hupfburgen' %}
+                {% if category.slug == 'hupfburgen' or category.slug == 'spiele-unterhaltung' or category.slug == 'vermietung' %}
                 <a href="{% url 'catalog:category_detail' slug=category.slug %}" class="block absolute inset-0"></a>
                 {% endif %}
             </div>
