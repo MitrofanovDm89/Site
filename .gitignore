@@ -170,4 +170,15 @@ htmlcov/
 .coverage
 .coverage.*
 coverage.xml
-*.cover 
+*.cover
+
+# Sample projects (не отправлять в Git)
+samples/
+examples/
+reference_projects/
+
+# Debug and test files
+test-*.html
+logo-test.html
+debug-*.html
+*.log 

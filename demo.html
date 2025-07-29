@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Site - Современный веб-сайт</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome для иконок -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Кастомные стили -->
+    <style>
+        :root {
+            --teal-primary: #20B2AA;
+            --teal-light: #48D1CC;
+            --teal-dark: #008B8B;
+            --coral-accent: #FF6B6B;
+            --coral-light: #FF8E8E;
+            --coral-dark: #E55A5A;
+            --gray-light: #F8FAFC;
+            --gray-medium: #64748B;
+            --gray-dark: #334155;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--teal-primary) 0%, var(--teal-light) 100%);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--teal-primary) 0%, var(--coral-accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hover-lift {
+            transition: all 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(32, 178, 170, 0.2);
+        }
+        
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--coral-accent);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .mobile-menu {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .mobile-menu.active {
+            transform: translateX(0);
+        }
+        
+        .cart-badge {
+            animation: pulse 2s infinite;
+        }
+        
+        .navbar-logo {
+            height: 48px !important;
+            max-width: 192px !important;
+            object-fit: contain !important;
+            width: auto !important;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+            transition: all 0.3s ease;
+        }
+        
+        .navbar-logo:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-lg sticky top-0 z-50">
+        <!-- Top Bar -->
+        <div class="gradient-bg text-white py-2">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center text-sm">
+                    <div class="flex items-center space-x-4">
+                        <a href="tel:015906787102" class="flex items-center hover:text-gray-200 transition">
+                            <i class="fas fa-phone mr-2"></i>
+                            0159 06787102
+                        </a>
+                        <a href="mailto:info@playandjump.de" class="flex items-center hover:text-gray-200 transition">
+                            <i class="fas fa-envelope mr-2"></i>
+                            info@playandjump.de
+                        </a>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <a href="#" class="hover:text-gray-200 transition">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        <a href="#" class="hover:text-gray-200 transition">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="hover:text-gray-200 transition">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Navigation -->
+        <nav class="bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <!-- Logo -->
+                    <div class="flex-shrink-0">
+                        <a href="/" class="flex items-center">
+                            <img src="./static/images/logo.png" alt="Play & Jump Logo" class="h-12 w-auto max-w-48 object-contain navbar-logo mr-3">
+                            <span class="text-2xl font-bold gradient-text">Play & Jump</span>
+                        </a>
+                    </div>
+                    
+                    <!-- Desktop Menu -->
+                    <div class="hidden md:flex items-center space-x-8">
+                        <a href="/" class="nav-link text-gray-700 hover:text-teal-600 font-medium">Startseite</a>
+                        <a href="/katalog/" class="nav-link text-gray-700 hover:text-teal-600 font-medium">Katalog</a>
+                        <a href="/vermietung/" class="nav-link text-gray-700 hover:text-teal-600 font-medium">Vermietung</a>
+                        <a href="/neuigkeiten/" class="nav-link text-gray-700 hover:text-teal-600 font-medium">Neuigkeiten</a>
+                        <a href="/kontakt/" class="nav-link text-gray-700 hover:text-teal-600 font-medium">Kontakt</a>
+                    </div>
+                    
+                    <!-- Right Side -->
+                    <div class="hidden md:flex items-center space-x-4">
+                        <!-- Search -->
+                        <div class="relative">
+                            <input type="text" placeholder="Поиск..." 
+                                   class="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                        </div>
+                        
+                        <!-- Cart -->
+                        <a href="/cart/" class="relative hover-lift">
+                            <div class="w-10 h-10 bg-gradient-to-r from-teal-500 to-coral-500 rounded-lg flex items-center justify-center text-white">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <span class="absolute -top-2 -right-2 bg-coral-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center cart-badge">0</span>
+                        </a>
+                        
+                        <!-- User Menu -->
+                        <div class="relative group">
+                            <button class="flex items-center space-x-2 hover-lift">
+                                <div class="w-10 h-10 bg-gradient-to-r from-teal-500 to-coral-500 rounded-full flex items-center justify-center text-white">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <i class="fas fa-chevron-down text-gray-600"></i>
+                            </button>
+                            
+                            <!-- Dropdown Menu -->
+                            <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                                <a href="/profile/" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-user mr-2"></i>Профиль
+                                </a>
+                                <a href="/orders/" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-list mr-2"></i>Заказы
+                                </a>
+                                <a href="/settings/" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-cog mr-2"></i>Настройки
+                                </a>
+                                <hr class="my-2">
+                                <a href="/logout/" class="block px-4 py-2 text-red-600 hover:bg-red-50">
+                                    <i class="fas fa-sign-out-alt mr-2"></i>Выйти
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Mobile Menu Button -->
+                    <div class="md:hidden">
+                        <button id="mobile-menu-btn" class="text-gray-700 hover:text-teal-600 focus:outline-none">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="mobile-menu md:hidden bg-white border-t border-gray-200">
+                <div class="px-4 py-6 space-y-4">
+                    <a href="/" class="block py-2 text-gray-700 hover:text-teal-600 font-medium">Главная</a>
+                    <a href="/catalog/" class="block py-2 text-gray-700 hover:text-teal-600 font-medium">Каталог</a>
+                    <a href="/services/" class="block py-2 text-gray-700 hover:text-teal-600 font-medium">Услуги</a>
+                    <a href="/about/" class="block py-2 text-gray-700 hover:text-teal-600 font-medium">О нас</a>
+                    <a href="/contact/" class="block py-2 text-gray-700 hover:text-teal-600 font-medium">Контакты</a>
+                    
+                    <hr class="my-4">
+                    
+                    <!-- Mobile Search -->
+                    <div class="relative">
+                        <input type="text" placeholder="Поиск..." 
+                               class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    
+                    <!-- Mobile Cart -->
+                    <a href="/cart/" class="flex items-center py-2 text-gray-700 hover:text-teal-600">
+                        <i class="fas fa-shopping-cart mr-2"></i>
+                        Корзина
+                        <span class="ml-auto bg-coral-500 text-white text-xs rounded-full px-2 py-1">0</span>
+                    </a>
+                    
+                    <!-- Mobile User -->
+                    <a href="/profile/" class="flex items-center py-2 text-gray-700 hover:text-teal-600">
+                        <i class="fas fa-user mr-2"></i>
+                        Профиль
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="min-h-screen">
+        <!-- Hero Section -->
+        <section class="relative bg-gradient-to-br from-teal-50 to-coral-50 py-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+                        Добро пожаловать в
+                        <span class="gradient-text">Site</span>
+                    </h1>
+                    <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+                        Современный веб-сайт с красивым дизайном в бирюзово-коралловой цветовой схеме. 
+                        Мы создаем качественные решения для вашего бизнеса.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <a href="/catalog/" class="bg-gradient-to-r from-teal-500 to-coral-500 text-white px-8 py-3 rounded-lg font-semibold hover-lift">
+                            Перейти в каталог
+                        </a>
+                        <a href="/contact/" class="border-2 border-teal-500 text-teal-600 px-8 py-3 rounded-lg font-semibold hover:bg-teal-500 hover:text-white transition-all duration-300">
+                            Связаться с нами
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4">Наши преимущества</h2>
+                    <p class="text-xl text-gray-600">Почему стоит выбрать нас</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Feature 1 -->
+                    <div class="text-center p-6 rounded-xl bg-gradient-to-br from-teal-50 to-coral-50 hover-lift">
+                        <div class="w-16 h-16 bg-gradient-to-r from-teal-500 to-coral-500 rounded-lg flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-rocket text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Быстрая разработка</h3>
+                        <p class="text-gray-600">Создаем качественные решения в кратчайшие сроки</p>
+                    </div>
+                    
+                    <!-- Feature 2 -->
+                    <div class="text-center p-6 rounded-xl bg-gradient-to-br from-teal-50 to-coral-50 hover-lift">
+                        <div class="w-16 h-16 bg-gradient-to-r from-teal-500 to-coral-500 rounded-lg flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-palette text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Современный дизайн</h3>
+                        <p class="text-gray-600">Красивые и функциональные интерфейсы</p>
+                    </div>
+                    
+                    <!-- Feature 3 -->
+                    <div class="text-center p-6 rounded-xl bg-gradient-to-br from-teal-50 to-coral-50 hover-lift">
+                        <div class="w-16 h-16 bg-gradient-to-r from-teal-500 to-coral-500 rounded-lg flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-shield-alt text-white text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Надежность</h3>
+                        <p class="text-gray-600">Стабильная работа и безопасность данных</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Color Palette Demo -->
+        <section class="py-20 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4">Цветовая палитра</h2>
+                    <p class="text-xl text-gray-600">Бирюзовый и коралловый - идеальное сочетание</p>
+                </div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <!-- Teal Primary -->
+                    <div class="text-center">
+                        <div class="w-24 h-24 bg-teal-500 rounded-lg mx-auto mb-4 shadow-lg"></div>
+                        <h3 class="font-semibold text-gray-900">Бирюзовый</h3>
+                        <p class="text-sm text-gray-600">#20B2AA</p>
+                    </div>
+                    
+                    <!-- Teal Light -->
+                    <div class="text-center">
+                        <div class="w-24 h-24 bg-teal-400 rounded-lg mx-auto mb-4 shadow-lg"></div>
+                        <h3 class="font-semibold text-gray-900">Светло-бирюзовый</h3>
+                        <p class="text-sm text-gray-600">#48D1CC</p>
+                    </div>
+                    
+                    <!-- Coral -->
+                    <div class="text-center">
+                        <div class="w-24 h-24 bg-coral-500 rounded-lg mx-auto mb-4 shadow-lg"></div>
+                        <h3 class="font-semibold text-gray-900">Коралловый</h3>
+                        <p class="text-sm text-gray-600">#FF6B6B</p>
+                    </div>
+                    
+                    <!-- Coral Light -->
+                    <div class="text-center">
+                        <div class="w-24 h-24 bg-coral-400 rounded-lg mx-auto mb-4 shadow-lg"></div>
+                        <h3 class="font-semibold text-gray-900">Светло-коралловый</h3>
+                        <p class="text-sm text-gray-600">#FF8E8E</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="py-20 bg-gradient-to-r from-teal-500 to-coral-500">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="text-4xl font-bold text-white mb-4">Готовы начать?</h2>
+                <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+                    Свяжитесь с нами сегодня и получите бесплатную консультацию по вашему проекту
+                </p>
+                <a href="/contact/" class="bg-white text-teal-600 px-8 py-3 rounded-lg font-semibold hover-lift">
+                    Начать проект
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white">
+        <!-- Main Footer -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Company Info -->
+                <div class="lg:col-span-2">
+                    <div class="flex items-center mb-4">
+                        <img src="./static/images/logo.png" alt="Play & Jump Logo" class="h-10 w-auto max-w-40 object-contain mr-3" style="filter: brightness(0) invert(1);">
+                        <span class="text-2xl font-bold gradient-text">Play & Jump</span>
+                    </div>
+                    <p class="text-gray-300 mb-4 max-w-md">
+                        Современный веб-сайт с использованием передовых технологий. 
+                        Мы создаем качественные решения для вашего бизнеса.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 bg-gradient-to-r from-teal-500 to-coral-500 rounded-lg flex items-center justify-center hover-lift">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gradient-to-r from-teal-500 to-coral-500 rounded-lg flex items-center justify-center hover-lift">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gradient-to-r from-teal-500 to-coral-500 rounded-lg flex items-center justify-center hover-lift">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gradient-to-r from-teal-500 to-coral-500 rounded-lg flex items-center justify-center hover-lift">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4 text-teal-400">Быстрые ссылки</h3>
+                    <ul class="space-y-2">
+                        <li><a href="/" class="text-gray-300 hover:text-teal-400 transition">Главная</a></li>
+                        <li><a href="/about/" class="text-gray-300 hover:text-teal-400 transition">О нас</a></li>
+                        <li><a href="/services/" class="text-gray-300 hover:text-teal-400 transition">Услуги</a></li>
+                        <li><a href="/catalog/" class="text-gray-300 hover:text-teal-400 transition">Каталог</a></li>
+                        <li><a href="/contact/" class="text-gray-300 hover:text-teal-400 transition">Контакты</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Services -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4 text-teal-400">Услуги</h3>
+                    <ul class="space-y-2">
+                        <li><a href="/web-development/" class="text-gray-300 hover:text-teal-400 transition">Веб-разработка</a></li>
+                        <li><a href="/mobile-apps/" class="text-gray-300 hover:text-teal-400 transition">Мобильные приложения</a></li>
+                        <li><a href="/design/" class="text-gray-300 hover:text-teal-400 transition">Дизайн</a></li>
+                        <li><a href="/consulting/" class="text-gray-300 hover:text-teal-400 transition">Консалтинг</a></li>
+                        <li><a href="/support/" class="text-gray-300 hover:text-teal-400 transition">Поддержка</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contact Section -->
+        <div class="bg-gray-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Contact Info -->
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gradient-to-r from-teal-500 to-coral-500 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-map-marker-alt text-white"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-teal-400">Адрес</h4>
+                            <p class="text-gray-300">ул. Примерная, 123<br>Москва, 123456</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Phone -->
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gradient-to-r from-teal-500 to-coral-500 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-phone text-white"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-teal-400">Телефон</h4>
+                            <p class="text-gray-300">+1 (234) 567-890<br>+1 (234) 567-891</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Email -->
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-gradient-to-r from-teal-500 to-coral-500 rounded-lg flex items-center justify-center mr-4">
+                            <i class="fas fa-envelope text-white"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-teal-400">Email</h4>
+                            <p class="text-gray-300">info@site.com<br>support@site.com</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bottom Footer -->
+        <div class="bg-gray-950">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="text-gray-400 text-sm mb-4 md:mb-0">
+                        <p>&copy; 2025 Site. Все права защищены.</p>
+                    </div>
+                    <div class="flex space-x-6 text-sm">
+                        <a href="/privacy/" class="text-gray-400 hover:text-teal-400 transition">Политика конфиденциальности</a>
+                        <a href="/terms/" class="text-gray-400 hover:text-teal-400 transition">Условия использования</a>
+                        <a href="/cookies/" class="text-gray-400 hover:text-teal-400 transition">Cookies</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('active');
+        });
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                mobileMenu.classList.remove('active');
+            }
+        });
+        
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Add scroll effect to header
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.classList.add('shadow-2xl');
+            } else {
+                header.classList.remove('shadow-2xl');
+            }
+        });
+    </script>
+</body>
+</html> 
