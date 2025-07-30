@@ -6,6 +6,7 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'playandjump.settings')
+# Используем production настройки если DJANGO_SETTINGS_MODULE не установлен
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'playandjump.settings_production')
 
 application = get_wsgi_application() 

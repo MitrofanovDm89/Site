@@ -181,4 +181,48 @@ reference_projects/
 test-*.html
 logo-test.html
 debug-*.html
-*.log 
+*.log
+
+# Production files
+logs/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.git/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+
+# Heroku
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Railway
+.railway/
+
+# Docker
+.dockerignore
+Dockerfile.prod
+
+# Backup files
+*.bak
+*.backup
+*.old 
