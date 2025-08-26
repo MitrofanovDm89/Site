@@ -8,27 +8,61 @@ from catalog.models import Product
 
 
 def home(request):
-    return render(request, 'main/home.html')
+    return render(request, 'index.html')
 
 
 def cart(request):
     """Страница корзины"""
     cart_items = request.session.get('cart', {})
     products = []
-    total_price = 0
+    total_price = 0.0
     
-    for product_id, quantity in cart_items.items():
+    for cart_key, cart_data in cart_items.items():
         try:
+            # Проверяем, является ли это новым форматом корзины с датами
+            if isinstance(cart_data, dict):
+                product_id = cart_data['product_id']
+                quantity = cart_data['quantity']
+                start_date = cart_data.get('start_date')
+                end_date = cart_data.get('end_date')
+                price_per_day = cart_data.get('price_per_day', 0)
+            else:
+                # Старый формат (только product_id и quantity)
+                product_id = cart_key
+                quantity = cart_data
+                start_date = None
+                end_date = None
+                price_per_day = 0
+            
             product = Product.objects.get(id=product_id, is_active=True)
+            
+            # Рассчитываем цену
+            if start_date and end_date and price_per_day:
+                # Новый формат с датами
+                from datetime import datetime
+                start = datetime.strptime(start_date, '%Y-%m-%d').date()
+                end = datetime.strptime(end_date, '%Y-%m-%d').date()
+                duration_days = (end - start).days + 1
+                subtotal = float(price_per_day) * duration_days * quantity
+            else:
+                # Старый формат без дат
+                duration_days = 1
+                subtotal = float(product.price) * quantity if product.price else 0.0
+            
             products.append({
                 'id': product.id,
                 'title': product.title,
                 'price': product.price,
                 'quantity': quantity,
-                'subtotal': product.price * quantity if product.price else 0
+                'subtotal': subtotal,
+                'start_date': start_date,
+                'end_date': end_date,
+                'duration_days': duration_days,
+                'cart_key': cart_key
             })
-            if product.price:
-                total_price += product.price * quantity
+            
+            total_price += float(subtotal)
+            
         except Product.DoesNotExist:
             continue
     
@@ -49,6 +83,8 @@ def add_to_cart(request):
             data = json.loads(request.body)
             product_id = data.get('product_id')
             quantity = data.get('quantity', 1)
+            start_date = data.get('start_date')
+            end_date = data.get('end_date')
             
             if not product_id:
                 return JsonResponse({'success': False, 'error': 'Product ID is required'})
@@ -63,12 +99,21 @@ def add_to_cart(request):
             if 'cart' not in request.session:
                 request.session['cart'] = {}
             
-            # Добавляем товар в корзину
+            # Создаем уникальный ключ для товара с датами
+            cart_key = f"{product_id}_{start_date}_{end_date}" if start_date and end_date else str(product_id)
+            
+            # Добавляем товар в корзину с информацией о датах
             cart = request.session['cart']
-            if str(product_id) in cart:
-                cart[str(product_id)] += quantity
+            if cart_key in cart:
+                cart[cart_key]['quantity'] += quantity
             else:
-                cart[str(product_id)] = quantity
+                cart[cart_key] = {
+                    'product_id': product_id,
+                    'quantity': quantity,
+                    'start_date': start_date,
+                    'end_date': end_date,
+                    'price_per_day': float(product.price) if product.price else 0
+                }
             
             request.session.modified = True
             
@@ -90,14 +135,14 @@ def remove_from_cart(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            product_id = data.get('product_id')
+            cart_key = data.get('cart_key')
             
-            if not product_id:
-                return JsonResponse({'success': False, 'error': 'Product ID is required'})
+            if not cart_key:
+                return JsonResponse({'success': False, 'error': 'Cart key is required'})
             
             cart = request.session.get('cart', {})
-            if str(product_id) in cart:
-                del cart[str(product_id)]
+            if cart_key in cart:
+                del cart[cart_key]
                 request.session.modified = True
             
             return JsonResponse({
@@ -118,19 +163,25 @@ def update_cart_quantity(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            product_id = data.get('product_id')
+            cart_key = data.get('cart_key')
             quantity = data.get('quantity', 1)
             
-            if not product_id:
-                return JsonResponse({'success': False, 'error': 'Product ID is required'})
+            if not cart_key:
+                return JsonResponse({'success': False, 'error': 'Cart key is required'})
             
             if quantity <= 0:
                 # Если количество <= 0, удаляем товар
                 return remove_from_cart(request)
             
             cart = request.session.get('cart', {})
-            if str(product_id) in cart:
-                cart[str(product_id)] = quantity
+            if cart_key in cart:
+                # Проверяем, является ли это новым форматом корзины
+                if isinstance(cart[cart_key], dict):
+                    cart[cart_key]['quantity'] = quantity
+                else:
+                    # Старый формат
+                    cart[cart_key] = quantity
+                
                 request.session.modified = True
             
             return JsonResponse({
@@ -168,20 +219,51 @@ def send_inquiry(request):
             # Получаем товары из корзины
             cart_items = request.session.get('cart', {})
             products = []
-            total_price = 0
+            total_price = 0.0
             
-            for product_id, quantity in cart_items.items():
+            for cart_key, cart_data in cart_items.items():
                 try:
+                    # Проверяем, является ли это новым форматом корзины с датами
+                    if isinstance(cart_data, dict):
+                        product_id = cart_data['product_id']
+                        quantity = cart_data['quantity']
+                        start_date = cart_data.get('start_date')
+                        end_date = cart_data.get('end_date')
+                        price_per_day = cart_data.get('price_per_day', 0)
+                    else:
+                        # Старый формат (только product_id и quantity)
+                        product_id = cart_key
+                        quantity = cart_data
+                        start_date = None
+                        end_date = None
+                        price_per_day = 0
+                    
                     product = Product.objects.get(id=product_id, is_active=True)
-                    subtotal = product.price * quantity if product.price else 0
+                    
+                    # Рассчитываем цену
+                    if start_date and end_date and price_per_day:
+                        # Новый формат с датами
+                        from datetime import datetime
+                        start = datetime.strptime(start_date, '%Y-%m-%d').date()
+                        end = datetime.strptime(end_date, '%Y-%m-%d').date()
+                        duration_days = (end - start).days + 1
+                        subtotal = float(price_per_day) * duration_days * quantity
+                    else:
+                        # Старый формат без дат
+                        subtotal = float(product.price) * quantity if product.price else 0.0
+                    
                     products.append({
                         'title': product.title,
                         'price': product.price,
                         'quantity': quantity,
-                        'subtotal': subtotal
+                        'subtotal': subtotal,
+                        'start_date': start_date,
+                        'end_date': end_date,
+                        'duration_days': duration_days if start_date and end_date else 1
                     })
-                    if product.price:
-                        total_price += subtotal
+                    
+                    total_price += float(subtotal)
+                    
                 except Product.DoesNotExist:
                     continue
             
@@ -204,7 +286,10 @@ Email: {customer_email or 'Не указано'}
 """
             
             for product in products:
-                message += f"- {product['title']} x{product['quantity']} = {product['subtotal']}€\n"
+                if product.get('start_date') and product.get('end_date'):
+                    message += f"- {product['title']} x{product['quantity']} ({product['start_date']} bis {product['end_date']}, {product['duration_days']} Tage) = {product['subtotal']}€\n"
+                else:
+                    message += f"- {product['title']} x{product['quantity']} = {product['subtotal']}€\n"
             
             message += f"\nОбщая стоимость: {total_price}€"
             
@@ -231,7 +316,10 @@ Email: {customer_email or 'Не указано'}
 """
                     
                     for product in products:
-                        confirmation_message += f"- {product['title']} x{product['quantity']} = {product['subtotal']}€\n"
+                        if product.get('start_date') and product.get('end_date'):
+                            confirmation_message += f"- {product['title']} x{product['quantity']} ({product['start_date']} bis {product['end_date']}, {product['duration_days']} Tage) = {product['subtotal']}€\n"
+                        else:
+                            confirmation_message += f"- {product['title']} x{product['quantity']} = {product['subtotal']}€\n"
                     
                     confirmation_message += f"\nОбщая стоимость: {total_price}€"
                     

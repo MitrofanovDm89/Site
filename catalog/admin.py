@@ -70,41 +70,7 @@ class ProductAdmin(admin.ModelAdmin):
     booking_count.short_description = 'Buchungen'
 
 
-@admin.register(Booking)
-class BookingAdmin(admin.ModelAdmin):
-    list_display = ['customer_name', 'product', 'start_date', 'end_date', 'total_price', 'status', 'duration_days']
-    list_filter = ['status', 'start_date', 'end_date', 'product']
-    search_fields = ['customer_name', 'customer_email', 'product__title']
-    readonly_fields = ['created_at', 'updated_at', 'duration_days']
-    list_editable = ['status']
-    
-    fieldsets = (
-        ('Kundeninformationen', {
-            'fields': ('customer_name', 'customer_email', 'customer_phone')
-        }),
-        ('Buchungsdetails', {
-            'fields': ('product', 'start_date', 'end_date', 'total_price', 'status')
-        }),
-        ('Zusätzliche Informationen', {
-            'fields': ('notes', 'created_at', 'updated_at', 'duration_days')
-        }),
-    )
-    
-    def duration_days(self, obj):
-        return obj.duration_days
-    duration_days.short_description = 'Dauer (Tage)'
-    
-    actions = ['confirm_bookings', 'cancel_bookings']
-    
-    def confirm_bookings(self, request, queryset):
-        updated = queryset.update(status='confirmed')
-        self.message_user(request, f'{updated} Buchungen wurden bestätigt.')
-    confirm_bookings.short_description = "Ausgewählte Buchungen bestätigen"
-    
-    def cancel_bookings(self, request, queryset):
-        updated = queryset.update(status='cancelled')
-        self.message_user(request, f'{updated} Buchungen wurden storniert.')
-    cancel_bookings.short_description = "Ausgewählte Buchungen stornieren"
+
 
 
 @admin.register(Availability)
@@ -171,28 +137,8 @@ class BookingAdmin(admin.ModelAdmin):
         self.message_user(request, f'{updated} Buchungen wurden storniert.')
     cancel_bookings.short_description = "Ausgewählte Buchungen stornieren"
 
-# Перерегистрируем Booking с обновленным админом
-admin.site.unregister(Booking)
+# Регистрируем Booking с обновленным админом
 admin.site.register(Booking, BookingAdmin)
 
-# Добавляем кастомную ссылку в админ-панель
-class CustomAdminSite(admin.AdminSite):
-    def get_app_list(self, request):
-        app_list = super().get_app_list(request)
-        
-        # Добавляем ссылку на страницу управления бронированиями
-        for app in app_list:
-            if app['app_label'] == 'catalog':
-                app['models'].append({
-                    'name': 'Buchungsverwaltung',
-                    'object_name': 'booking_management',
-                    'admin_url': reverse('catalog:booking_management'),
-                    'view_only': True,
-                    'perms': {'view': True},
-                })
-                break
-        
-        return app_list
-
-# Заменяем стандартный админ-сайт
-admin.site = CustomAdminSite()
+# Добавляем ссылку на страницу управления бронированиями в админ-панель
+# (без замены стандартного admin.site)

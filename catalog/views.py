@@ -50,8 +50,8 @@ def catalog_index(request):
 def booking_management(request):
     """Страница управления бронированиями с календарем"""
     
-    # Получаем все товары для фильтрации
-    products = Product.objects.filter(is_active=True)
+    # Получаем все товары для фильтрации с ценой
+    products = Product.objects.filter(is_active=True).values('id', 'title', 'price')
     
     # Получаем все бронирования
     bookings = Booking.objects.select_related('product').all()
@@ -148,10 +148,30 @@ def create_booking(request):
         try:
             data = json.loads(request.body)
             
+            # Получаем продукт для расчета цены
+            try:
+                product = Product.objects.get(id=data['product_id'])
+            except Product.DoesNotExist:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Продукт не найден'
+                }, status=400)
+            
             # Преобразуем строки дат в объекты date
             from datetime import datetime
             start_date = datetime.strptime(data['start_date'], '%Y-%m-%d').date()
             end_date = datetime.strptime(data['end_date'], '%Y-%m-%d').date()
+            
+            # Проверяем, что end_date >= start_date
+            if end_date < start_date:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Дата окончания должна быть не раньше даты начала'
+                }, status=400)
+            
+            # Рассчитываем количество дней и общую цену
+            duration_days = (end_date - start_date).days + 1
+            total_price = product.price * duration_days if product.price else 0
             
             # Создаем новое бронирование
             booking = Booking.objects.create(
@@ -161,7 +181,7 @@ def create_booking(request):
                 customer_phone=data.get('customer_phone', ''),
                 start_date=start_date,
                 end_date=end_date,
-                total_price=data['total_price'],
+                total_price=total_price,
                 notes=data.get('notes', ''),
                 status='pending'
             )
@@ -169,7 +189,9 @@ def create_booking(request):
             return JsonResponse({
                 'success': True,
                 'booking_id': booking.id,
-                'message': 'Buchung erfolgreich erstellt'
+                'message': 'Buchung erfolgreich erstellt',
+                'duration_days': duration_days,
+                'total_price': float(total_price)
             })
             
         except Exception as e:
@@ -193,10 +215,31 @@ def update_booking(request, booking_id):
             
             # Преобразуем строки дат в объекты date
             from datetime import datetime
+            date_changed = False
             if 'start_date' in data:
-                booking.start_date = datetime.strptime(data['start_date'], '%Y-%m-%d').date()
+                new_start_date = datetime.strptime(data['start_date'], '%Y-%m-%d').date()
+                if new_start_date != booking.start_date:
+                    booking.start_date = new_start_date
+                    date_changed = True
+                    
             if 'end_date' in data:
-                booking.end_date = datetime.strptime(data['end_date'], '%Y-%m-%d').date()
+                new_end_date = datetime.strptime(data['end_date'], '%Y-%m-%d').date()
+                if new_end_date != booking.end_date:
+                    booking.end_date = new_end_date
+                    date_changed = True
+            
+            # Если даты изменились, пересчитываем цену
+            if date_changed:
+                if booking.end_date < booking.start_date:
+                    return JsonResponse({
+                        'success': False,
+                        'error': 'Дата окончания должна быть не раньше даты начала'
+                    }, status=400)
+                
+                # Рассчитываем новую цену
+                duration_days = (booking.end_date - booking.start_date).days + 1
+                booking.total_price = booking.product.price * duration_days if booking.product.price else 0
+            
             if 'status' in data:
                 booking.status = data['status']
             if 'notes' in data:
@@ -206,7 +249,9 @@ def update_booking(request, booking_id):
             
             return JsonResponse({
                 'success': True,
-                'message': 'Buchung erfolgreich aktualisiert'
+                'message': 'Buchung erfolgreich aktualisiert',
+                'duration_days': booking.duration_days,
+                'total_price': float(booking.total_price)
             })
             
         elif request.method == 'DELETE':

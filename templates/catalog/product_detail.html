@@ -47,29 +47,43 @@
                 </div>
                 {% endif %}
                 
-                <!-- Availability Calendar -->
-                <div class="bg-white rounded-xl shadow-lg p-6">
-                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Verfügbarkeit Kalender</h3>
-                    <div id="availability-calendar" class="w-full">
-                        <!-- Calendar will be rendered here -->
-                    </div>
-                    <div class="mt-4 text-sm text-gray-600">
-                        <div class="flex items-center space-x-4">
-                            <div class="flex items-center">
-                                <div class="w-4 h-4 bg-green-500 rounded mr-2"></div>
-                                <span>Verfügbar</span>
-                            </div>
-                            <div class="flex items-center">
-                                <div class="w-4 h-4 bg-red-500 rounded mr-2"></div>
-                                <span>Gebucht</span>
-                            </div>
-                            <div class="flex items-center">
-                                <div class="w-4 h-4 bg-gray-300 rounded mr-2"></div>
-                                <span>Vergangen</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                                 <!-- Availability Calendar -->
+                 <div class="bg-white rounded-xl shadow-lg p-6">
+                     <h3 class="text-xl font-semibold text-gray-900 mb-4">Verfügbarkeit Kalender</h3>
+                     <div id="availability-calendar" class="w-full">
+                         <!-- Calendar will be rendered here -->
+                     </div>
+                     
+                     <!-- Calendar Instructions -->
+                     <div class="mt-4 p-4 bg-blue-50 rounded-lg">
+                         <p class="text-sm text-blue-800 mb-2">
+                             <strong>Anleitung:</strong> Klicken Sie zuerst auf ein Startdatum, dann auf ein Enddatum.
+                         </p>
+                         <button id="add-to-cart-from-calendar" 
+                                 onclick="openDateSelectionModal()" 
+                                 class="w-full bg-gradient-to-r from-teal-500 to-coral-500 text-white py-2 px-4 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 hidden">
+                             <i class="fas fa-cart-plus mr-2"></i>
+                             In den Warenkorb hinzufügen
+                         </button>
+                     </div>
+                     
+                     <div class="mt-4 text-sm text-gray-600">
+                         <div class="flex items-center space-x-4">
+                             <div class="flex items-center">
+                                 <div class="w-4 h-4 bg-green-500 rounded mr-2"></div>
+                                 <span>Verfügbar</span>
+                             </div>
+                             <div class="flex items-center">
+                                 <div class="w-4 h-4 bg-red-500 rounded mr-2"></div>
+                                 <span>Gebucht</span>
+                             </div>
+                             <div class="flex items-center">
+                                 <div class="w-4 h-4 bg-gray-300 rounded mr-2"></div>
+                                 <span>Vergangen</span>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
             </div>
 
             <!-- Product Info -->
@@ -110,11 +124,11 @@
 
                 <!-- Action Buttons -->
                 <div class="space-y-4">
-                    <a href="/kontakt/" 
-                       class="w-full bg-gradient-to-r from-teal-500 to-coral-500 text-white py-4 px-6 rounded-xl font-semibold text-lg hover:shadow-lg transition-all duration-300 hover:-translate-y-1 flex items-center justify-center">
-                        <i class="fas fa-calendar-check mr-3"></i>
-                        Jetzt buchen
-                    </a>
+                    <button onclick="openDateSelectionModal()" 
+                            class="w-full bg-gradient-to-r from-teal-500 to-coral-500 text-white py-4 px-6 rounded-xl font-semibold text-lg hover:shadow-lg transition-all duration-300 hover:-translate-y-1 flex items-center justify-center">
+                        <i class="fas fa-cart-plus mr-3"></i>
+                        In den Warenkorb
+                    </button>
                     
                     <a href="tel:015906787102" 
                        class="w-full border-2 border-teal-600 text-teal-600 py-4 px-6 rounded-xl font-semibold text-lg hover:bg-teal-600 hover:text-white transition-all duration-300 flex items-center justify-center">
@@ -219,7 +233,8 @@ class AvailabilityCalendar {
         this.container = document.getElementById(containerId);
         this.bookedDates = bookedDates;
         this.currentDate = new Date();
-        this.selectedDate = null;
+        this.startDate = null;
+        this.endDate = null;
         this.currentMonth = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), 1);
         
         this.init();
@@ -274,7 +289,9 @@ class AvailabilityCalendar {
             const isToday = this.isSameDate(date, currentDate);
             const isPast = date < currentDate;
             const isBooked = this.isBooked(date);
-            const isSelected = this.selectedDate && this.isSameDate(date, this.selectedDate);
+            const isInRange = this.isInDateRange(date);
+            const isStartDate = this.startDate && this.isSameDate(date, this.startDate);
+            const isEndDate = this.endDate && this.isSameDate(date, this.endDate);
             
             let classes = 'calendar-day text-center py-2 text-sm cursor-pointer rounded transition-colors';
             
@@ -284,8 +301,10 @@ class AvailabilityCalendar {
                 classes += ' bg-gray-100 text-gray-400 cursor-not-allowed';
             } else if (isBooked) {
                 classes += ' bg-red-500 text-white cursor-not-allowed';
-            } else if (isSelected) {
-                classes += ' bg-teal-500 text-white';
+            } else if (isStartDate || isEndDate) {
+                classes += ' bg-teal-600 text-white font-bold';
+            } else if (isInRange) {
+                classes += ' bg-teal-300 text-white';
             } else {
                 classes += ' hover:bg-teal-100 text-gray-900';
             }
@@ -319,10 +338,28 @@ class AvailabilityCalendar {
                     const currentDate = new Date();
                     
                     if (date >= currentDate && !this.isBooked(date)) {
-                        this.selectedDate = date;
+                        if (!this.startDate) {
+                            // Первый клик - устанавливаем начальную дату
+                            this.startDate = date;
+                            this.endDate = null;
+                        } else if (!this.endDate) {
+                            // Второй клик - устанавливаем конечную дату
+                            if (date >= this.startDate) {
+                                this.endDate = date;
+                            } else {
+                                // Если конечная дата раньше начальной, меняем их местами
+                                this.endDate = this.startDate;
+                                this.startDate = date;
+                            }
+                        } else {
+                            // Третий клик - сбрасываем и начинаем заново
+                            this.startDate = date;
+                            this.endDate = null;
+                        }
+                        
                         this.render();
                         this.attachEventListeners();
-                        this.onDateSelected(date);
+                        this.onDateSelected();
                     }
                 }
             }
@@ -340,16 +377,39 @@ class AvailabilityCalendar {
         return this.bookedDates.includes(dateStr);
     }
     
-    onDateSelected(date) {
-        // Update booking button with selected date
-        const bookingBtn = document.querySelector('a[href="/kontakt/"]');
-        if (bookingBtn) {
-            const dateStr = date.toLocaleDateString('de-DE');
-            bookingBtn.innerHTML = `<i class="fas fa-calendar-check mr-3"></i>Buchen für ${dateStr}`;
+    isInDateRange(date) {
+        if (!this.startDate || !this.endDate) return false;
+        return date >= this.startDate && date <= this.endDate;
+    }
+    
+    onDateSelected() {
+        if (this.startDate && this.endDate) {
+            console.log('Selected range:', this.startDate.toLocaleDateString('de-DE'), 'to', this.endDate.toLocaleDateString('de-DE'));
+            
+            // Автоматически заполняем модальное окно выбора дат
+            const startDateInput = document.getElementById('start-date');
+            const endDateInput = document.getElementById('end-date');
+            
+            if (startDateInput && endDateInput) {
+                startDateInput.value = this.startDate.toISOString().split('T')[0];
+                endDateInput.value = this.endDate.toISOString().split('T')[0];
+                updatePriceCalculation();
+            }
+            
+            // Показываем кнопку добавления в корзину
+            const addToCartBtn = document.getElementById('add-to-cart-from-calendar');
+            if (addToCartBtn) {
+                addToCartBtn.classList.remove('hidden');
+            }
+        } else if (this.startDate) {
+            console.log('Selected start date:', this.startDate.toLocaleDateString('de-DE'));
+            
+            // Скрываем кнопку, если выбран только один день
+            const addToCartBtn = document.getElementById('add-to-cart-from-calendar');
+            if (addToCartBtn) {
+                addToCartBtn.classList.add('hidden');
+            }
         }
-        
-        // You can add more functionality here, like opening a booking modal
-        console.log('Selected date:', date.toLocaleDateString('de-DE'));
     }
 }
 
@@ -361,5 +421,182 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize calendar
     new AvailabilityCalendar('availability-calendar', bookedDates);
 });
+</script>
+
+<!-- Date Selection Modal -->
+<div id="date-selection-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-900">Datum auswählen</h3>
+                <button onclick="closeDateSelectionModal()" class="text-gray-400 hover:text-gray-600 text-2xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Startdatum *</label>
+                    <input type="date" id="start-date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Enddatum *</label>
+                    <input type="date" id="end-date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                </div>
+                
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm text-gray-600">Preis pro Tag:</span>
+                        <span class="font-bold text-teal-600">{{ product.price|default:0|floatformat:0 }}€</span>
+                    </div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm text-gray-600">Anzahl Tage:</span>
+                        <span id="duration-days" class="font-bold text-teal-600">1</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Gesamtpreis:</span>
+                        <span id="total-price" class="font-bold text-teal-600 text-lg">{{ product.price|default:0|floatformat:0 }}€</span>
+                    </div>
+                </div>
+                
+                <div class="flex gap-3 pt-4">
+                    <button onclick="closeDateSelectionModal()" 
+                            class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                        Abbrechen
+                    </button>
+                    <button onclick="addToCartWithDates()" 
+                            class="flex-1 px-4 py-2 bg-gradient-to-r from-teal-500 to-coral-500 text-white rounded-lg hover:shadow-lg transition-all duration-300">
+                        In den Warenkorb hinzufügen
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Date selection modal functions
+function openDateSelectionModal() {
+    document.getElementById('date-selection-modal').classList.remove('hidden');
+    
+    // Set minimum date to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('start-date').min = today;
+    document.getElementById('end-date').min = today;
+    
+    // Set default dates (today and tomorrow)
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    document.getElementById('start-date').value = today;
+    document.getElementById('end-date').value = tomorrow.toISOString().split('T')[0];
+    
+    updatePriceCalculation();
+}
+
+function closeDateSelectionModal() {
+    document.getElementById('date-selection-modal').classList.add('hidden');
+}
+
+function updatePriceCalculation() {
+    const startDate = document.getElementById('start-date').value;
+    const endDate = document.getElementById('end-date').value;
+    const pricePerDay = {{ product.price|default:0|floatformat:0 }};
+    
+    if (startDate && endDate) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        
+        if (end >= start) {
+            const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+            const totalPrice = pricePerDay * days;
+            
+            document.getElementById('duration-days').textContent = days;
+            document.getElementById('total-price').textContent = totalPrice + '€';
+        } else {
+            document.getElementById('duration-days').textContent = '0';
+            document.getElementById('total-price').textContent = '0€';
+        }
+    }
+}
+
+function addToCartWithDates() {
+    const startDate = document.getElementById('start-date').value;
+    const endDate = document.getElementById('end-date').value;
+    
+    if (!startDate || !endDate) {
+        alert('Bitte wählen Sie Start- und Enddatum aus.');
+        return;
+    }
+    
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    
+    if (end < start) {
+        alert('Das Enddatum muss nach dem Startdatum liegen.');
+        return;
+    }
+    
+    // Add to cart with dates
+    fetch('{% url "main:add_to_cart" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            product_id: {{ product.id }},
+            quantity: 1,
+            start_date: startDate,
+            end_date: endDate
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification(data.message, 'success');
+            closeDateSelectionModal();
+            updateCartCount(data.cart_count);
+        } else {
+            showNotification(data.error, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Fehler beim Hinzufügen zur Warenkorb', 'error');
+    });
+}
+
+// Add event listeners for date inputs
+document.addEventListener('DOMContentLoaded', function() {
+    const startDateInput = document.getElementById('start-date');
+    const endDateInput = document.getElementById('end-date');
+    
+    if (startDateInput && endDateInput) {
+        startDateInput.addEventListener('change', updatePriceCalculation);
+        endDateInput.addEventListener('change', updatePriceCalculation);
+    }
+});
+
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 ${
+        type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+    }`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+function updateCartCount(count) {
+    const cartBadges = document.querySelectorAll('.cart-count');
+    cartBadges.forEach(badge => {
+        badge.textContent = count;
+    });
+}
 </script>
 {% endblock %} 
