@@ -100,4 +100,14 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField' 
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Email Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Для разработки
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # Для продакшена
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'dlktsprdct@gmail.com'
+EMAIL_HOST_PASSWORD = ''  # Пароль приложения Gmail
+DEFAULT_FROM_EMAIL = 'dlktsprdct@gmail.com' 

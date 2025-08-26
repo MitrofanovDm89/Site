@@ -4,48 +4,329 @@
 {% block title %}Warenkorb – Play & Jump{% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-gray-50 py-12">
+<div class="min-h-screen bg-gray-50 py-8">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header -->
-        <div class="text-center mb-12">
+        <div class="text-center mb-8">
             <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                <span class="gradient-text">Warenkorb</span>
+                <span class="text-teal-600">Warenkorb</span>
             </h1>
-            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                Überprüfen Sie Ihre ausgewählten Produkte und Services.
+            <p class="text-xl text-gray-600">
+                Überprüfen Sie Ihre Auswahl und senden Sie eine Anfrage.
             </p>
         </div>
 
-        <!-- Empty Cart -->
-        <div class="bg-white rounded-xl shadow-lg p-8 text-center">
-            <div class="w-24 h-24 bg-gradient-to-br from-teal-500 to-coral-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i class="fas fa-shopping-cart text-white text-3xl"></i>
-            </div>
-            <h3 class="text-2xl font-semibold text-gray-900 mb-2">Ihr Warenkorb ist leer</h3>
-            <p class="text-gray-600 mb-8">Fügen Sie Produkte aus unserem Katalog hinzu.</p>
+        {% if cart_items %}
+        <!-- Cart Items -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Ausgewählte Produkte</h2>
             
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="/katalog/" class="bg-gradient-to-r from-teal-500 to-coral-500 text-white px-8 py-3 rounded-lg font-semibold hover:shadow-lg transition">
-                    <i class="fas fa-shopping-bag mr-2"></i>Zum Katalog
-                </a>
-                <a href="/kontakt/" class="border-2 border-teal-500 text-teal-600 px-8 py-3 rounded-lg font-semibold hover:bg-teal-500 hover:text-white transition">
-                    <i class="fas fa-phone mr-2"></i>Beratung anfordern
-                </a>
+            <div class="space-y-4">
+                {% for item in cart_items %}
+                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-shrink-0">
+                            <div class="w-16 h-16 bg-gradient-to-br from-teal-500 to-coral-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-box text-white text-xl"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">{{ item.title }}</h3>
+                            <p class="text-gray-600">Preis: {{ item.price }}€</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center border border-gray-300 rounded-lg">
+                            <button onclick="updateQuantity({{ item.id }}, {{ item.quantity|add:'-1' }})" 
+                                    class="px-3 py-1 text-gray-600 hover:text-gray-800 transition-colors">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <span class="px-3 py-1 text-gray-900 font-medium">{{ item.quantity }}</span>
+                            <button onclick="updateQuantity({{ item.id }}, {{ item.quantity|add:'1' }})" 
+                                    class="px-3 py-1 text-gray-600 hover:text-gray-800 transition-colors">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="text-right">
+                            <p class="text-lg font-bold text-teal-600">{{ item.subtotal }}€</p>
+                        </div>
+                        
+                        <button onclick="removeFromCart({{ item.id }})" 
+                                class="text-red-500 hover:text-red-700 transition-colors">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Total -->
+            <div class="mt-6 pt-6 border-t border-gray-200">
+                <div class="flex justify-between items-center">
+                    <span class="text-2xl font-bold text-gray-900">Gesamtpreis:</span>
+                    <span class="text-3xl font-bold text-teal-600">{{ total_price }}€</span>
+                </div>
             </div>
         </div>
 
-        <!-- Call to Action -->
-        <div class="mt-12 text-center">
-            <div class="bg-gradient-to-r from-teal-500 to-coral-500 rounded-2xl p-8 text-white">
-                <h3 class="text-2xl font-bold mb-4">Benötigen Sie Hilfe?</h3>
-                <p class="text-lg mb-6 opacity-90">
-                    Unsere Experten helfen Ihnen gerne bei der Auswahl der perfekten Produkte.
-                </p>
-                <a href="tel:015906787102" class="bg-white text-teal-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
-                    <i class="fas fa-phone mr-2"></i>0159 06787102
-                </a>
+        <!-- Inquiry Form -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Anfrage senden</h2>
+            
+            <form id="inquiry-form" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="customer-name" class="block text-sm font-medium text-gray-700 mb-2">
+                            Name (optional)
+                        </label>
+                        <input type="text" 
+                               id="customer-name" 
+                               name="customer_name"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                               placeholder="Ihr Name">
+                    </div>
+                    
+                    <div>
+                        <label for="customer-email" class="block text-sm font-medium text-gray-700 mb-2">
+                            E-Mail <span class="text-red-500">*</span>
+                        </label>
+                        <input type="email" 
+                               id="customer-email" 
+                               name="customer_email"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                               placeholder="ihre.email@example.com"
+                               required>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="customer-phone" class="block text-sm font-medium text-gray-700 mb-2">
+                            Telefon (optional)
+                        </label>
+                        <input type="tel" 
+                               id="customer-phone" 
+                               name="customer_phone"
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                               placeholder="+49 123 456789">
+                    </div>
+                    
+                    <div class="flex items-end">
+                        <div class="text-sm text-gray-600">
+                            <p><span class="text-red-500">*</span> Mindestens E-Mail oder Telefon erforderlich</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="comment" class="block text-sm font-medium text-gray-700 mb-2">
+                        Kommentar (optional)
+                    </label>
+                    <textarea id="comment" 
+                              name="comment"
+                              rows="4"
+                              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                              placeholder="Zusätzliche Informationen oder Wünsche..."></textarea>
+                </div>
+                
+                <div class="flex justify-center">
+                    <button type="submit" 
+                            class="px-8 py-3 bg-teal-600 text-white text-lg font-semibold rounded-lg hover:bg-teal-700 transition-colors focus:ring-2 focus:ring-teal-500 focus:ring-offset-2">
+                        <i class="fas fa-paper-plane mr-2"></i>
+                        Anfrage senden
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        {% else %}
+        <!-- Empty Cart -->
+        <div class="bg-white rounded-lg shadow-md p-12 text-center">
+            <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fas fa-shopping-cart text-gray-400 text-3xl"></i>
             </div>
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Ihr Warenkorb ist leer</h2>
+            <p class="text-gray-600 mb-8">
+                Fügen Sie Produkte aus unserem Katalog hinzu, um eine Anfrage zu senden.
+            </p>
+            <a href="{% url 'catalog:catalog_index' %}" 
+               class="inline-flex items-center px-6 py-3 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Zum Katalog
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div id="success-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg p-8 max-w-md w-full text-center">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-check text-green-600 text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Anfrage gesendet!</h3>
+            <p class="text-gray-600 mb-6" id="success-message">
+                Wir haben Ihre Anfrage erhalten und werden uns in Kürze bei Ihnen melden.
+            </p>
+            <button onclick="closeSuccessModal()" 
+                    class="w-full px-4 py-2 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition-colors">
+                Schließen
+            </button>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('inquiry-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    sendInquiry();
+});
+
+function updateQuantity(productId, newQuantity) {
+    if (newQuantity <= 0) {
+        removeFromCart(productId);
+        return;
+    }
+    
+    fetch('{% url "main:update_cart_quantity" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            product_id: productId,
+            quantity: newQuantity
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload(); // Перезагружаем страницу для обновления данных
+        } else {
+            showNotification(data.error, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Fehler beim Aktualisieren der Menge', 'error');
+    });
+}
+
+function removeFromCart(productId) {
+    if (!confirm('Sind Sie sicher, dass Sie dieses Produkt aus dem Warenkorb entfernen möchten?')) {
+        return;
+    }
+    
+    fetch('{% url "main:remove_from_cart" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            product_id: productId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload(); // Перезагружаем страницу для обновления данных
+        } else {
+            showNotification(data.error, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Fehler beim Entfernen des Produkts', 'error');
+    });
+}
+
+function sendInquiry() {
+    const form = document.getElementById('inquiry-form');
+    const formData = new FormData(form);
+    
+    const data = {
+        customer_name: formData.get('customer_name'),
+        customer_email: formData.get('customer_email'),
+        customer_phone: formData.get('customer_phone'),
+        comment: formData.get('comment')
+    };
+    
+    // Валидация
+    if (!data.customer_email && !data.customer_phone) {
+        showNotification('Bitte geben Sie mindestens eine E-Mail-Adresse oder Telefonnummer an.', 'error');
+        return;
+    }
+    
+    // Показываем индикатор загрузки
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Wird gesendet...';
+    submitBtn.disabled = true;
+    
+    fetch('{% url "main:send_inquiry" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            showSuccessModal(result.message);
+            // Обновляем счетчик корзины в шапке
+            updateCartCount(0);
+        } else {
+            showNotification(result.error, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Fehler beim Senden der Anfrage', 'error');
+    })
+    .finally(() => {
+        // Восстанавливаем кнопку
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    });
+}
+
+function showSuccessModal(message) {
+    document.getElementById('success-message').textContent = message;
+    document.getElementById('success-modal').classList.remove('hidden');
+}
+
+function closeSuccessModal() {
+    document.getElementById('success-modal').classList.add('hidden');
+    // Перенаправляем на главную страницу
+    window.location.href = '{% url "main:home" %}';
+}
+
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 ${
+        type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+    }`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 5000);
+}
+
+function updateCartCount(count) {
+    const cartBadges = document.querySelectorAll('.cart-count');
+    cartBadges.forEach(badge => {
+        badge.textContent = count;
+    });
+}
+</script>
 {% endblock %} 

@@ -152,10 +152,10 @@
                            class="flex-1 px-4 py-2 bg-teal-600 text-white text-center rounded-lg hover:bg-teal-700 transition-colors">
                             Details
                         </a>
-                        <button onclick="addToCart('{{ product.id }}', '{{ product.title }}', {{ product.price|default:0 }})" 
-                                class="px-4 py-2 bg-coral-500 text-white rounded-lg hover:bg-coral-600 transition-colors">
-                            <i class="fas fa-cart-plus"></i>
-                        </button>
+                                               <button onclick="addToCart({{ product.id }})" 
+                               class="px-4 py-2 bg-coral-500 text-white rounded-lg hover:bg-coral-600 transition-colors">
+                           <i class="fas fa-cart-plus"></i>
+                       </button>
                     </div>
                 </div>
             </div>
@@ -194,13 +194,11 @@
 
 <!-- Add to Cart JavaScript -->
 <script>
-function addToCart(productId, productTitle, productPrice) {
-    // Здесь будет логика добавления в корзину
-    fetch('/cart/add/', {
+function addToCart(productId) {
+    fetch('{% url "main:add_to_cart" %}', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
         },
         body: JSON.stringify({
             product_id: productId,
@@ -210,17 +208,15 @@ function addToCart(productId, productTitle, productPrice) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Показываем уведомление
-            showNotification(`${productTitle} wurde zum Warenkorb hinzugefügt!`, 'success');
-            // Обновляем счетчик корзины
-            updateCartCount();
+            showNotification(data.message, 'success');
+            updateCartCount(data.cart_count);
         } else {
-            showNotification('Fehler beim Hinzufügen zum Warenkorb', 'error');
+            showNotification(data.error, 'error');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        showNotification('Fehler beim Hinzufügen zum Warenkorb', 'error');
+        showNotification('Fehler beim Hinzufügen zur Warenkorb', 'error');
     });
 }
 
@@ -240,19 +236,11 @@ function showNotification(message, type) {
     }, 3000);
 }
 
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
+function updateCartCount(count) {
+    const cartBadges = document.querySelectorAll('.cart-count');
+    cartBadges.forEach(badge => {
+        badge.textContent = count;
+    });
 }
 </script>
 

@@ -142,3 +142,57 @@ class ServiceAdmin(admin.ModelAdmin):
 admin.site.site_header = "Play & Jump Admin"
 admin.site.site_title = "Play & Jump"
 admin.site.index_title = "Willkommen in der Play & Jump Verwaltung"
+
+# Добавляем ссылку на страницу управления бронированиями
+from django.urls import reverse
+from django.utils.html import format_html
+
+class BookingAdmin(admin.ModelAdmin):
+    list_display = ['customer_name', 'product', 'start_date', 'end_date', 'total_price', 'status', 'duration_days', 'booking_management_link']
+    list_filter = ['status', 'start_date', 'product']
+    search_fields = ['customer_name', 'customer_email', 'product__title']
+    readonly_fields = ['duration_days', 'created_at', 'updated_at']
+    date_hierarchy = 'start_date'
+    
+    def booking_management_link(self, obj):
+        url = reverse('catalog:booking_management')
+        return format_html('<a href="{}" target="_blank">📅 Kalender öffnen</a>', url)
+    booking_management_link.short_description = 'Kalender'
+    
+    actions = ['confirm_bookings', 'cancel_bookings']
+    
+    def confirm_bookings(self, request, queryset):
+        updated = queryset.update(status='confirmed')
+        self.message_user(request, f'{updated} Buchungen wurden bestätigt.')
+    confirm_bookings.short_description = "Ausgewählte Buchungen bestätigen"
+    
+    def cancel_bookings(self, request, queryset):
+        updated = queryset.update(status='cancelled')
+        self.message_user(request, f'{updated} Buchungen wurden storniert.')
+    cancel_bookings.short_description = "Ausgewählte Buchungen stornieren"
+
+# Перерегистрируем Booking с обновленным админом
+admin.site.unregister(Booking)
+admin.site.register(Booking, BookingAdmin)
+
+# Добавляем кастомную ссылку в админ-панель
+class CustomAdminSite(admin.AdminSite):
+    def get_app_list(self, request):
+        app_list = super().get_app_list(request)
+        
+        # Добавляем ссылку на страницу управления бронированиями
+        for app in app_list:
+            if app['app_label'] == 'catalog':
+                app['models'].append({
+                    'name': 'Buchungsverwaltung',
+                    'object_name': 'booking_management',
+                    'admin_url': reverse('catalog:booking_management'),
+                    'view_only': True,
+                    'perms': {'view': True},
+                })
+                break
+        
+        return app_list
+
+# Заменяем стандартный админ-сайт
+admin.site = CustomAdminSite()
