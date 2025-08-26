@@ -56,26 +56,14 @@
                      
                                       <!-- Calendar Instructions -->
                  <div class="mt-4 p-4 bg-blue-50 rounded-lg">
-                     <p class="text-sm text-blue-800 mb-2">
-                         <strong>Anleitung:</strong> Wählen Sie die Anzahl der Tage und klicken Sie dann auf ein Datum.
+                     <p class="text-sm text-blue-800 mb-3">
+                         <strong>Anleitung:</strong> Klicken Sie auf ein Startdatum, dann auf ein Enddatum. Klicken Sie erneut zum Zurücksetzen.
                      </p>
-                     
-                     <!-- Range Selector -->
-                     <div class="mb-3 flex items-center space-x-3">
-                         <label class="text-sm text-blue-800 font-medium">Anzahl Tage:</label>
-                         <select id="range-days-selector" class="px-3 py-1 border border-blue-300 rounded text-sm">
-                             <option value="1">1 Tag</option>
-                             <option value="3">3 Tage</option>
-                             <option value="6" selected>6 Tage</option>
-                             <option value="7">1 Woche</option>
-                             <option value="14">2 Wochen</option>
-                         </select>
-                     </div>
                      
                      <!-- Date Selection Status -->
                      <div id="date-selection-status" class="mb-3 p-2 bg-white rounded border-2 border-dashed border-blue-300">
                          <p class="text-xs text-blue-600">
-                             <span id="status-text">Keine Daten ausgewählt</span>
+                             <span id="status-text">Klicken Sie auf ein Startdatum</span>
                          </p>
                      </div>
                      
@@ -264,7 +252,7 @@ class AvailabilityCalendar {
         this.startDate = null;
         this.endDate = null;
         this.currentMonth = new Date(this.currentDate.getFullYear(), this.currentDate.getMonth(), 1);
-        this.autoRangeDays = 6; // Автоматически выбирать 6 дней (от выбранной даты)
+        this.selectionState = 'none'; // 'none', 'start', 'complete'
         
         this.init();
     }
@@ -438,9 +426,7 @@ class AvailabilityCalendar {
                     
                     // Проверяем, что дата не в прошлом и не забронирована
                     if (date >= currentDate && !this.isBooked(date)) {
-                        // Автоматически выбираем диапазон дат
-                        this.selectDateRange(date);
-                        
+                        this.handleDateClick(date);
                         this.render();
                         this.onDateSelected();
                     }
@@ -452,18 +438,30 @@ class AvailabilityCalendar {
         document.addEventListener('click', this._clickHandler);
     }
     
-    // Новый метод для автоматического выбора диапазона дат
-    selectDateRange(selectedDate) {
-        // Получаем выбранное пользователем количество дней
-        const rangeSelector = document.getElementById('range-days-selector');
-        const selectedDays = rangeSelector ? parseInt(rangeSelector.value) : this.autoRangeDays;
-        
-        // Сбрасываем предыдущий выбор
-        this.startDate = new Date(selectedDate);
-        
-        // Автоматически устанавливаем конечную дату через выбранное количество дней
-        this.endDate = new Date(selectedDate);
-        this.endDate.setDate(this.endDate.getDate() + selectedDays - 1); // -1 потому что включаем начальную дату
+    // Новая логика выбора дат: первый клик - начало, второй - конец, третий - сброс
+    handleDateClick(selectedDate) {
+        if (this.selectionState === 'none') {
+            // Первый клик - устанавливаем начальную дату
+            this.startDate = new Date(selectedDate);
+            this.endDate = null;
+            this.selectionState = 'start';
+        } else if (this.selectionState === 'start') {
+            // Второй клик - устанавливаем конечную дату
+            if (selectedDate >= this.startDate) {
+                this.endDate = new Date(selectedDate);
+                this.selectionState = 'complete';
+            } else {
+                // Если конечная дата раньше начальной, меняем их местами
+                this.endDate = new Date(this.startDate);
+                this.startDate = new Date(selectedDate);
+                this.selectionState = 'complete';
+            }
+        } else if (this.selectionState === 'complete') {
+            // Третий клик - сбрасываем выбор
+            this.startDate = null;
+            this.endDate = null;
+            this.selectionState = 'none';
+        }
     }
     
     isSameDate(date1, date2) {
@@ -487,14 +485,18 @@ class AvailabilityCalendar {
         this.updateDateSelectionStatus();
         
         if (this.startDate && this.endDate) {
-            // Автоматически заполняем модальное окно выбора дат
+            // Автоматически заполняем модальное окно выбора дат, если оно открыто
             const startDateInput = document.getElementById('start-date');
             const endDateInput = document.getElementById('end-date');
             
             if (startDateInput && endDateInput) {
                 startDateInput.value = this.formatDateForData(this.startDate);
                 endDateInput.value = this.formatDateForData(this.endDate);
-                updatePriceCalculation();
+                
+                // Обновляем расчет цены, если модальное окно открыто
+                if (!document.getElementById('date-selection-modal').classList.contains('hidden')) {
+                    updatePriceCalculation();
+                }
             }
             
             // Показываем кнопку добавления в корзину
@@ -519,14 +521,14 @@ class AvailabilityCalendar {
             const startStr = this.startDate.toLocaleDateString('de-DE');
             const endStr = this.endDate.toLocaleDateString('de-DE');
             const days = this.calculateDaysBetween(this.startDate, this.endDate);
-            statusText.textContent = `Ausgewählt: ${startStr} bis ${endStr} (${days} Tag(e))`;
+            statusText.textContent = `Ausgewählt: ${startStr} bis ${endStr} (${days} Tag(e)) - Klicken Sie erneut zum Zurücksetzen`;
             statusText.className = 'text-xs text-green-600 font-semibold';
         } else if (this.startDate) {
             const startStr = this.startDate.toLocaleDateString('de-DE');
             statusText.textContent = `Startdatum: ${startStr} - Klicken Sie auf ein Enddatum`;
             statusText.className = 'text-xs text-blue-600';
         } else {
-            statusText.textContent = 'Keine Daten ausgewählt';
+            statusText.textContent = 'Klicken Sie auf ein Startdatum';
             statusText.className = 'text-xs text-blue-600';
         }
     }
@@ -551,21 +553,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get booked dates from Django context
     const bookedDates = {{ booked_dates|safe }};
     
-    // Initialize calendar
-    const calendar = new AvailabilityCalendar('availability-calendar', bookedDates);
-    
-    // Add event listener for range selector
-    const rangeSelector = document.getElementById('range-days-selector');
-    if (rangeSelector) {
-        rangeSelector.addEventListener('change', function() {
-            // Если уже выбраны даты, обновляем их с новым диапазоном
-            if (calendar.startDate) {
-                calendar.selectDateRange(calendar.startDate);
-                calendar.render();
-                calendar.onDateSelected();
-            }
-        });
-    }
+    // Initialize calendar and make it global
+    window.calendar = new AvailabilityCalendar('availability-calendar', bookedDates);
 });
 </script>
 
@@ -631,12 +620,19 @@ function openDateSelectionModal() {
     document.getElementById('start-date').min = today;
     document.getElementById('end-date').min = today;
     
-    // Set default dates (today and tomorrow)
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    
-    document.getElementById('start-date').value = today;
-    document.getElementById('end-date').value = tomorrow.toISOString().split('T')[0];
+    // Use dates from calendar if they are selected, otherwise use defaults
+    if (window.calendar && window.calendar.startDate && window.calendar.endDate) {
+        // Use selected dates from calendar
+        document.getElementById('start-date').value = window.calendar.formatDateForData(window.calendar.startDate);
+        document.getElementById('end-date').value = window.calendar.formatDateForData(window.calendar.endDate);
+    } else {
+        // Set default dates (today and tomorrow)
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        
+        document.getElementById('start-date').value = today;
+        document.getElementById('end-date').value = tomorrow.toISOString().split('T')[0];
+    }
     
     updatePriceCalculation();
 }
