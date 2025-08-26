@@ -4,260 +4,269 @@
 {% block title %}Alle Produkte – Play & Jump{% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-gradient-to-br from-teal-50 via-white to-coral-50 py-12">
+<div class="min-h-screen bg-gray-50 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header -->
-        <div class="text-center mb-12 fade-in">
-            <nav class="flex justify-center mb-6">
-                <ol class="flex items-center space-x-2 text-sm text-gray-500">
-                    <li><a href="{% url 'catalog:catalog_index' %}" class="hover:text-teal-600 transition">Katalog</a></li>
-                    <li><i class="fas fa-chevron-right text-gray-400"></i></li>
-                    <li class="text-teal-600 font-semibold">Alle Produkte</li>
-                </ol>
-            </nav>
-            
-            <h1 class="mobile-heading md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
-                <span class="hero-gradient-text">Alle Produkte</span>
+        <div class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                <span class="text-teal-600">Alle Produkte</span>
             </h1>
-            <p class="mobile-text md:text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed mb-6">
-                Entdecken Sie unsere komplette Auswahl an <span class="font-semibold text-teal-600">Hüpfburgen</span>, 
-                <span class="font-semibold text-coral-600">Gesellschaftsspielen</span> und 
-                <span class="font-semibold text-teal-600">Unterhaltungsgeräten</span>.
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Entdecken Sie unsere vielfältige Auswahl an Hüpfburgen, Gesellschaftsspielen und Unterhaltungsgeräten.
             </p>
-            <div class="w-24 h-1 bg-gradient-to-r from-teal-500 to-coral-500 mx-auto rounded-full glow-effect"></div>
         </div>
 
         <!-- Filters and Search -->
-        <div class="bg-white rounded-2xl shadow-lg p-6 mb-8 fade-in" style="animation-delay: 0.3s;">
-            <form method="GET" class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <!-- Search -->
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fas fa-search text-gray-400"></i>
-                        </div>
-                        <input type="text" name="search" value="{{ current_search|default:'' }}" 
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <div class="flex flex-col lg:flex-row gap-4 items-center justify-between">
+                <!-- Search -->
+                <div class="flex-1 max-w-md">
+                    <form method="GET" class="flex">
+                        <input type="text" 
+                               name="search" 
+                               value="{{ search_query|default:'' }}"
                                placeholder="Produkt suchen..." 
-                               class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all">
-                    </div>
-                    
-                    <!-- Category Filter -->
-                    <div class="relative">
-                        <select name="category" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all appearance-none bg-white">
-                            <option value="">Alle Kategorien</option>
-                            {% for category in categories %}
-                            <option value="{{ category.slug }}" {% if current_category == category.slug %}selected{% endif %}>
-                                {{ category.name }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                            <i class="fas fa-chevron-down text-gray-400"></i>
-                        </div>
-                    </div>
+                               class="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                        <button type="submit" 
+                                class="px-6 py-2 bg-teal-600 text-white rounded-r-lg hover:bg-teal-700 transition-colors">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Category Filter -->
+                <form method="GET" class="flex items-center gap-4">
+                    <label class="text-gray-700 font-medium">Kategorie:</label>
+                    <select name="category" 
+                            onchange="this.form.submit()" 
+                            class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                        <option value="">Alle Kategorien</option>
+                        {% for category in categories %}
+                        <option value="{{ category.slug }}" 
+                                {% if selected_category == category.slug %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
                     
                     <!-- Sort -->
-                    <div class="relative">
-                        <select name="sort" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all appearance-none bg-white">
-                            <option value="title" {% if current_sort == 'title' %}selected{% endif %}>Name A-Z</option>
-                            <option value="name_desc" {% if current_sort == 'name_desc' %}selected{% endif %}>Name Z-A</option>
-                            <option value="price" {% if current_sort == 'price' %}selected{% endif %}>Preis aufsteigend</option>
-                            <option value="price_desc" {% if current_sort == 'price_desc' %}selected{% endif %}>Preis absteigend</option>
-                        </select>
-                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                            <i class="fas fa-chevron-down text-gray-400"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="flex flex-col sm:flex-row gap-4 justify-between items-center">
-                    <button type="submit" class="bg-gradient-to-r from-teal-500 to-coral-500 text-white px-8 py-3 rounded-xl font-semibold hover:shadow-lg transition-all duration-300 btn-hero">
-                        <i class="fas fa-filter mr-2"></i>
-                        Filter anwenden
-                    </button>
+                    <label class="text-gray-700 font-medium">Sortieren:</label>
+                    <select name="sort" 
+                            onchange="this.form.submit()" 
+                            class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                        <option value="title" {% if sort_by == 'title' %}selected{% endif %}>Name A-Z</option>
+                        <option value="price" {% if sort_by == 'price' %}selected{% endif %}>Preis aufsteigend</option>
+                        <option value="price_desc" {% if sort_by == 'price_desc' %}selected{% endif %}>Preis absteigend</option>
+                    </select>
                     
-                    {% if current_search or current_category or current_sort != 'title' %}
-                    <a href="{% url 'catalog:all_products' %}" class="text-teal-600 hover:text-teal-700 font-semibold transition">
-                        <i class="fas fa-times mr-2"></i>
-                        Filter zurücksetzen
-                    </a>
+                    <!-- Hidden search field to preserve search query -->
+                    {% if search_query %}
+                    <input type="hidden" name="search" value="{{ search_query }}">
                     {% endif %}
-                </div>
-            </form>
-        </div>
-
-        <!-- Results Count -->
-        <div class="mb-8 fade-in" style="animation-delay: 0.6s;">
-            <div class="flex items-center justify-between">
-                <p class="text-gray-600">
-                    <span class="font-semibold text-teal-600">{{ products.count }}</span> Produkte gefunden
-                </p>
-                {% if current_search %}
-                <p class="text-sm text-gray-500">
-                    Suchergebnisse für: <span class="font-semibold">"{{ current_search }}"</span>
-                </p>
-                {% endif %}
+                </form>
             </div>
+
+            <!-- Active Filters Display -->
+            {% if selected_category or search_query %}
+            <div class="mt-4 pt-4 border-t border-gray-200">
+                <div class="flex flex-wrap gap-2 items-center">
+                    <span class="text-gray-600">Aktive Filter:</span>
+                    {% if selected_category %}
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-teal-100 text-teal-800">
+                        Kategorie: {{ selected_category|title }}
+                        <a href="?{% if search_query %}search={{ search_query }}{% endif %}{% if sort_by != 'title' %}&sort={{ sort_by }}{% endif %}" 
+                           class="ml-2 text-teal-600 hover:text-teal-800">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    </span>
+                    {% endif %}
+                    {% if search_query %}
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
+                        Suche: "{{ search_query }}"
+                        <a href="?{% if selected_category %}category={{ selected_category }}{% endif %}{% if sort_by != 'title' %}&sort={{ sort_by }}{% endif %}" 
+                           class="ml-2 text-blue-600 hover:text-blue-800">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    </span>
+                    {% endif %}
+                    <a href="{% url 'catalog:catalog_index' %}" 
+                       class="text-gray-500 hover:text-gray-700 text-sm underline">
+                        Alle Filter löschen
+                    </a>
+                </div>
+            </div>
+            {% endif %}
         </div>
 
         <!-- Products Grid -->
         {% if products %}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-16">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {% for product in products %}
-            <div class="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 card-hover stagger-item">
-                <a href="{% url 'catalog:product_detail' slug=product.slug %}" class="block">
+            <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                <!-- Product Image -->
+                <div class="relative overflow-hidden rounded-t-lg">
                     {% if product.image %}
-                    <div class="relative overflow-hidden rounded-t-2xl">
-                        <img src="{{ product.image.url }}" alt="{{ product.title }}" 
-                             class="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-                        <div class="absolute top-4 right-4">
-                            <div class="bg-gradient-to-r from-teal-500 to-coral-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                                {% if product.price %}
-                                €{{ product.price }}
-                                {% else %}
-                                Auf Anfrage
-                                {% endif %}
-                            </div>
-                        </div>
-                        {% if product.category %}
-                        <div class="absolute bottom-4 left-4">
-                            <div class="bg-white/90 backdrop-blur-sm rounded-lg px-3 py-1">
-                                <span class="text-xs font-semibold text-gray-700">{{ product.category.name }}</span>
-                            </div>
-                        </div>
-                        {% endif %}
-                    </div>
+                    <img src="{{ product.image.url }}" 
+                         alt="{{ product.title }}" 
+                         class="w-full h-48 object-cover transition-transform duration-300 hover:scale-105">
                     {% else %}
-                    <div class="h-48 bg-gradient-to-br from-teal-500 via-teal-600 to-coral-500 rounded-t-2xl flex items-center justify-center relative overflow-hidden">
-                        <div class="absolute inset-0 bg-gradient-to-r from-teal-400/30 to-coral-400/30"></div>
-                        <div class="relative z-10 text-center">
-                            <i class="fas fa-gift text-white text-4xl mb-2 group-hover:scale-110 transition-transform duration-300"></i>
-                            <div class="bg-white/20 backdrop-blur-sm rounded-lg px-3 py-1 mb-2">
-                                <div class="text-white font-semibold text-sm">
-                                    {% if product.price %}
-                                    €{{ product.price }}
-                                    {% else %}
-                                    Auf Anfrage
-                                    {% endif %}
-                                </div>
-                            </div>
-                            {% if product.category %}
-                            <div class="bg-white/90 backdrop-blur-sm rounded-lg px-2 py-1">
-                                <span class="text-xs font-semibold text-gray-700">{{ product.category.name }}</span>
-                            </div>
-                            {% endif %}
-                        </div>
-                        <!-- Floating elements -->
-                        <div class="absolute top-4 right-4 w-6 h-6 bg-white/20 rounded-full animate-pulse"></div>
-                        <div class="absolute bottom-4 left-4 w-4 h-4 bg-white/20 rounded-full animate-bounce"></div>
+                    <div class="w-full h-48 bg-gradient-to-br from-teal-500 to-coral-500 flex items-center justify-center">
+                        <i class="fas fa-image text-white text-4xl"></i>
                     </div>
                     {% endif %}
                     
-                    <div class="p-4">
-                        <h2 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-teal-600 transition line-clamp-2">
-                            {{ product.title }}
-                        </h2>
-                        {% if product.description %}
-                        <p class="text-gray-600 text-sm mb-3 line-clamp-2 group-hover:text-gray-700 transition">
-                            {{ product.description|truncatewords:15 }}
-                        </p>
-                        {% endif %}
-                        
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center text-teal-600 font-semibold text-sm group-hover:text-teal-700 transition">
-                                <span>Details</span>
-                                <i class="fas fa-arrow-right ml-1 transition-transform group-hover:translate-x-1"></i>
-                            </div>
-                            <div class="w-6 h-6 bg-gradient-to-r from-teal-500 to-coral-500 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <i class="fas fa-chevron-right text-white text-xs"></i>
-                            </div>
-                        </div>
+                    <!-- Category Badge -->
+                    {% if product.category %}
+                    <div class="absolute top-2 left-2">
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-teal-100 text-teal-800">
+                            {{ product.category.name }}
+                        </span>
                     </div>
-                </a>
+                    {% endif %}
+                </div>
+
+                <!-- Product Info -->
+                <div class="p-4">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+                        {{ product.title }}
+                    </h3>
+                    
+                    {% if product.description %}
+                    <p class="text-gray-600 text-sm mb-3 line-clamp-3">
+                        {{ product.description }}
+                    </p>
+                    {% endif %}
+
+                    <!-- Price -->
+                    {% if product.price %}
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-2xl font-bold text-teal-600">
+                            {{ product.price }}€
+                        </span>
+                    </div>
+                    {% endif %}
+
+                    <!-- Actions -->
+                    <div class="flex gap-2">
+                        <a href="{% url 'catalog:product_detail' slug=product.slug %}" 
+                           class="flex-1 px-4 py-2 bg-teal-600 text-white text-center rounded-lg hover:bg-teal-700 transition-colors">
+                            Details
+                        </a>
+                        <button onclick="addToCart('{{ product.id }}', '{{ product.title }}', {{ product.price|default:0 }})" 
+                                class="px-4 py-2 bg-coral-500 text-white rounded-lg hover:bg-coral-600 transition-colors">
+                            <i class="fas fa-cart-plus"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
             {% endfor %}
         </div>
+
+        <!-- Results Count -->
+        <div class="mt-8 text-center text-gray-600">
+            <p>{{ products.count }} Produkt{{ products.count|pluralize:"e" }} gefunden</p>
+        </div>
+
         {% else %}
-        <div class="text-center py-16 fade-in">
-            <div class="w-32 h-32 bg-gradient-to-br from-teal-500 to-coral-500 rounded-full flex items-center justify-center mx-auto mb-8 animate-pulse">
-                <i class="fas fa-search text-white text-4xl"></i>
-            </div>
-            <h3 class="text-3xl font-bold text-gray-900 mb-4">Keine Produkte gefunden</h3>
-            <p class="text-gray-600 text-lg max-w-2xl mx-auto mb-8">
-                {% if current_search %}
-                Leider wurden keine Produkte für "{{ current_search }}" gefunden. Versuchen Sie andere Suchbegriffe.
-                {% else %}
-                Aktuell sind keine Produkte verfügbar. Bitte schauen Sie später wieder vorbei.
-                {% endif %}
-            </p>
-            <a href="{% url 'catalog:all_products' %}" class="inline-flex items-center bg-gradient-to-r from-teal-500 to-coral-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:shadow-lg transition-all duration-300 btn-hero">
-                <i class="fas fa-arrow-left mr-2"></i>
-                Alle Produkte anzeigen
-            </a>
-        </div>
-        {% endif %}
-
-        <!-- Stats Section -->
-        {% if products %}
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 fade-in" style="animation-delay: 0.9s;">
-            <div class="text-center stagger-item stats-counter">
-                <div class="w-16 h-16 bg-gradient-to-r from-teal-500 to-coral-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-cube text-white text-2xl"></i>
-                </div>
-                <div class="text-3xl font-bold text-teal-600 mb-2">{{ products.count }}</div>
-                <div class="text-gray-600">Produkte</div>
-            </div>
-            <div class="text-center stagger-item stats-counter">
-                <div class="w-16 h-16 bg-gradient-to-r from-coral-500 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-star text-white text-2xl"></i>
-                </div>
-                <div class="text-3xl font-bold text-coral-600 mb-2">4.8</div>
-                <div class="text-gray-600">Kundenbewertung</div>
-            </div>
-            <div class="text-center stagger-item stats-counter">
-                <div class="w-16 h-16 bg-gradient-to-r from-teal-500 to-coral-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-truck text-white text-2xl"></i>
-                </div>
-                <div class="text-3xl font-bold text-teal-600 mb-2">24h</div>
-                <div class="text-gray-600">Lieferung</div>
+        <!-- No Products Found -->
+        <div class="text-center py-12">
+            <div class="bg-white rounded-lg shadow-md p-8">
+                <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
+                <h3 class="text-xl font-semibold text-gray-700 mb-2">Keine Produkte gefunden</h3>
+                <p class="text-gray-500 mb-4">
+                    {% if search_query %}
+                    Keine Produkte für "{{ search_query }}" gefunden.
+                    {% elif selected_category %}
+                    Keine Produkte in der Kategorie "{{ selected_category }}" gefunden.
+                    {% else %}
+                    Keine Produkte verfügbar.
+                    {% endif %}
+                </p>
+                <a href="{% url 'catalog:catalog_index' %}" 
+                   class="inline-flex items-center px-6 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors">
+                    Alle Produkte anzeigen
+                </a>
             </div>
         </div>
         {% endif %}
-
-        <!-- Call to Action -->
-        <div class="text-center fade-in" style="animation-delay: 1.2s;">
-            <div class="bg-gradient-to-r from-teal-500 to-coral-500 rounded-3xl p-8 md:p-12 text-white shadow-2xl">
-                <div class="max-w-4xl mx-auto">
-                    <h3 class="text-3xl md:text-4xl font-bold mb-6">Interesse an unseren Produkten?</h3>
-                    <p class="text-xl mb-8 opacity-90 leading-relaxed">
-                        Kontaktieren Sie uns für ein individuelles Angebot und professionelle Beratung. 
-                        Wir helfen Ihnen bei der Auswahl der perfekten Produkte für Ihr Event.
-                    </p>
-                    <div class="flex flex-col sm:flex-row gap-6 justify-center">
-                        <a href="/kontakt/" class="group bg-white text-teal-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all duration-300 btn-hero">
-                            <span class="flex items-center justify-center">
-                                <i class="fas fa-envelope mr-2 group-hover:animate-pulse"></i>
-                                Angebot anfordern
-                            </span>
-                        </a>
-                        <a href="tel:015906787102" class="group border-2 border-white text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white hover:text-teal-600 transition-all duration-300 btn-hero">
-                            <span class="flex items-center justify-center">
-                                <i class="fas fa-phone mr-2 group-hover:animate-bounce"></i>
-                                0159 06787102
-                            </span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
+
+<!-- Add to Cart JavaScript -->
+<script>
+function addToCart(productId, productTitle, productPrice) {
+    // Здесь будет логика добавления в корзину
+    fetch('/cart/add/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+            product_id: productId,
+            quantity: 1
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Показываем уведомление
+            showNotification(`${productTitle} wurde zum Warenkorb hinzugefügt!`, 'success');
+            // Обновляем счетчик корзины
+            updateCartCount();
+        } else {
+            showNotification('Fehler beim Hinzufügen zum Warenkorb', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Fehler beim Hinzufügen zum Warenkorb', 'error');
+    });
+}
+
+function showNotification(message, type) {
+    // Создаем уведомление
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 ${
+        type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+    }`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    // Убираем через 3 секунды
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
 
 <style>
 .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }

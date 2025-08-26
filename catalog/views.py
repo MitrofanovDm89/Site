@@ -5,8 +5,40 @@ import json
 
 
 def catalog_index(request):
+    # Получаем все активные товары
+    products = Product.objects.filter(is_active=True).select_related('category')
+    
+    # Получаем все категории для фильтра
     categories = Category.objects.all()
-    return render(request, 'catalog/index.html', {'categories': categories})
+    
+    # Фильтрация по категории (если выбрана)
+    selected_category = request.GET.get('category')
+    if selected_category:
+        products = products.filter(category__slug=selected_category)
+    
+    # Поиск по названию (если указан)
+    search_query = request.GET.get('search')
+    if search_query:
+        products = products.filter(title__icontains=search_query)
+    
+    # Сортировка
+    sort_by = request.GET.get('sort', 'title')
+    if sort_by == 'price':
+        products = products.order_by('price')
+    elif sort_by == 'price_desc':
+        products = products.order_by('-price')
+    else:
+        products = products.order_by('title')
+    
+    context = {
+        'products': products,
+        'categories': categories,
+        'selected_category': selected_category,
+        'search_query': search_query,
+        'sort_by': sort_by,
+    }
+    
+    return render(request, 'catalog/all_products.html', context)
 
 
 def category_detail(request, slug):

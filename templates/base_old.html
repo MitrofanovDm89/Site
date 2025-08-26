@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Play & Jump - Hüpfburgen und Spielgeräte{% endblock %}</title>
+    <title>{% block title %}Site - Современный веб-сайт{% endblock %}</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -99,55 +99,284 @@
         /* Mobile Grid */
         .mobile-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: 1fr;
+            gap: 1rem;
         }
         
-        /* Focus Ring */
-        .focus-ring:focus {
-            outline: 2px solid var(--teal-primary);
-            outline-offset: 2px;
+        @media (min-width: 640px) {
+            .mobile-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
         }
         
-        /* Page Transitions */
+        @media (min-width: 1024px) {
+            .mobile-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 2rem;
+            }
+        }
+        
+        /* Page Transition Animation */
         .page-transition {
-            animation: fadeIn 0.3s ease-in-out;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Smooth Page Load */
+        .content-wrapper {
+            opacity: 0;
+            animation: contentFadeIn 0.8s ease-out forwards;
+        }
+        
+        @keyframes contentFadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--teal-primary) 0%, var(--teal-light) 100%);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--teal-primary) 0%, var(--coral-accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Enhanced Hover Effects */
+        .hover-lift {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: center;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(32, 178, 170, 0.15);
+        }
+        
+        /* Button Animations */
+        .btn-animate {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-animate::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .btn-animate:hover::before {
+            left: 100%;
+        }
+        
+        .btn-animate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(32, 178, 170, 0.3);
+        }
+        
+        /* Navigation Animations */
+        .nav-link {
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--coral-accent);
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .nav-link:hover {
+            transform: translateY(-1px);
+        }
+        
+        /* Mobile Menu Animations */
+        .mobile-menu {
+            transform: translateX(-100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .mobile-menu.active {
+            transform: translateX(0);
+        }
+        
+        /* Cart Badge Animation */
+        .cart-badge {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { 
+                transform: scale(1); 
+                opacity: 1;
+            }
+            50% { 
+                transform: scale(1.15); 
+                opacity: 0.8;
+            }
+        }
+        
+        /* Logo Animation */
+        .navbar-logo {
+            height: 48px !important;
+            max-width: 192px !important;
+            object-fit: contain !important;
+            width: auto !important;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .navbar-logo:hover {
+            transform: scale(1.08) rotate(1deg);
+            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.2));
+        }
+        
+        /* Card Animations */
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: center;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Loading Animation */
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Fade In Animation for Elements */
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out forwards;
         }
         
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            to { opacity: 1; }
         }
         
-        /* Cart Badge */
-        .cart-badge {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            min-width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 600;
+        /* Stagger Animation for Lists */
+        .stagger-item {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: staggerFadeIn 0.6s ease-out forwards;
         }
         
-        /* Mobile Hidden */
-        .mobile-hidden {
-            display: block;
+        .stagger-item:nth-child(1) { animation-delay: 0.1s; }
+        .stagger-item:nth-child(2) { animation-delay: 0.2s; }
+        .stagger-item:nth-child(3) { animation-delay: 0.3s; }
+        .stagger-item:nth-child(4) { animation-delay: 0.4s; }
+        .stagger-item:nth-child(5) { animation-delay: 0.5s; }
+        
+        @keyframes staggerFadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
-        @media (max-width: 768px) {
+        /* Smooth Scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Focus Animations */
+        .focus-ring:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(32, 178, 170, 0.3);
+            transition: box-shadow 0.2s ease;
+        }
+        
+        /* Dropdown Animation */
+        .dropdown-menu {
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .group:hover .dropdown-menu {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Mobile Optimizations */
+        @media (max-width: 640px) {
             .mobile-hidden {
-                display: none;
+                display: none !important;
+            }
+            
+            .mobile-full {
+                width: 100% !important;
+            }
+            
+            .mobile-center {
+                text-align: center !important;
+            }
+            
+            .mobile-padding {
+                padding: 1rem !important;
+            }
+            
+            .mobile-margin {
+                margin: 1rem !important;
+            }
+        }
+        
+        /* Tablet Optimizations */
+        @media (min-width: 641px) and (max-width: 1024px) {
+            .tablet-padding {
+                padding: 1.5rem !important;
+            }
+            
+            .tablet-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
             }
         }
     </style>
+    
+    {% block extra_css %}{% endblock %}
 </head>
 <body class="bg-gray-50">
     <!-- Header -->
-    <header class="sticky top-0 z-50">
+    <header class="bg-white shadow-lg sticky top-0 z-50">
+        
+        <!-- Main Navigation -->
         <nav class="bg-white border-b border-gray-200 shadow-md">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mobile-optimized">
                 <div class="flex justify-between h-16 items-center">
@@ -169,6 +398,17 @@
                             <!-- Счетчик товаров -->
                             <span class="ml-1 bg-teal-600 text-white text-xs rounded-full px-2 py-0.5 cart-count cart-badge">0</span>
                         </a>
+
+                            
+                            <!-- Dropdown Menu -->
+                            <div class="dropdown-menu absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                                <a href="/profile/" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors touch-target">Profil</a>
+                                <a href="/orders/" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors touch-target">Meine Bestellungen</a>
+                                <a href="/settings/" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors touch-target">Adressen</a>
+                                <hr class="my-1">
+                                <a href="/logout/" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 transition-colors touch-target">Abmelden</a>
+                            </div>
+                        </div>
                     </div>
                     
                     <!-- Mobile Menu Button -->
@@ -191,6 +431,7 @@
                     <svg class="w-6 h-6 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
                     Warenkorb <span class="ml-1 bg-teal-600 text-white text-xs rounded-full px-2 py-0.5 cart-count cart-badge">0</span>
                 </a>
+
             </div>
         </nav>
     </header>
@@ -257,6 +498,18 @@
                 }
             });
         });
+        
+        // Add scroll effect to header
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.classList.add('shadow-2xl');
+            } else {
+                header.classList.remove('shadow-2xl');
+            }
+        });
     </script>
+    
+    {% block extra_js %}{% endblock %}
 </body>
-</html>
+</html> 

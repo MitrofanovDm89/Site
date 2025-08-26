@@ -19,11 +19,8 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     '.pythonanywhere.com',
-    '.herokuapp.com',
-    '.vercel.app',
     '.railway.app',
-    '.render.com',
-    '.fly.dev',
+    '.herokuapp.com',
 ]
 
 # Application definition
@@ -58,16 +55,11 @@ SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
-# Database
-# Используем PostgreSQL для production
+# Database - используем SQLite для PythonAnywhere (бесплатный план)
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME', 'playandjump'),
-        'USER': os.environ.get('DB_USER', 'postgres'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
-        'HOST': os.environ.get('DB_HOST', 'localhost'),
-        'PORT': os.environ.get('DB_PORT', '5432'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -95,10 +87,14 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': BASE_DIR / 'logs' / 'django.log',
         },
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+        },
     },
     'loggers': {
         'django': {
-            'handlers': ['file'],
+            'handlers': ['file', 'console'],
             'level': 'INFO',
             'propagate': True,
         },
