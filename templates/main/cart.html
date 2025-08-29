@@ -32,7 +32,7 @@
                         </div>
                         <div>
                             <h3 class="text-lg font-semibold text-gray-900">{{ item.title }}</h3>
-                            <p class="text-gray-600">Preis: {{ item.price }}€/Tag</p>
+                            <p class="text-gray-600">Preis: {{ item.price_per_day }}€/Tag</p>
                             
                             {% if item.start_date and item.end_date %}
                             <div class="mt-2 space-y-1">
@@ -50,32 +50,20 @@
                     </div>
                     
                     <div class="flex items-center space-x-4">
-                        <div class="flex items-center border border-gray-300 rounded-lg">
-                            <button onclick="updateQuantity('{{ item.cart_key }}', {{ item.quantity|add:'-1' }})" 
-                                    class="px-3 py-1 text-gray-600 hover:text-gray-800 transition-colors">
-                                <i class="fas fa-minus"></i>
-                            </button>
-                            <span class="px-3 py-1 text-gray-900 font-medium">{{ item.quantity }}</span>
-                            <button onclick="updateQuantity('{{ item.cart_key }}', {{ item.quantity|add:'1' }})" 
-                                    class="px-3 py-1 text-gray-600 hover:text-gray-800 transition-colors">
-                                <i class="fas fa-plus"></i>
-                            </button>
-                        </div>
-                        
                         <div class="text-right">
                             <p class="text-lg font-bold text-teal-600">{{ item.subtotal }}€</p>
                         </div>
                         
                         <div class="flex items-center space-x-2">
                             {% if item.start_date and item.end_date %}
-                            <button onclick="editDates('{{ item.cart_key }}', '{{ item.start_date }}', '{{ item.end_date }}', {{ item.price|default:0|floatformat:0 }})" 
-                                    class="text-blue-500 hover:text-blue-700 transition-colors" title="Daten bearbeiten">
+                            <button onclick="editDates('{{ item.cart_key }}', '{{ item.start_date }}', '{{ item.end_date }}', {{ item.price_per_day|default:0|floatformat:0 }})" 
+                                    class="text-blue-500 hover:text-blue-700 transition-colors p-2 rounded-lg hover:bg-blue-50" title="Daten bearbeiten">
                                 <i class="fas fa-edit"></i>
                             </button>
                             {% endif %}
                             
                             <button onclick="removeFromCart('{{ item.cart_key }}')" 
-                                    class="text-red-500 hover:text-red-700 transition-colors" title="Entfernen">
+                                    class="text-red-500 hover:text-red-700 transition-colors p-2 rounded-lg hover:bg-red-50" title="Entfernen">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -98,6 +86,7 @@
             <h2 class="text-2xl font-bold text-gray-900 mb-6">Anfrage senden</h2>
             
             <form id="inquiry-form" class="space-y-6">
+                {% csrf_token %}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label for="customer-name" class="block text-sm font-medium text-gray-700 mb-2">
@@ -201,44 +190,75 @@
         </div>
     </div>
 </div>
+
+<!-- Date Edit Modal -->
+<div id="date-edit-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-900">Daten bearbeiten</h3>
+                <button onclick="closeDateEditModal()" class="text-gray-400 hover:text-gray-600 text-2xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Startdatum *</label>
+                    <input type="date" id="edit-start-date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Enddatum *</label>
+                    <input type="date" id="edit-end-date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                </div>
+                
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm text-gray-600">Preis pro Tag:</span>
+                        <span id="edit-price-per-day" class="font-bold text-teal-600">0€</span>
+                    </div>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm text-gray-600">Anzahl Tage:</span>
+                        <span id="edit-duration-days" class="font-bold text-teal-600">1</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">Gesamtpreis:</span>
+                        <span id="edit-total-price" class="font-bold text-teal-600 text-lg">0€</span>
+                    </div>
+                </div>
+                
+                <div class="flex gap-3 pt-4">
+                    <button onclick="closeDateEditModal()" 
+                            class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                        Abbrechen
+                    </button>
+                    <button onclick="saveDateChanges()" 
+                            class="flex-1 px-4 py-2 bg-gradient-to-r from-teal-500 to-coral-500 text-white rounded-lg hover:shadow-lg transition-all duration-300">
+                        Speichern
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
+// Получаем CSRF токен
+function getCSRFToken() {
+    const metaTag = document.querySelector('meta[name="csrf-token"]');
+    if (metaTag) {
+        return metaTag.getAttribute('content');
+    }
+    return null;
+}
+
 document.getElementById('inquiry-form').addEventListener('submit', function(e) {
     e.preventDefault();
     sendInquiry();
 });
-
-function updateQuantity(cartKey, newQuantity) {
-    if (newQuantity <= 0) {
-        removeFromCart(cartKey);
-        return;
-    }
-    
-    fetch('{% url "main:update_cart_quantity" %}', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            cart_key: cartKey,
-            quantity: newQuantity
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            location.reload(); // Перезагружаем страницу для обновления данных
-        } else {
-            showNotification(data.error, 'error');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showNotification('Fehler beim Aktualisieren der Menge', 'error');
-    });
-}
 
 function removeFromCart(cartKey) {
     if (!confirm('Sind Sie sicher, dass Sie dieses Produkt aus dem Warenkorb entfernen möchten?')) {
@@ -249,6 +269,7 @@ function removeFromCart(cartKey) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken(),
         },
         body: JSON.stringify({
             cart_key: cartKey
@@ -257,7 +278,7 @@ function removeFromCart(cartKey) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            location.reload(); // Перезагружаем страницу для обновления данных
+            location.reload();
         } else {
             showNotification(data.error, 'error');
         }
@@ -295,6 +316,7 @@ function sendInquiry() {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken(),
         },
         body: JSON.stringify(data)
     })
@@ -353,6 +375,8 @@ function updateCartCount(count) {
 
 // Date editing functions
 function editDates(cartKey, startDate, endDate, pricePerDay) {
+    console.log('editDates called:', cartKey, startDate, endDate, pricePerDay);
+    
     // Store current cart key for editing
     window.currentEditingCartKey = cartKey;
     window.currentEditingPricePerDay = pricePerDay;
@@ -415,68 +439,38 @@ function saveDateChanges() {
         return;
     }
     
-    // Here you would need to implement the API call to update the cart item dates
-    // For now, we'll just close the modal and reload the page
-    showNotification('Daten erfolgreich aktualisiert!', 'success');
-    closeDateEditModal();
-    location.reload();
+    console.log('Saving date changes:', window.currentEditingCartKey, startDate, endDate);
+    
+    // Отправляем запрос на обновление дат
+    fetch('{% url "main:update_cart_dates" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken(),
+        },
+        body: JSON.stringify({
+            cart_key: window.currentEditingCartKey,
+            start_date: startDate,
+            end_date: endDate
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Daten erfolgreich aktualisiert!', 'success');
+            closeDateEditModal();
+            location.reload(); // Перезагружаем страницу для обновления данных
+        } else {
+            showNotification(data.error, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Fehler beim Aktualisieren der Daten', 'error');
+    });
 }
-</script>
 
-<!-- Date Edit Modal -->
-<div id="date-edit-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
-    <div class="flex items-center justify-center min-h-screen p-4">
-        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-bold text-gray-900">Daten bearbeiten</h3>
-                <button onclick="closeDateEditModal()" class="text-gray-400 hover:text-gray-600 text-2xl">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Startdatum *</label>
-                    <input type="date" id="edit-start-date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Enddatum *</label>
-                    <input type="date" id="edit-end-date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
-                </div>
-                
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-sm text-gray-600">Preis pro Tag:</span>
-                        <span id="edit-price-per-day" class="font-bold text-teal-600">0€</span>
-                    </div>
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-sm text-gray-600">Anzahl Tage:</span>
-                        <span id="edit-duration-days" class="font-bold text-teal-600">1</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-600">Gesamtpreis:</span>
-                        <span id="edit-total-price" class="font-bold text-teal-600 text-lg">0€</span>
-                    </div>
-                </div>
-                
-                <div class="flex gap-3 pt-4">
-                    <button onclick="closeDateEditModal()" 
-                            class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                        Abbrechen
-                    </button>
-                    <button onclick="saveDateChanges()" 
-                            class="flex-1 px-4 py-2 bg-gradient-to-r from-teal-500 to-coral-500 text-white rounded-lg hover:shadow-lg transition-all duration-300">
-                        Speichern
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Add event listeners for date inputs -->
-<script>
+// Add event listeners for date inputs
 document.addEventListener('DOMContentLoaded', function() {
     const editStartDateInput = document.getElementById('edit-start-date');
     const editEndDateInput = document.getElementById('edit-end-date');

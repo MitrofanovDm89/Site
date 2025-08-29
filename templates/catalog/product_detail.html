@@ -611,6 +611,15 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
 <script>
+// Получаем CSRF токен
+function getCSRFToken() {
+    const metaTag = document.querySelector('meta[name="csrf-token"]');
+    if (metaTag) {
+        return metaTag.getAttribute('content');
+    }
+    return null;
+}
+
 // Date selection modal functions
 function openDateSelectionModal() {
     document.getElementById('date-selection-modal').classList.remove('hidden');
@@ -685,10 +694,10 @@ function addToCartWithDates() {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken(),
         },
         body: JSON.stringify({
             product_id: {{ product.id }},
-            quantity: 1,
             start_date: startDate,
             end_date: endDate
         })
