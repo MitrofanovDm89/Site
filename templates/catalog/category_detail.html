@@ -53,7 +53,7 @@
                         </div>
                     </div>
                     {% else %}
-                    <div class="h-48 bg-gradient-to-br from-teal-500 to-coral-500 rounded-t-xl flex items-center justify-center">
+                    <div class="h-48 bg-teal-500 rounded-t-xl flex items-center justify-center">
                         <i class="fas fa-image text-white text-4xl"></i>
                     </div>
                     {% endif %}
@@ -118,7 +118,7 @@
 
         {% else %}
         <div class="text-center py-12">
-            <div class="w-24 h-24 bg-gradient-to-br from-teal-500 to-coral-500 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div class="w-24 h-24 bg-teal-500 rounded-full flex items-center justify-center mx-auto mb-6">
                 <i class="fas fa-box text-white text-3xl"></i>
             </div>
             <h3 class="text-2xl font-semibold text-gray-900 mb-2">Keine Produkte verfügbar</h3>
@@ -126,7 +126,7 @@
                 Aktuell sind keine Produkte in dieser Kategorie verfügbar.
             </p>
             <a href="{% url 'catalog:catalog_index' %}" 
-               class="inline-flex items-center bg-gradient-to-r from-teal-500 to-coral-500 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition">
+               class="inline-flex items-center bg-teal-500 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition">
                 <i class="fas fa-arrow-left mr-2"></i>
                 Zurück zum Katalog
             </a>
