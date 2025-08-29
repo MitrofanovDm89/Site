@@ -81,6 +81,78 @@
             </div>
         </div>
 
+        <!-- Delivery Options -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Lieferoptionen</h2>
+            
+            <div class="space-y-4">
+                <div class="flex items-center">
+                    <input type="radio" id="delivery-pickup" name="delivery_option" value="pickup" 
+                           {% if delivery_option == 'pickup' %}checked{% endif %}
+                           onchange="updateDeliveryOption('pickup')"
+                           class="w-4 h-4 text-teal-600 bg-gray-100 border-gray-300 focus:ring-teal-500">
+                    <label for="delivery-pickup" class="ml-3 text-lg font-medium text-gray-900">
+                        Selbstabholung (kostenlos)
+                    </label>
+                </div>
+                
+                <div class="flex items-center">
+                    <input type="radio" id="delivery-delivery" name="delivery_option" value="delivery" 
+                           {% if delivery_option == 'delivery' %}checked{% endif %}
+                           onchange="updateDeliveryOption('delivery')"
+                           class="w-4 h-4 text-teal-600 bg-gray-100 border-gray-300 focus:ring-teal-500">
+                    <label for="delivery-delivery" class="ml-3 text-lg font-medium text-gray-900">
+                        Lieferung + Aufbau/Abbau (60€)
+                    </label>
+                    {% if delivery_option == 'delivery' %}
+                    <button onclick="openDeliveryDetailsModal()" 
+                            class="ml-3 text-sm text-teal-600 hover:text-teal-800 underline">
+                        Details bearbeiten
+                    </button>
+                    {% endif %}
+                </div>
+                
+                {% if delivery_option == 'delivery' and delivery_address %}
+                <div class="ml-7 mt-3 p-4 bg-teal-50 rounded-lg border border-teal-200">
+                    <div class="text-sm text-teal-800">
+                        <div class="font-medium mb-2">Lieferdetails:</div>
+                        <div><strong>Adresse:</strong> {{ delivery_address }}</div>
+                        <div><strong>Lieferung:</strong> {{ delivery_datetime|date:"d.m.Y H:i" }}</div>
+                        <div><strong>Rückgabe:</strong> {{ return_datetime|date:"d.m.Y H:i" }}</div>
+                        {% if delivery_instructions %}
+                        <div><strong>Anweisungen:</strong> {{ delivery_instructions }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="mt-4 p-4 bg-blue-50 rounded-lg">
+                    <p class="text-sm text-blue-800">
+                        <strong>Hinweis:</strong> Die Lieferung erfolgt im Umkreis von 30 km von unserem Unternehmen. 
+                        Inklusive Aufbau, Abbau und Demontage der Ausrüstung.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Final Total -->
+            <div class="mt-6 pt-6 border-t border-gray-200">
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center text-lg">
+                        <span class="text-gray-700">Mietpreis:</span>
+                        <span class="font-semibold text-gray-900">{{ total_price }}€</span>
+                    </div>
+                    <div class="flex justify-between items-center text-lg">
+                        <span class="text-gray-700">Lieferung:</span>
+                        <span class="font-semibold text-gray-900" data-delivery-cost>{{ delivery_cost }}€</span>
+                    </div>
+                    <div class="flex justify-between items-center text-2xl font-bold text-teal-600 pt-2 border-t border-gray-200">
+                        <span>Gesamt:</span>
+                        <span data-final-total>{{ final_total }}€</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Inquiry Form -->
         <div class="bg-white rounded-lg shadow-md p-6">
             <h2 class="text-2xl font-bold text-gray-900 mb-6">Anfrage senden</h2>
@@ -242,6 +314,87 @@
         </div>
     </div>
 </div>
+
+<!-- Delivery Details Modal -->
+<div id="delivery-details-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-900">Lieferdetails eingeben</h3>
+                <button onclick="closeDeliveryDetailsModal()" class="text-gray-400 hover:text-gray-600 text-2xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="delivery-details-form" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Lieferadresse <span class="text-red-500">*</span>
+                    </label>
+                    <textarea 
+                        id="delivery-address" 
+                        name="delivery_address"
+                        rows="3"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                        placeholder="Straße, Hausnummer, Stadt, PLZ"
+                        required>{{ delivery_address }}</textarea>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Lieferdatum & Zeit <span class="text-red-500">*</span>
+                        </label>
+                        <input 
+                            type="datetime-local" 
+                            id="delivery-datetime" 
+                            name="delivery_datetime"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                            value="{{ delivery_datetime }}"
+                            required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Rückgabedatum & Zeit <span class="text-red-500">*</span>
+                        </label>
+                        <input 
+                            type="datetime-local" 
+                            id="return-datetime" 
+                            name="return_datetime"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                            value="{{ return_datetime }}"
+                            required>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Zusätzliche Anweisungen (optional)
+                    </label>
+                    <textarea 
+                        id="delivery-instructions" 
+                        name="delivery_instructions"
+                        rows="3"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                        placeholder="Z.B. Eingang vom Hof, Hauscode 123, Parkplatz verfügbar...">{{ delivery_instructions }}</textarea>
+                </div>
+                
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="closeDeliveryDetailsModal()" 
+                            class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                        Abbrechen
+                    </button>
+                    <button type="submit" 
+                            class="flex-1 px-4 py-2 bg-gradient-to-r from-teal-500 to-coral-500 text-white rounded-lg hover:shadow-lg transition-all duration-300">
+                        Speichern
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
@@ -373,6 +526,42 @@ function updateCartCount(count) {
     });
 }
 
+function updateDeliveryOption(deliveryOption) {
+    fetch('{% url "main:update_delivery_option" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken(),
+        },
+        body: JSON.stringify({
+            delivery_option: deliveryOption
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Обновляем отображение стоимости
+            document.querySelector('[data-delivery-cost]').textContent = data.delivery_cost + '€';
+            document.querySelector('[data-final-total]').textContent = data.final_total + '€';
+            
+            showNotification('Lieferoption aktualisiert', 'success');
+            
+            // Если выбрана доставка, открываем модальное окно для деталей
+            if (deliveryOption === 'delivery') {
+                setTimeout(() => {
+                    openDeliveryDetailsModal();
+                }, 500); // Небольшая задержка для показа уведомления
+            }
+        } else {
+            showNotification(data.error, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Fehler beim Aktualisieren der Lieferoption', 'error');
+    });
+}
+
 // Date editing functions
 function editDates(cartKey, startDate, endDate, pricePerDay) {
     console.log('editDates called:', cartKey, startDate, endDate, pricePerDay);
@@ -479,6 +668,76 @@ document.addEventListener('DOMContentLoaded', function() {
         editStartDateInput.addEventListener('change', updateEditPriceCalculation);
         editEndDateInput.addEventListener('change', updateEditPriceCalculation);
     }
+    
+    // Delivery details form handling
+    const deliveryDetailsForm = document.getElementById('delivery-details-form');
+    if (deliveryDetailsForm) {
+        deliveryDetailsForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveDeliveryDetails();
+        });
+    }
 });
+
+// Delivery details functions
+function openDeliveryDetailsModal() {
+    document.getElementById('delivery-details-modal').classList.remove('hidden');
+}
+
+function closeDeliveryDetailsModal() {
+    document.getElementById('delivery-details-modal').classList.add('hidden');
+}
+
+function saveDeliveryDetails() {
+    const form = document.getElementById('delivery-details-form');
+    const formData = new FormData(form);
+    
+    const data = {
+        delivery_address: formData.get('delivery_address'),
+        delivery_datetime: formData.get('delivery_datetime'),
+        return_datetime: formData.get('return_datetime'),
+        delivery_instructions: formData.get('delivery_instructions')
+    };
+    
+    // Валидация
+    if (!data.delivery_address || !data.delivery_datetime || !data.return_datetime) {
+        showNotification('Bitte füllen Sie alle erforderlichen Felder aus.', 'error');
+        return;
+    }
+    
+    // Показываем индикатор загрузки
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Wird gespeichert...';
+    submitBtn.disabled = true;
+    
+    fetch('{% url "main:update_delivery_details" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken(),
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            showNotification(result.message, 'success');
+            closeDeliveryDetailsModal();
+            location.reload(); // Перезагружаем страницу для обновления данных
+        } else {
+            showNotification(result.error, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Fehler beim Speichern der Lieferdetails', 'error');
+    })
+    .finally(() => {
+        // Восстанавливаем кнопку
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    });
+}
 </script>
 {% endblock %} 

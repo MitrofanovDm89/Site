@@ -151,11 +151,11 @@
     <header class="sticky top-0 z-50">
         <nav class="bg-white border-b border-gray-200 shadow-md">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mobile-optimized">
-                <div class="flex justify-between h-16 items-center">
+                <div class="flex justify-between h-18 items-center">
                     <!-- Logo -->
                     <div class="flex-shrink-0 flex items-center -ml-4">
                         <a href="/" class="focus-ring touch-target">
-                            <img class="h-12 w-auto max-w-48 object-contain navbar-logo" src="{% static 'images/logo.png' %}" alt="Play & Jump Logo">
+                            <img class="h-16 w-auto max-w-64 object-contain navbar-logo" src="{% static 'images/logo.png' %}" alt="Play & Jump Logo">
                         </a>
                     </div>
                     
@@ -205,10 +205,12 @@
     <footer class="bg-gray-900 text-white">
         <!-- Bottom Footer -->
         <div class="bg-gray-950">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
                 <div class="flex flex-col md:flex-row justify-between items-center">
                     <div class="flex items-center mb-4 md:mb-0">
-                        <img src="{% static 'images/logo.png' %}" alt="Play & Jump Logo" class="h-8 w-auto max-w-32 object-contain mr-3" style="filter: brightness(0) invert(1);">
+                        <a href="/" class="focus-ring touch-target">
+                            <img src="{% static 'images/logo.png' %}" alt="Play & Jump Logo" class="h-16 w-auto max-w-64 object-contain mr-3" style="filter: brightness(0) invert(1);">
+                        </a>
                         <span class="text-gray-400 text-sm">&copy; 2025 Play & Jump. Alle Rechte vorbehalten.</span>
                     </div>
                     <div class="flex space-x-6 text-sm">

@@ -14,6 +14,7 @@ def home(request):
 def cart(request):
     """Страница корзины для аренды по дням"""
     cart_items = request.session.get('cart', {})
+    delivery_option = request.session.get('delivery_option', 'pickup')  # pickup или delivery
     products = []
     total_price = 0.0
     
@@ -79,10 +80,21 @@ def cart(request):
         request.session['cart'] = cart_items
         request.session.modified = True
     
+    # Рассчитываем стоимость доставки
+    delivery_cost = 60.0 if delivery_option == 'delivery' else 0.0
+    final_total = total_price + delivery_cost
+    
     context = {
         'cart_items': products,
         'total_price': total_price,
-        'cart_count': len(products)
+        'delivery_option': delivery_option,
+        'delivery_cost': delivery_cost,
+        'final_total': final_total,
+        'cart_count': len(products),
+        'delivery_address': request.session.get('delivery_address', ''),
+        'delivery_datetime': request.session.get('delivery_datetime', ''),
+        'return_datetime': request.session.get('return_datetime', ''),
+        'delivery_instructions': request.session.get('delivery_instructions', '')
     }
     
     return render(request, 'main/cart.html', context)
@@ -219,6 +231,106 @@ def update_cart_dates(request):
     return JsonResponse({'success': False, 'error': 'Method not allowed'})
 
 
+def update_delivery_option(request):
+    """Обновление способа доставки"""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            delivery_option = data.get('delivery_option')
+            
+            if delivery_option not in ['pickup', 'delivery']:
+                return JsonResponse({'success': False, 'error': 'Invalid delivery option'})
+            
+            # Сохраняем выбор в сессии
+            request.session['delivery_option'] = delivery_option
+            request.session.modified = True
+            
+            # Рассчитываем новую стоимость
+            cart_items = request.session.get('cart', {})
+            total_price = 0.0
+            
+            for cart_key, cart_data in cart_items.items():
+                if isinstance(cart_data, dict):
+                    start_date = cart_data.get('start_date')
+                    end_date = cart_data.get('end_date')
+                    price_per_day = cart_data.get('price_per_day', 0)
+                    
+                    if start_date and end_date and price_per_day:
+                        start = datetime.strptime(start_date, '%Y-%m-%d').date()
+                        end = datetime.strptime(end_date, '%Y-%m-%d').date()
+                        duration_days = (end - start).days + 1
+                        subtotal = float(price_per_day) * duration_days
+                        total_price += subtotal
+            
+            delivery_cost = 60.0 if delivery_option == 'delivery' else 0.0
+            final_total = total_price + delivery_cost
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Способ доставки обновлен',
+                'delivery_cost': delivery_cost,
+                'final_total': final_total
+            })
+            
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    
+    return JsonResponse({'success': False, 'error': 'Method not allowed'})
+
+
+def update_delivery_details(request):
+    """Обновление деталей доставки (адрес, даты, время)"""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            
+            # Проверяем, что выбран способ доставки
+            if request.session.get('delivery_option') != 'delivery':
+                return JsonResponse({'success': False, 'error': 'Lieferung muss ausgewählt werden'})
+            
+            # Получаем данные доставки
+            delivery_address = data.get('delivery_address', '').strip()
+            delivery_datetime = data.get('delivery_datetime', '').strip()
+            return_datetime = data.get('return_datetime', '').strip()
+            delivery_instructions = data.get('delivery_instructions', '').strip()
+            
+            # Валидация обязательных полей
+            if not delivery_address:
+                return JsonResponse({'success': False, 'error': 'Lieferadresse ist erforderlich'})
+            if not delivery_datetime:
+                return JsonResponse({'success': False, 'error': 'Lieferdatum und -zeit sind erforderlich'})
+            if not return_datetime:
+                return JsonResponse({'success': False, 'error': 'Rückgabedatum und -zeit sind erforderlich'})
+            
+            # Проверяем, что время возврата после времени доставки
+            try:
+                delivery_dt = datetime.strptime(delivery_datetime, '%Y-%m-%dT%H:%M')
+                return_dt = datetime.strptime(return_datetime, '%Y-%m-%dT%H:%M')
+                
+                if return_dt <= delivery_dt:
+                    return JsonResponse({'success': False, 'error': 'Rückgabezeit muss nach der Lieferzeit liegen'})
+                    
+            except ValueError:
+                return JsonResponse({'success': False, 'error': 'Ungültiges Datums- oder Zeitformat'})
+            
+            # Сохраняем в сессии
+            request.session['delivery_address'] = delivery_address
+            request.session['delivery_datetime'] = delivery_datetime
+            request.session['return_datetime'] = return_datetime
+            request.session['delivery_instructions'] = delivery_instructions
+            request.session.modified = True
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Lieferdetails erfolgreich gespeichert'
+            })
+            
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    
+    return JsonResponse({'success': False, 'error': 'Method not allowed'})
+
+
 def send_inquiry(request):
     """Отправка заявки на email"""
     if request.method == 'POST':
@@ -293,14 +405,16 @@ def send_inquiry(request):
             
             # Формируем сообщение
             message = f"""
-Новая заявка с сайта Play & Jump
+Neue Anfrage von der Play & Jump Website
 
-Клиент: {customer_name or 'Не указано'}
-Email: {customer_email or 'Не указано'}
-Телефон: {customer_phone or 'Не указано'}
-Комментарий: {comment or 'Не указано'}
+Kunde: {customer_name or 'Nicht angegeben'}
+Email: {customer_email or 'Nicht angegeben'}
+Telefon: {customer_phone or 'Nicht angegeben'}
+Kommentar: {comment or 'Nicht angegeben'}
 
-Выбранные товары:
+Lieferoption: {'Lieferung + Aufbau/Abbau' if request.session.get('delivery_option') == 'delivery' else 'Selbstabholung'}
+
+Ausgewählte Produkte:
 """
             
             for product in products:
@@ -309,12 +423,38 @@ Email: {customer_email or 'Не указано'}
                 else:
                     message += f"- {product['title']} = {product['subtotal']}€\n"
             
-            message += f"\nОбщая стоимость: {total_price}€"
+            # Добавляем информацию о доставке
+            delivery_option = request.session.get('delivery_option', 'pickup')
+            delivery_cost = 60.0 if delivery_option == 'delivery' else 0.0
+            total_price = sum(product['subtotal'] for product in products)
+            final_total = total_price + delivery_cost
+            
+            message += f"\nMietpreis: {total_price}€"
+            if delivery_option == 'delivery':
+                message += f"\nLieferung + Aufbau/Abbau: {delivery_cost}€"
+                
+                # Добавляем детали доставки
+                delivery_address = request.session.get('delivery_address', '')
+                delivery_datetime = request.session.get('delivery_datetime', '')
+                return_datetime = request.session.get('return_datetime', '')
+                delivery_instructions = request.session.get('delivery_instructions', '')
+                
+                if delivery_address:
+                    message += f"\n\nLieferdetails:"
+                    message += f"\nAdresse: {delivery_address}"
+                    if delivery_datetime:
+                        message += f"\nLieferung: {delivery_datetime}"
+                    if return_datetime:
+                        message += f"\nRückgabe: {return_datetime}"
+                    if delivery_instructions:
+                        message += f"\nAnweisungen: {delivery_instructions}"
+                
+            message += f"\nGesamt: {final_total}€"
             
             # Отправляем email администратору
             try:
                 send_mail(
-                    subject='Новая заявка с сайта Play & Jump',
+                    subject='Neue Anfrage von der Play & Jump Website',
                     message=message,
                     from_email=settings.DEFAULT_FROM_EMAIL,
                     recipient_list=['dlktsprdct@gmail.com'],
@@ -324,13 +464,13 @@ Email: {customer_email or 'Не указано'}
                 # Отправляем подтверждение клиенту (если указан email)
                 if customer_email:
                     confirmation_message = f"""
-Здравствуйте!
+Hallo!
 
-Спасибо за вашу заявку на сайте Play & Jump.
+Vielen Dank für Ihre Anfrage auf der Play & Jump Website.
 
-Мы получили ваш запрос и свяжемся с вами в ближайшее время.
+Wir haben Ihre Anfrage erhalten und werden uns in Kürze bei Ihnen melden.
 
-Детали заявки:
+Anfrage-Details:
 """
                     
                     for product in products:
@@ -339,35 +479,64 @@ Email: {customer_email or 'Не указано'}
                         else:
                             confirmation_message += f"- {product['title']} = {product['subtotal']}€\n"
                     
-                    confirmation_message += f"\nОбщая стоимость: {total_price}€"
+                    confirmation_message += f"\nMietpreis: {total_price}€"
+                    if delivery_option == 'delivery':
+                        confirmation_message += f"\nLieferung + Aufbau/Abbau: {delivery_cost}€"
+                        
+                        # Добавляем детали доставки
+                        delivery_address = request.session.get('delivery_address', '')
+                        delivery_datetime = request.session.get('delivery_datetime', '')
+                        return_datetime = request.session.get('return_datetime', '')
+                        delivery_instructions = request.session.get('delivery_instructions', '')
+                        
+                        if delivery_address:
+                            confirmation_message += f"\n\nLieferdetails:"
+                            confirmation_message += f"\nAdresse: {delivery_address}"
+                            if delivery_datetime:
+                                confirmation_message += f"\nLieferung: {delivery_datetime}"
+                            if return_datetime:
+                                confirmation_message += f"\nRückgabe: {return_datetime}"
+                            if delivery_instructions:
+                                confirmation_message += f"\nAnweisungen: {delivery_instructions}"
+                        
+                    confirmation_message += f"\nGesamt: {final_total}€"
                     
                     send_mail(
-                        subject='Ваша заявка получена - Play & Jump',
+                        subject='Ihre Anfrage wurde erhalten - Play & Jump',
                         message=confirmation_message,
                         from_email=settings.DEFAULT_FROM_EMAIL,
                         recipient_list=[customer_email],
                         fail_silently=True,
                     )
                 
-                # Очищаем корзину
+                # Очищаем корзину и данные доставки
                 request.session['cart'] = {}
+                request.session['delivery_option'] = 'pickup'
+                if 'delivery_address' in request.session:
+                    del request.session['delivery_address']
+                if 'delivery_datetime' in request.session:
+                    del request.session['delivery_datetime']
+                if 'return_datetime' in request.session:
+                    del request.session['return_datetime']
+                if 'delivery_instructions' in request.session:
+                    del request.session['delivery_instructions']
                 request.session.modified = True
                 
                 return JsonResponse({
                     'success': True,
-                    'message': 'Заявка успешно отправлена! Мы свяжемся с вами в ближайшее время.'
+                    'message': 'Anfrage erfolgreich gesendet! Wir werden uns in Kürze bei Ihnen melden.'
                 })
                 
             except Exception as e:
                 return JsonResponse({
                     'success': False,
-                    'error': f'Ошибка при отправке email: {str(e)}'
+                    'error': f'Fehler beim Senden der E-Mail: {str(e)}'
                 })
             
         except Exception as e:
             return JsonResponse({
                 'success': False,
-                'error': f'Ошибка при обработке заявки: {str(e)}'
+                'error': f'Fehler bei der Verarbeitung der Anfrage: {str(e)}'
             })
     
     return JsonResponse({'success': False, 'error': 'Method not allowed'})
