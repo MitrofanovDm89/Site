@@ -92,6 +92,30 @@ def cart(request):
     delivery_cost = 60.0 if delivery_option == 'delivery' else 0.0
     final_total = total_price + delivery_cost
     
+    # Получаем данные доставки из сессии
+    delivery_address = request.session.get('delivery_address', '')
+    delivery_datetime = request.session.get('delivery_datetime', '')
+    return_datetime = request.session.get('return_datetime', '')
+    delivery_instructions = request.session.get('delivery_instructions', '')
+    
+    # Преобразуем строки дат в объекты datetime для правильного отображения
+    try:
+        if delivery_datetime:
+            delivery_dt = datetime.strptime(delivery_datetime, '%Y-%m-%dT%H:%M')
+            delivery_datetime = delivery_dt
+        if return_datetime:
+            return_dt = datetime.strptime(return_datetime, '%Y-%m-%dT%H:%M')
+            return_datetime = return_dt
+    except ValueError:
+        # Если формат даты неправильный, оставляем как есть
+        pass
+    
+    # Отладочная информация
+    print(f"DEBUG: delivery_address = {delivery_address}")
+    print(f"DEBUG: delivery_datetime = {delivery_datetime}")
+    print(f"DEBUG: return_datetime = {return_datetime}")
+    print(f"DEBUG: delivery_instructions = {delivery_instructions}")
+    
     context = {
         'cart_items': products,
         'total_price': total_price,
@@ -99,10 +123,10 @@ def cart(request):
         'delivery_cost': delivery_cost,
         'final_total': final_total,
         'cart_count': len(products),
-        'delivery_address': request.session.get('delivery_address', ''),
-        'delivery_datetime': request.session.get('delivery_datetime', ''),
-        'return_datetime': request.session.get('return_datetime', ''),
-        'delivery_instructions': request.session.get('delivery_instructions', '')
+        'delivery_address': delivery_address,
+        'delivery_datetime': delivery_datetime,
+        'return_datetime': return_datetime,
+        'delivery_instructions': delivery_instructions
     }
     
     return render(request, 'main/cart.html', context)

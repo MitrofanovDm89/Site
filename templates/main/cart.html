@@ -23,7 +23,11 @@
             
             <div class="space-y-4">
                 {% for item in cart_items %}
-                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
+                     {% if item.start_date and item.end_date %}
+                     data-start-date="{{ item.start_date }}"
+                     data-end-date="{{ item.end_date }}"
+                     {% endif %}>
                     <div class="flex items-center space-x-4">
                         <div class="flex-shrink-0">
                             {% if item.image %}
@@ -126,11 +130,22 @@
                 <div class="ml-7 mt-3 p-4 bg-teal-50 rounded-lg border border-teal-200">
                     <div class="text-sm text-teal-800">
                         <div class="font-medium mb-2">Lieferdetails (gespeichert):</div>
+                        
                         <div><strong>Adresse:</strong> {{ delivery_address }}</div>
+                        {% if delivery_datetime %}
                         <div><strong>Lieferung:</strong> {{ delivery_datetime|date:"d.m.Y H:i" }}</div>
+                        {% else %}
+                        <div><strong>Lieferung:</strong> <span class="text-red-500">Nicht angegeben</span></div>
+                        {% endif %}
+                        {% if return_datetime %}
                         <div><strong>Rückgabe:</strong> {{ return_datetime|date:"d.m.Y H:i" }}</div>
+                        {% else %}
+                        <div><strong>Rückgabe:</strong> <span class="text-red-500">Nicht angegeben</span></div>
+                        {% endif %}
                         {% if delivery_instructions %}
                         <div><strong>Anweisungen:</strong> {{ delivery_instructions }}</div>
+                        {% else %}
+                        <div><strong>Anweisungen:</strong> <span class="text-gray-500">Keine Anweisungen</span></div>
                         {% endif %}
                         <div class="mt-2 text-xs text-teal-600">
                             <i class="fas fa-info-circle mr-1"></i>
@@ -359,6 +374,10 @@
             </div>
             
             <form id="delivery-details-form" class="space-y-6">
+                <!-- Скрытые поля с датами аренды для валидации -->
+                <input type="hidden" id="rental-start-date" value="">
+                <input type="hidden" id="rental-end-date" value="">
+                
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Lieferadresse <span class="text-red-500">*</span>
@@ -383,7 +402,12 @@
                             name="delivery_datetime"
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                             value="{{ delivery_datetime }}"
+                            min=""
+                            max=""
                             required>
+                        <div class="mt-1 text-xs text-gray-500" id="delivery-hint">
+                            Lieferung muss vor dem ersten Tag der Miete erfolgen.
+                        </div>
                     </div>
                     
                     <div>
@@ -396,7 +420,12 @@
                             name="return_datetime"
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                             value="{{ return_datetime }}"
+                            min=""
+                            max=""
                             required>
+                        <div class="mt-1 text-xs text-gray-500" id="return-hint">
+                            Rückgabe muss nach dem letzten Tag der Miete erfolgen.
+                        </div>
                     </div>
                 </div>
                 
@@ -751,24 +780,114 @@ document.addEventListener('DOMContentLoaded', function() {
          // Способ доставки устанавливается сервером, не переопределяем
      
      // При загрузке страницы скрываем/показываем детали доставки в зависимости от выбранного способа
-     const pickupRadio = document.getElementById('delivery-pickup');
-     const deliveryRadio = document.getElementById('delivery-delivery');
-     const deliveryDetails = document.querySelector('.ml-7.mt-3.p-4.bg-teal-50');
-     
-     if (deliveryDetails) {
-         if (pickupRadio && pickupRadio.checked) {
-             // Если выбран pickup, скрываем детали
-             deliveryDetails.style.display = 'none';
-         } else if (deliveryRadio && deliveryRadio.checked) {
-             // Если выбран delivery, показываем детали
-             deliveryDetails.style.display = 'block';
-         }
-     }
+    const pickupRadio = document.getElementById('delivery-pickup');
+    const deliveryRadio = document.getElementById('delivery-delivery');
+    const deliveryDetails = document.querySelector('.ml-7.mt-3.p-4.bg-teal-50');
+    
+    if (deliveryDetails) {
+        if (pickupRadio && pickupRadio.checked) {
+            // Если выбран pickup, скрываем детали
+            deliveryDetails.style.display = 'none';
+        } else if (deliveryRadio && deliveryRadio.checked) {
+            // Если выбран delivery, показываем детали
+            deliveryDetails.style.display = 'block';
+        }
+    }
+    
+    // Проверяем и исправляем неправильные данные доставки
+    validateAndFixDeliveryDates();
 });
 
+// Функция для проверки и исправления неправильных данных доставки
+function validateAndFixDeliveryDates() {
+    const cartItems = document.querySelectorAll('[data-start-date][data-end-date]');
+    if (cartItems.length === 0) return;
+    
+    const firstItem = cartItems[0];
+    const rentalStartDate = new Date(firstItem.getAttribute('data-start-date'));
+    const rentalEndDate = new Date(firstItem.getAttribute('data-end-date'));
+    
+    // Проверяем, есть ли сохраненные данные доставки
+    const deliveryDetails = document.querySelector('.ml-7.mt-3.p-4.bg-teal-50');
+    if (!deliveryDetails) return;
+    
+    // Если есть неправильные данные, показываем предупреждение
+    const returnDateText = deliveryDetails.textContent.match(/Rückgabe:\s*(\d{2}\.\d{2}\.\d{4})/);
+    if (returnDateText) {
+        const returnDate = new Date(returnDateText[1].split('.').reverse().join('-'));
+        if (returnDate < rentalEndDate) {
+            // Показываем предупреждение о неправильных данных
+            const warningDiv = document.createElement('div');
+            warningDiv.className = 'mt-2 p-2 bg-red-100 border border-red-300 rounded text-red-700 text-xs';
+            warningDiv.innerHTML = '<i class="fas fa-exclamation-triangle mr-1"></i>Warnung: Rückgabedatum liegt vor dem Ende der Miete. Bitte korrigieren Sie die Lieferdetails.';
+            deliveryDetails.appendChild(warningDiv);
+        }
+    }
+}
+
 // Delivery details functions
+function setupDeliveryDateConstraints() {
+    // Получаем даты аренды из корзины
+    const cartItems = document.querySelectorAll('[data-start-date][data-end-date]');
+    if (cartItems.length === 0) return;
+    
+    // Берем первый товар (если несколько, можно расширить логику)
+    const firstItem = cartItems[0];
+    const startDate = firstItem.getAttribute('data-start-date');
+    const endDate = firstItem.getAttribute('data-end-date');
+    
+    if (!startDate || !endDate) return;
+    
+    // Устанавливаем ограничения для поля доставки
+    const deliveryInput = document.getElementById('delivery-datetime');
+    if (deliveryInput) {
+        // Минимальная дата: сегодня
+        const today = new Date();
+        const todayStr = today.toISOString().slice(0, 16);
+        deliveryInput.min = todayStr;
+        
+        // Максимальная дата: первый день аренды (включительно)
+        const startDateTime = new Date(startDate + 'T23:59'); // Конец дня
+        const startDateTimeStr = startDateTime.toISOString().slice(0, 16);
+        deliveryInput.max = startDateTimeStr;
+        
+        // Обновляем подсказку
+        const deliveryHint = document.getElementById('delivery-hint');
+        if (deliveryHint) {
+            const startDateFormatted = startDateTime.toLocaleDateString('de-DE');
+            deliveryHint.textContent = `Lieferung kann bis zum ${startDateFormatted} erfolgen (auch am Tag der Miete).`;
+        }
+    }
+    
+    // Устанавливаем ограничения для поля забора
+    const returnInput = document.getElementById('return-datetime');
+    if (returnInput) {
+        // Минимальная дата: день окончания аренды (включительно)
+        const endDateTime = new Date(endDate + 'T00:00'); // Начало дня окончания аренды
+        const endDateTimeStr = endDateTime.toISOString().slice(0, 16);
+        returnInput.min = endDateTimeStr;
+        
+        // Максимальная дата: +5 дней после окончания аренды
+        const maxReturnDate = new Date(endDate);
+        maxReturnDate.setDate(maxReturnDate.getDate() + 5);
+        const maxReturnDateTimeStr = maxReturnDate.toISOString().slice(0, 16);
+        returnInput.max = maxReturnDateTimeStr;
+        
+        // Обновляем подсказку
+        const returnHint = document.getElementById('return-hint');
+        if (returnHint) {
+            const endDateFormatted = endDateTime.toLocaleDateString('de-DE');
+            const maxReturnDateFormatted = maxReturnDate.toLocaleDateString('de-DE');
+            returnHint.textContent = `Rückgabe kann ab ${endDateFormatted} bis ${maxReturnDateFormatted} erfolgen (nicht vor dem Ende der Miete).`;
+        }
+    }
+}
+
 function openDeliveryDetailsModal() {
     document.getElementById('delivery-details-modal').classList.remove('hidden');
+    
+    // Устанавливаем ограничения на поля ввода дат
+    setupDeliveryDateConstraints();
     
     // НЕ переключаем автоматически на delivery - пользователь сам выбирает
 }
@@ -795,6 +914,43 @@ function saveDeliveryDetails() {
     if (!data.delivery_address || !data.delivery_datetime || !data.return_datetime) {
         showNotification('Bitte füllen Sie alle erforderlichen Felder aus.', 'error');
         return;
+    }
+    
+    // Дополнительная валидация дат
+    const deliveryDate = new Date(data.delivery_datetime);
+    const returnDate = new Date(data.return_datetime);
+    const today = new Date();
+    
+    // Проверяем, что доставка не раньше сегодня
+    if (deliveryDate < today) {
+        showNotification('Das Lieferdatum kann nicht in der Vergangenheit liegen.', 'error');
+        return;
+    }
+    
+    // Проверяем, что забор не раньше доставки
+    if (returnDate <= deliveryDate) {
+        showNotification('Das Rückgabedatum muss nach dem Lieferdatum liegen.', 'error');
+        return;
+    }
+    
+    // Получаем даты аренды из корзины для дополнительной валидации
+    const cartItems = document.querySelectorAll('[data-start-date][data-end-date]');
+    if (cartItems.length > 0) {
+        const firstItem = cartItems[0];
+        const rentalStartDate = new Date(firstItem.getAttribute('data-start-date'));
+        const rentalEndDate = new Date(firstItem.getAttribute('data-end-date'));
+        
+        // Проверяем, что доставка не позже первого дня аренды
+        if (deliveryDate.toDateString() > rentalStartDate.toDateString()) {
+            showNotification('Das Lieferdatum kann nicht nach dem ersten Tag der Miete liegen.', 'error');
+            return;
+        }
+        
+        // Проверяем, что забор не раньше последнего дня аренды
+        if (returnDate.toDateString() < rentalEndDate.toDateString()) {
+            showNotification('Das Rückgabedatum kann nicht vor dem letzten Tag der Miete liegen.', 'error');
+            return;
+        }
     }
     
     // Показываем индикатор загрузки
