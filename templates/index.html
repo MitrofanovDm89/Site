@@ -184,6 +184,73 @@
     </div>
 </section>
 
+<!-- FAQ Section -->
+<section class="py-12 md:py-20 bg-white mobile-optimized">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12 md:mb-16">
+            <h2 class="mobile-heading md:text-4xl font-bold text-gray-900 mb-4">Häufig gestellte Fragen</h2>
+            <p class="mobile-text md:text-xl text-gray-600">Finden Sie schnell Antworten auf Ihre Fragen</p>
+        </div>
+        
+        <div class="space-y-4" id="faq-container">
+            <!-- FAQ Item 1 -->
+            <div class="bg-gray-50 rounded-xl overflow-hidden hover:shadow-md transition-all duration-300">
+                <button class="faq-question w-full px-6 py-4 text-left flex items-center justify-between hover:bg-teal-50 transition-colors duration-200" onclick="toggleFAQ(1)">
+                    <span class="font-semibold text-gray-900 text-lg">Können Kinder weiter hüpfen wenn es anfängst zu regnen?</span>
+                    <i class="fas fa-chevron-down text-teal-600 transform transition-transform duration-200" id="faq-icon-1"></i>
+                </button>
+                <div class="faq-answer hidden px-6 pb-4" id="faq-answer-1">
+                    <p class="text-gray-700 leading-relaxed">Obwohl manche Produkte eine Dachvorrichtung besitzen, ist das Benutzen bei Regen untersagt. Da es eine Erhöhte Rutsch und Verletzungsgefahr besteht.</p>
+                </div>
+            </div>
+
+            <!-- FAQ Item 2 -->
+            <div class="bg-gray-50 rounded-xl overflow-hidden hover:shadow-md transition-all duration-300">
+                <button class="faq-question w-full px-6 py-4 text-left flex items-center justify-between hover:bg-teal-50 transition-colors duration-200" onclick="toggleFAQ(2)">
+                    <span class="font-semibold text-gray-900 text-lg">Darf die Hüpfburg Indoor aufgeblassen werden?</span>
+                    <i class="fas fa-chevron-down text-teal-600 transform transition-transform duration-200" id="faq-icon-2"></i>
+                </button>
+                <div class="faq-answer hidden px-6 pb-4" id="faq-answer-2">
+                    <p class="text-gray-700 leading-relaxed">Bei genügend Platz ist es möglich, wie z.B. in einer Sporthalle.</p>
+                </div>
+            </div>
+
+            <!-- FAQ Item 3 -->
+            <div class="bg-gray-50 rounded-xl overflow-hidden hover:shadow-md transition-all duration-300">
+                <button class="faq-question w-full px-6 py-4 text-left flex items-center justify-between hover:bg-teal-50 transition-colors duration-200" onclick="toggleFAQ(3)">
+                    <span class="font-semibold text-gray-900 text-lg">Ist es möglich die Reservierung zu stornieren?</span>
+                    <i class="fas fa-chevron-down text-teal-600 transform transition-transform duration-200" id="faq-icon-3"></i>
+                </button>
+                <div class="faq-answer hidden px-6 pb-4" id="faq-answer-3">
+                    <p class="text-gray-700 leading-relaxed">Bis 12 Tage vor dem Veranstaltungstermin können Sie kostenlos die Reservierung ohne Grund stornieren. Bitte beachten Sie, dass bei einer Absage aus anderen Gründen 12 Tage vor dem Eventtag 50% vom Netto Betrag berechnet werden.</p>
+                </div>
+            </div>
+
+            <!-- FAQ Item 4 -->
+            <div class="bg-gray-50 rounded-xl overflow-hidden hover:shadow-md transition-all duration-300">
+                <button class="faq-question w-full px-6 py-4 text-left flex items-center justify-between hover:bg-teal-50 transition-colors duration-200" onclick="toggleFAQ(4)">
+                    <span class="font-semibold text-gray-900 text-lg">Beinhalten die Preise schon die Mehrwertsteuer?</span>
+                    <i class="fas fa-chevron-down text-teal-600 transform transition-transform duration-200" id="faq-icon-4"></i>
+                </button>
+                <div class="faq-answer hidden px-6 pb-4" id="faq-answer-4">
+                    <p class="text-gray-700 leading-relaxed">Ja. Kleinunternehmer nach § 19 UStG brauchen keine Steuer extra zu berechnen.</p>
+                </div>
+            </div>
+
+            <!-- FAQ Item 5 -->
+            <div class="bg-gray-50 rounded-xl overflow-hidden hover:shadow-md transition-all duration-300">
+                <button class="faq-question w-full px-6 py-4 text-left flex items-center justify-between hover:bg-teal-50 transition-colors duration-200" onclick="toggleFAQ(5)">
+                    <span class="font-semibold text-gray-900 text-lg">Wie kann ich die Hüpfburg transportieren?</span>
+                    <i class="fas fa-chevron-down text-teal-600 transform transition-transform duration-200" id="faq-icon-5"></i>
+                </button>
+                <div class="faq-answer hidden px-6 pb-4" id="faq-answer-5">
+                    <p class="text-gray-700 leading-relaxed">Alle Module (außer Hüpfburg Maxi), Popcorn und Zuckerwattemaschine können mit einem Kombi Pkw transportiert werden. Für Hüpfburg Maxi ist ein Anhänger mit Plane, Bus oder Transporter wie Citan, Partner, Kangoo erforderlich.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <script>
 function toggleTestimonial(id) {
     const content = document.getElementById(`testimonial-${id}`);
@@ -643,18 +710,50 @@ function toggleTestimonial(id) {
                justify-content: center;
            }
            
-           /* Typewriter cursor effect */
-           #hero-description::after {
-               content: '|';
-               color: rgba(255, 255, 255, 0.8);
-               animation: blink 1s infinite;
-               margin-left: 2px;
-           }
-           
-           @keyframes blink {
-               0%, 50% { opacity: 1; }
-               51%, 100% { opacity: 0; }
-           }
+                    /* Typewriter cursor effect */
+         #hero-description::after {
+             content: '|';
+             color: rgba(255, 255, 255, 0.8);
+             animation: blink 1s infinite;
+             margin-left: 2px;
+         }
+         
+         @keyframes blink {
+             0%, 50% { opacity: 1; }
+             51%, 100% { opacity: 0; }
+         }
+         
+         /* FAQ Styles */
+         .faq-question {
+             cursor: pointer;
+             user-select: none;
+         }
+         
+         .faq-question:hover {
+             background-color: #f0fdfa;
+         }
+         
+         .faq-answer {
+             max-height: 0;
+             overflow: hidden;
+             transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
+         }
+         
+         .faq-answer.active {
+             max-height: 200px;
+             padding-top: 1rem;
+             padding-bottom: 1rem;
+         }
+         
+         .faq-answer.hidden {
+             max-height: 0;
+             padding-top: 0;
+             padding-bottom: 0;
+         }
+         
+         .faq-icon-rotate {
+             transform: rotate(180deg);
+         }
 </style>
 
 <script>
@@ -796,5 +895,35 @@ function toggleTestimonial(id) {
   document.addEventListener('DOMContentLoaded', () => {
     initTextRotation();
   });
+  
+  // FAQ Accordion functionality
+  function toggleFAQ(id) {
+    const answer = document.getElementById(`faq-answer-${id}`);
+    const icon = document.getElementById(`faq-icon-${id}`);
+    const allAnswers = document.querySelectorAll('.faq-answer');
+    const allIcons = document.querySelectorAll('[id^="faq-icon-"]');
+    
+    // Close all other FAQ items
+    allAnswers.forEach((item, index) => {
+      if (item.id !== `faq-answer-${id}`) {
+        item.classList.remove('active');
+        item.classList.add('hidden');
+        allIcons[index].classList.remove('faq-icon-rotate');
+      }
+    });
+    
+    // Toggle current FAQ item
+    if (answer.classList.contains('hidden')) {
+      answer.classList.remove('hidden');
+      answer.classList.add('active');
+      icon.classList.add('faq-icon-rotate');
+    } else {
+      answer.classList.remove('active');
+      answer.classList.add('hidden');
+      icon.classList.remove('faq-icon-rotate');
+    }
+  }
+  
+
 </script>
 {% endblock %} 
