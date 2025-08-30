@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Allgemeine Geschäftsbedingungen - Play & Jump{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+            <div class="px-6 py-8">
+                <h1 class="text-3xl font-bold text-gray-900 mb-8 text-center">
+                    Allgemeine Geschäftsbedingungen
+                </h1>
+                
+                <div class="prose prose-lg max-w-none">
+                    <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                        <p class="text-blue-800 font-medium">
+                            <strong>Stand:</strong> {{ "now"|date:"d.m.Y" }}<br>
+                            <strong>Gültig für:</strong> Alle Mietverträge der Play & Jump, Hüpfburg Vermietung
+                        </p>
+                    </div>
+
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">1. Geltungsbereich</h2>
+                    <p class="text-gray-700 mb-6">
+                        Diese Allgemeinen Geschäftsbedingungen gelten für alle Mietverträge zwischen der Play & Jump, Hüpfburg Vermietung (im Folgenden "Vermieter") und den Mietern (im Folgenden "Mieter") von Hüpfburgen, Gesellschaftsspielen und Fun Food Equipment.
+                    </p>
+
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">2. Vertragsschluss</h2>
+                    <p class="text-gray-700 mb-6">
+                        Der Mietvertrag kommt durch schriftliche Bestätigung des Vermieters zustande. Mündliche Absprachen sind nur gültig, wenn sie schriftlich bestätigt wurden. Die Buchung ist erst nach Erhalt der schriftlichen Bestätigung verbindlich.
+                    </p>
+
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">3. Mietobjekte und Preise</h2>
+                    <p class="text-gray-700 mb-4">Alle Preise verstehen sich inklusive der gesetzlichen Mehrwertsteuer. Der Vermieter ist Kleinunternehmer nach § 19 UStG.</p>
+                    
+                    <div class="bg-gray-100 p-4 rounded-lg mb-6">
+                        <h3 class="font-semibold text-gray-900 mb-2">Preisstruktur:</h3>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1">
+                            <li>Mietpreis für Hüpfburgen und Spiele (pro Tag)</li>
+                            <li>Lieferung und Aufbau/Abbau: 60€ (im Radius von 30 km)</li>
+                            <li>Zusätzliche Kilometer: 0,50€ pro km</li>
+                            <li>Späte Lieferung (nach 18:00 Uhr): +20€</li>
+                            <li>Frühe Lieferung (vor 8:00 Uhr): +20€</li>
+                        </ul>
+                    </div>
+
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">4. Buchung und Stornierung</h2>
+                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                        <h3 class="font-semibold text-yellow-800 mb-2">Wichtige Stornierungsregeln:</h3>
+                        <ul class="list-disc list-inside text-yellow-800 space-y-1">
+                            <li><strong>Bis 12 Tage vor dem Event:</strong> Kostenlose Stornierung ohne Angabe von Gründen</li>
+                            <li><strong>12 Tage bis zum Eventtag:</strong> 50% des Netto-Betrags werden berechnet</li>
+                            <li><strong>Am Eventtag:</strong> 100% des Mietpreises werden fällig</li>
+                        </ul>
+                    </div>
+
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">5. Schönwetter-Garantie</h2>
+                    <p class="text-gray-700 mb-6">
+                        Bei schlechter Wettervorhersage (Regen, Sturm, Gewitter) kann die Buchung kostenlos bis 24 Stunden vor dem Event storniert werden. Die Entscheidung liegt beim Vermieter basierend auf aktuellen Wetterprognosen.
+                    </p>
+
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">6. Lieferung und Aufbau</h2>
+                    <p class="text-gray-700 mb-4">Der Vermieter übernimmt:</p>
+                    <ul class="list-disc list-inside text-gray-700 ml-4 mb-6 space-y-1">
+                        <li>Lieferung im Radius von 30 km (60€)</li>
+                        <li>Professioneller Aufbau und Abbau</li>
+                        <li>Einweisung in die Nutzung</li>
+                        <li>Sicherheitscheck vor der Nutzung</li>
+                    </ul>
+
+                    <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-6">
+                        <h3 class="font-semibold text-green-800 mb-2">Lieferzeiten:</h3>
+                        <ul class="list-disc list-inside text-green-800 space-y-1">
+                            <li>Standard: 8:00 - 18:00 Uhr</li>
+                            <li>Frühe Lieferung: ab 6:00 Uhr (+20€)</li>
+                            <li>Späte Lieferung: bis 22:00 Uhr (+20€)</li>
+                        </ul>
+                    </div>
+
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">7. Nutzungsbedingungen</h2>
+                    <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+                        <h3 class="font-semibold text-red-800 mb-2">Wichtige Sicherheitsregeln:</h3>
+                        <ul class="list-disc list-inside text-red-800 space-y-1">
+                            <li><strong>Bei Regen:</strong> Nutzung untersagt - erhöhte Rutschgefahr!</li>
+                            <li><strong>Maximale Belastung:</strong> Hüpfburg Maxi: 8 Kinder gleichzeitig</li>
+                            <li><strong>Altersbeschränkung:</strong> Kinder unter 3 Jahren nur unter Aufsicht</li>
+                            <li><strong>Schuhe:</strong> Immer ausziehen vor dem Hüpfen</li>
+                            <li><strong>Essen/Trinken:</strong> Nicht in der Hüpfburg erlaubt</li>
+                        </ul>
+                    </div>
+
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">8. Haftung und Versicherung</h2>
+                    <p class="text-gray-700 mb-6">
+                        Der Mieter haftet für alle Schäden, die durch unsachgemäße Nutzung oder Vorsatz entstehen. Der Vermieter übernimmt keine Haftung für Unfälle während der Nutzung. Es wird empfohlen, eine private Haftpflichtversicherung abzuschließen.
+                    </p>
+
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">9. Transport und Lagerung</h2>
+                    <p class="text-gray-700 mb-4">Transportmöglichkeiten:</p>
+      <ul class="list-disc list-inside text-gray-700 ml-4 mb-6 space-y-1">
+          <li><strong>Kombi Pkw:</strong> Alle Module außer Hüpfburg Maxi, Popcorn- und Zuckerwattemaschine</li>
+          <li><strong>Anhänger/Transporter:</strong> Hüpfburg Maxi, Popcorn- und Zuckerwattemaschine</li>
+          <li><strong>Mindestgröße:</strong> Anhänger mit Plane, Bus oder Transporter (Citan, Partner, Kangoo)</li>
+      </ul>
+
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">10. Qualitätsstandards</h2>
+                    <p class="text-gray-700 mb-6">
+                        Alle Mietobjekte werden vor jeder Auslieferung professionell gereinigt und desinfiziert. Wir verwenden nur hochwertige, gepflegte Module, die regelmäßig gewartet werden.
+                    </p>
+
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">11. Zahlungsbedingungen</h2>
+                    <div class="bg-gray-100 p-4 rounded-lg mb-6">
+                        <h3 class="font-semibold text-gray-900 mb-2">Zahlungsmodalitäten:</h3>
+                        <ul class="list-disc list-inside text-gray-700 space-y-1">
+                            <li><strong>Buchung:</strong> 50% Anzahlung bei Buchung</li>
+                            <li><strong>Restbetrag:</strong> 50% bei Lieferung</li>
+                            <li><strong>Zahlungsarten:</strong> Bar, EC-Karte, Überweisung</li>
+                            <li><strong>Rechnung:</strong> Wird bei Lieferung ausgehändigt</li>
+                        </ul>
+                    </div>
+
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">12. Mietdauer</h2>
+                    <p class="text-gray-700 mb-6">
+                        Die Standardmietdauer beträgt einen Tag (24 Stunden). Verlängerungen sind nach Absprache möglich. Bei mehrtägigen Mieten gelten gesonderte Preise.
+                    </p>
+
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">13. Rückgabe und Kontrolle</h2>
+                    <p class="text-gray-700 mb-6">
+                        Bei der Rückgabe erfolgt eine Kontrolle auf Beschädigungen und Vollständigkeit. Der Mieter ist verpflichtet, alle Teile vollständig und in sauberem Zustand zurückzugeben.
+                    </p>
+
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">14. Störungen und Notfälle</h2>
+                    <p class="text-gray-700 mb-6">
+                        Bei technischen Problemen oder Notfällen ist der Vermieter unter der Notfallnummer 015906787102 erreichbar. Wir garantieren eine schnelle Reaktionszeit.
+                    </p>
+
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">15. Datenschutz</h2>
+                    <p class="text-gray-700 mb-6">
+                        Die Verarbeitung personenbezogener Daten erfolgt gemäß unserer Datenschutzerklärung und den geltenden Datenschutzbestimmungen.
+                    </p>
+
+                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">16. Schlussbestimmungen</h2>
+                    <p class="text-gray-700 mb-6">
+                        Diese AGB gelten für alle Geschäftsbeziehungen. Änderungen werden schriftlich mitgeteilt. Sollten einzelne Bestimmungen unwirksam sein, bleibt der Vertrag im Übrigen bestehen.
+                    </p>
+
+                    <div class="bg-gray-100 p-4 rounded-lg text-sm text-gray-600">
+                        <p class="mb-2">
+                            <strong>Kontakt für Fragen zu den AGB:</strong><br>
+                            Inh. Alexander Steinke<br>
+                            Play & Jump, Hüpfburg Vermietung<br>
+                            Ludwig Jahn.2, 77815 Bühl<br>
+                            Telefon: 015906787102<br>
+                            E-Mail: info@playandjump.de<br>
+                            Website: https://playandjump.de
+                        </p>
+                        <p>
+                            <strong>Gültig ab:</strong> {{ "now"|date:"d.m.Y" }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

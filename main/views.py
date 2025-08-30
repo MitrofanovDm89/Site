@@ -626,6 +626,7 @@ def impressum(request):
 
 
 def datenschutz(request):
+    """Datenschutz page view"""
     return render(request, 'main/datenschutz.html')
 
 
@@ -635,3 +636,8 @@ def vermietung(request):
 
 def neuigkeiten(request):
     return render(request, 'main/neuigkeiten.html') 
+
+
+def cookie_richtlinie(request):
+    """Cookie-Richtlinie (EU) page view"""
+    return render(request, 'main/cookie_richtlinie.html') 

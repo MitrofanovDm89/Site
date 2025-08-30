@@ -21,4 +21,5 @@ urlpatterns = [
     path('cart/update-delivery/', views.update_delivery_option, name='update_delivery_option'),
     path('cart/update-delivery-details/', views.update_delivery_details, name='update_delivery_details'),
     path('cart/send-inquiry/', views.send_inquiry, name='send_inquiry'),
+    path('cookie-richtlinie/', views.cookie_richtlinie, name='cookie_richtlinie'),
 ] 
