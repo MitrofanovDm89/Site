@@ -68,7 +68,8 @@ def cart(request):
                 'end_date': end_date,
                 'duration_days': duration_days,
                 'cart_key': cart_key,
-                'price_per_day': price_per_day
+                'price_per_day': price_per_day,
+                'image': product.image
             })
             
             total_price += float(subtotal)
@@ -343,12 +344,20 @@ def send_inquiry(request):
             customer_email = data.get('customer_email', '').strip()
             customer_phone = data.get('customer_phone', '').strip()
             comment = data.get('comment', '').strip()
+            privacy_consent = data.get('privacy_consent', False)
             
             # Валидация
             if not customer_email and not customer_phone:
                 return JsonResponse({
                     'success': False, 
                     'error': 'Необходимо указать email или телефон'
+                })
+            
+            # Проверка согласия на обработку персональных данных
+            if not privacy_consent:
+                return JsonResponse({
+                    'success': False, 
+                    'error': 'Bitte stimmen Sie der Verarbeitung Ihrer personenbezogenen Daten zu.'
                 })
             
             # Получаем товары из корзины
