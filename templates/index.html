@@ -35,10 +35,12 @@
       Willkommen bei
       <span class="gradient-text">Play & Jump</span>
     </h1>
-    <p id="hero-description" class="mobile-text md:text-xl text-white/90 mb-8 max-w-3xl mx-auto animate-fade-in-up-delay">
-      Seit vielen Jahren bieten wir hochwertige Hüpfburgen, Gesellschaftsspiele und Unterhaltungsgeräte 
-      für alle Altersgruppen an. Wir sind Ihr Partner für unvergessliche Kinderfeste und Events.
-    </p>
+         <div class="h-24 md:h-28 flex items-center justify-center mb-8">
+       <p id="hero-description" class="mobile-text md:text-xl text-white/90 max-w-3xl mx-auto animate-fade-in-up text-center">
+         Seit vielen Jahren bieten wir hochwertige Hüpfburgen, Gesellschaftsspiele und Unterhaltungsgeräte 
+         für alle Altersgruppen an. Wir sind Ihr Partner für unvergessliche Kinderfeste und Events.
+       </p>
+     </div>
     <div class="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up-delay-2">
       <a href="/katalog/" class="button-coral-effect touch-button bg-white text-teal-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition mobile-full">
         Katalog entdecken
@@ -245,7 +247,7 @@ function toggleTestimonial(id) {
   
   .hero-bg-slide.active {
     opacity: 0.8;
-    animation: blur-cycle 4s ease-in-out infinite, ken-burns 20s ease-in-out infinite;
+    animation: blur-cycle 10s ease-in-out infinite, ken-burns 20s ease-in-out infinite;
   }
   
   @keyframes blur-cycle {
@@ -441,31 +443,14 @@ function toggleTestimonial(id) {
   }
   
   .animate-fade-in-up-delay {
-    animation: fadeInUp 1s ease-out 0.3s both, textBlurCycle 4s ease-in-out infinite 0.8s;
+    animation: fadeInUp 1s ease-out 0.3s both;
   }
   
   .animate-fade-in-up-delay-2 {
     animation: fadeInUp 1s ease-out 0.6s both;
   }
   
-  @keyframes textBlurCycle {
-    0% {
-      filter: blur(10px);
-      opacity: 0.3;
-    }
-    25% {
-      filter: blur(0px);
-      opacity: 1;
-    }
-    75% {
-      filter: blur(0px);
-      opacity: 1;
-    }
-    100% {
-      filter: blur(10px);
-      opacity: 0.3;
-    }
-  }
+
   
   @keyframes fadeInUp {
     from { 
@@ -645,10 +630,31 @@ function toggleTestimonial(id) {
              justify-content: center;
          }
          
-         /* Text rotation animation */
-         #hero-description {
-             transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-         }
+                   /* Text rotation animation */
+          #hero-description {
+              transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+              min-height: 1.5rem;
+          }
+          
+                     /* Fixed height container for text */
+           .h-24.md\:h-28 {
+               display: flex;
+               align-items: center;
+               justify-content: center;
+           }
+           
+           /* Typewriter cursor effect */
+           #hero-description::after {
+               content: '|';
+               color: rgba(255, 255, 255, 0.8);
+               animation: blink 1s infinite;
+               margin-left: 2px;
+           }
+           
+           @keyframes blink {
+               0%, 50% { opacity: 1; }
+               51%, 100% { opacity: 0; }
+           }
 </style>
 
 <script>
@@ -708,8 +714,8 @@ function toggleTestimonial(id) {
       slides[currentSlide].classList.add('active');
     }
     
-                 // Change slide every 4 seconds (synchronized with blur animation)
-             setInterval(nextSlide, 4000);
+                 // Change slide every 10 seconds (synchronized with blur animation)
+             setInterval(nextSlide, 10000);
   }
   
   // Initialize background slider when DOM is loaded
@@ -717,36 +723,74 @@ function toggleTestimonial(id) {
     initBackgroundSlider();
   });
   
-  // Text rotation functionality
-  function initTextRotation() {
-    const descriptionElement = document.getElementById('hero-description');
-    if (!descriptionElement) return;
-    
-    const texts = [
-      "Seit vielen Jahren bieten wir hochwertige Hüpfburgen, Gesellschaftsspiele und Unterhaltungsgeräte für alle Altersgruppen an. Wir sind Ihr Partner für unvergessliche Kinderfeste und Events.",
-      "Mit unsere einmalige Event Betreuung, können auch die Eltern bedenkenlos mitfeiern.",
-      "Mieten Sie eines von unseren Modulen für Ihr Event, für Ihre Kindern, für Ihren Spaß.",
-      "So werden Ihre Kinder zu Comichelden oder Märchenfiguren.",
-      "Ruhe für Eltern und sicheres Spielen für Kinder sind seit 2018 unsere Spezialität. Professionelle und saubere Produkte ziehen immer mehr zufriedene Kunden an. Wir freuen uns, dass wir Sie glücklich machen können."
-    ];
-    
-    let currentTextIndex = 0;
-    
-    function rotateText() {
-      descriptionElement.style.opacity = '0';
-      descriptionElement.style.transform = 'translateY(10px)';
+           // Text rotation functionality with typewriter effect
+    function initTextRotation() {
+      const descriptionElement = document.getElementById('hero-description');
+      if (!descriptionElement) return;
       
-      setTimeout(() => {
-        currentTextIndex = (currentTextIndex + 1) % texts.length;
-        descriptionElement.textContent = texts[currentTextIndex];
-        descriptionElement.style.opacity = '1';
-        descriptionElement.style.transform = 'translateY(0)';
-      }, 300);
+      const texts = [
+        "Seit vielen Jahren bieten wir hochwertige Hüpfburgen, Gesellschaftsspiele und Unterhaltungsgeräte für alle Altersgruppen an. Wir sind Ihr Partner für unvergessliche Kinderfeste und Events.",
+        "Mit unsere einmalige Event Betreuung, können auch die Eltern bedenkenlos mitfeiern.",
+        "Mieten Sie eines von unseren Modulen für Ihr Event, für Ihre Kindern, für Ihren Spaß.",
+        "So werden Ihre Kinder zu Comichelden oder Märchenfiguren.",
+        "Ruhe für Eltern und sicheres Spielen für Kinder sind seit 2018 unsere Spezialität. Professionelle und saubere Produkte ziehen immer mehr zufriedene Kunden an. Wir freuen uns, dass wir Sie glücklich machen können."
+      ];
+      
+      let currentTextIndex = 0;
+      let isTyping = false;
+      
+      // Calculate typing speed for 5 seconds
+      function calculateTypingSpeed(text) {
+        const targetTime = 5000; // 5 seconds
+        const charCount = text.length;
+        return Math.max(50, targetTime / charCount); // Minimum 50ms per character
+      }
+      
+      // Typewriter effect function
+      function typeText(text, element) {
+        if (isTyping) return;
+        isTyping = true;
+        
+        element.textContent = '';
+        const chars = text.split('');
+        let charIndex = 0;
+        const typingSpeed = calculateTypingSpeed(text);
+        
+        const typeInterval = setInterval(() => {
+          if (charIndex < chars.length) {
+            element.textContent += chars[charIndex];
+            charIndex++;
+          } else {
+            clearInterval(typeInterval);
+            isTyping = false;
+            // Text is now fully typed, will stay visible until next rotation
+          }
+        }, typingSpeed);
+      }
+      
+      function rotateText() {
+        // Always rotate text every 10 seconds (synchronized with background slider)
+        descriptionElement.style.opacity = '0';
+        descriptionElement.style.transform = 'translateY(10px)';
+        
+        setTimeout(() => {
+          currentTextIndex = (currentTextIndex + 1) % texts.length;
+          const newText = texts[currentTextIndex];
+          
+          // Start typewriter effect for new text
+          typeText(newText, descriptionElement);
+          
+          descriptionElement.style.opacity = '1';
+          descriptionElement.style.transform = 'translateY(0)';
+        }, 300);
+      }
+      
+      // Initial typewriter effect for first text - start immediately
+      typeText(texts[0], descriptionElement);
+      
+      // Check for rotation every 10 seconds (synchronized with background slider)
+      setInterval(rotateText, 10000);
     }
-    
-    // Rotate text every 4 seconds (synchronized with background slider)
-    setInterval(rotateText, 4000);
-  }
   
   // Initialize text rotation when DOM is loaded
   document.addEventListener('DOMContentLoaded', () => {
