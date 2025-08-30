@@ -846,10 +846,20 @@ function setupDeliveryDateConstraints() {
         const todayStr = today.toISOString().slice(0, 16);
         deliveryInput.min = todayStr;
         
-        // Максимальная дата: первый день аренды (включительно)
-        const startDateTime = new Date(startDate + 'T23:59'); // Конец дня
-        const startDateTimeStr = startDateTime.toISOString().slice(0, 16);
-        deliveryInput.max = startDateTimeStr;
+                 // Максимальная дата: первый день аренды (включительно)
+         // Используем UTC время, чтобы избежать проблем с часовыми поясами
+         const startDateTime = new Date(startDate + 'T23:59:59.999Z'); // Конец дня в UTC
+         const startDateTimeStr = startDateTime.toISOString().slice(0, 16);
+         deliveryInput.max = startDateTimeStr;
+        
+        // Отладочная информация
+        console.log('=== DEBUG: Delivery Date Constraints ===');
+        console.log('Start Date from cart:', startDate);
+        console.log('Start DateTime object:', startDateTime);
+        console.log('Start DateTime string:', startDateTimeStr);
+        console.log('Delivery input min attribute:', deliveryInput.min);
+        console.log('Delivery input max attribute:', deliveryInput.max);
+        console.log('=======================================');
         
         // Обновляем подсказку
         const deliveryHint = document.getElementById('delivery-hint');
@@ -862,16 +872,27 @@ function setupDeliveryDateConstraints() {
     // Устанавливаем ограничения для поля забора
     const returnInput = document.getElementById('return-datetime');
     if (returnInput) {
-        // Минимальная дата: день окончания аренды (включительно)
-        const endDateTime = new Date(endDate + 'T00:00'); // Начало дня окончания аренды
-        const endDateTimeStr = endDateTime.toISOString().slice(0, 16);
-        returnInput.min = endDateTimeStr;
+                 // Минимальная дата: день окончания аренды (включительно)
+         // Принудительно устанавливаем на начало дня окончания аренды
+         // Используем UTC время, чтобы избежать проблем с часовыми поясами
+         const endDateTime = new Date(endDate + 'T00:00:00.000Z');
+         const endDateTimeStr = endDateTime.toISOString().slice(0, 16);
+         returnInput.min = endDateTimeStr;
         
         // Максимальная дата: +5 дней после окончания аренды
         const maxReturnDate = new Date(endDate);
         maxReturnDate.setDate(maxReturnDate.getDate() + 5);
         const maxReturnDateTimeStr = maxReturnDate.toISOString().slice(0, 16);
         returnInput.max = maxReturnDateTimeStr;
+        
+        // Отладочная информация
+        console.log('=== DEBUG: Return Date Constraints ===');
+        console.log('End Date from cart:', endDate);
+        console.log('End DateTime object:', endDateTime);
+        console.log('End DateTime string:', endDateTimeStr);
+        console.log('Return input min attribute:', returnInput.min);
+        console.log('Return input max attribute:', returnInput.max);
+        console.log('=====================================');
         
         // Обновляем подсказку
         const returnHint = document.getElementById('return-hint');
@@ -941,13 +962,13 @@ function saveDeliveryDetails() {
         const rentalEndDate = new Date(firstItem.getAttribute('data-end-date'));
         
         // Проверяем, что доставка не позже первого дня аренды
-        if (deliveryDate.toDateString() > rentalStartDate.toDateString()) {
+        if (deliveryDate.getTime() > rentalStartDate.getTime()) {
             showNotification('Das Lieferdatum kann nicht nach dem ersten Tag der Miete liegen.', 'error');
             return;
         }
         
         // Проверяем, что забор не раньше последнего дня аренды
-        if (returnDate.toDateString() < rentalEndDate.toDateString()) {
+        if (returnDate.getTime() < rentalEndDate.getTime()) {
             showNotification('Das Rückgabedatum kann nicht vor dem letzten Tag der Miete liegen.', 'error');
             return;
         }
