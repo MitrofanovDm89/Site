@@ -15,7 +15,13 @@ def home(request):
 def cart(request):
     """Страница корзины для аренды по дням"""
     cart_items = request.session.get('cart', {})
-    delivery_option = request.session.get('delivery_option', 'pickup')  # pickup или delivery
+    # По умолчанию всегда Selbstabholung, если не выбран другой способ
+    delivery_option = request.session.get('delivery_option', 'pickup')
+    
+    # Если в сессии нет выбранного способа доставки, устанавливаем pickup по умолчанию
+    if 'delivery_option' not in request.session:
+        request.session['delivery_option'] = 'pickup'
+        delivery_option = 'pickup'
     products = []
     total_price = 0.0
     
@@ -134,6 +140,10 @@ def add_to_cart(request):
             if 'cart' not in request.session:
                 request.session['cart'] = {}
             
+            # Устанавливаем pickup по умолчанию при первом добавлении товара
+            if 'delivery_option' not in request.session:
+                request.session['delivery_option'] = 'pickup'
+            
             # Создаем уникальный ключ для товара с датами
             cart_key = f"{product_id}_{start_date}_{end_date}"
             
@@ -174,6 +184,21 @@ def remove_from_cart(request):
             if cart_key in cart:
                 del cart[cart_key]
                 request.session.modified = True
+                
+                # Если корзина пуста, сбрасываем способ доставки на pickup
+                # Детали доставки очищаем только при полной очистке корзины
+                if not cart:
+                    request.session['delivery_option'] = 'pickup'
+                    # Очищаем детали доставки только если корзина полностью пуста
+                    if 'delivery_address' in request.session:
+                        del request.session['delivery_address']
+                    if 'delivery_datetime' in request.session:
+                        del request.session['delivery_datetime']
+                    if 'return_datetime' in request.session:
+                        del request.session['return_datetime']
+                    if 'delivery_instructions' in request.session:
+                        del request.session['delivery_instructions']
+                    request.session.modified = True
             
             return JsonResponse({
                 'success': True,
@@ -246,6 +271,10 @@ def update_delivery_option(request):
             # Сохраняем выбор в сессии
             request.session['delivery_option'] = delivery_option
             request.session.modified = True
+            
+            # Если выбран pickup, НЕ очищаем данные доставки
+            # Пользователь может сохранить детали и использовать их позже
+            # Детали будут очищены только при очистке корзины или отправке заявки
             
             # Рассчитываем новую стоимость
             cart_items = request.session.get('cart', {})
@@ -519,9 +548,11 @@ Anfrage-Details:
                         fail_silently=True,
                     )
                 
-                # Очищаем корзину и данные доставки
+                # Очищаем корзину и данные доставки только при успешной отправке заявки
                 request.session['cart'] = {}
+                # Сбрасываем на pickup по умолчанию
                 request.session['delivery_option'] = 'pickup'
+                # Очищаем детали доставки
                 if 'delivery_address' in request.session:
                     del request.session['delivery_address']
                 if 'delivery_datetime' in request.session:

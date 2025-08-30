@@ -90,15 +90,21 @@
             <h2 class="text-2xl font-bold text-gray-900 mb-6">Lieferoptionen</h2>
             
             <div class="space-y-4">
-                <div class="flex items-center">
-                    <input type="radio" id="delivery-pickup" name="delivery_option" value="pickup" 
-                           {% if delivery_option == 'pickup' %}checked{% endif %}
-                           onchange="updateDeliveryOption('pickup')"
-                           class="w-4 h-4 text-teal-600 bg-gray-100 border-gray-300 focus:ring-teal-500">
-                    <label for="delivery-pickup" class="ml-3 text-lg font-medium text-gray-900">
-                        Selbstabholung (kostenlos)
-                    </label>
-                </div>
+                                 <div class="flex items-center">
+                     <input type="radio" id="delivery-pickup" name="delivery_option" value="pickup" 
+                            {% if delivery_option == 'pickup' %}checked{% endif %}
+                            onchange="updateDeliveryOption('pickup')"
+                            class="w-4 h-4 text-teal-600 bg-gray-100 border-gray-300 focus:ring-teal-500">
+                     <label for="delivery-pickup" class="ml-3 text-lg font-medium text-gray-900">
+                         Selbstabholung (kostenlos)
+                     </label>
+                     {% if delivery_address %}
+                     <button onclick="openDeliveryDetailsModal()" 
+                             class="ml-3 text-sm text-teal-600 hover:text-teal-800 underline">
+                         Details bearbeiten
+                     </button>
+                     {% endif %}
+                 </div>
                 
                 <div class="flex items-center">
                     <input type="radio" id="delivery-delivery" name="delivery_option" value="delivery" 
@@ -108,7 +114,7 @@
                     <label for="delivery-delivery" class="ml-3 text-lg font-medium text-gray-900">
                         Lieferung + Aufbau/Abbau (60€)
                     </label>
-                    {% if delivery_option == 'delivery' %}
+                    {% if delivery_address %}
                     <button onclick="openDeliveryDetailsModal()" 
                             class="ml-3 text-sm text-teal-600 hover:text-teal-800 underline">
                         Details bearbeiten
@@ -116,16 +122,20 @@
                     {% endif %}
                 </div>
                 
-                {% if delivery_option == 'delivery' and delivery_address %}
+                {% if delivery_address %}
                 <div class="ml-7 mt-3 p-4 bg-teal-50 rounded-lg border border-teal-200">
                     <div class="text-sm text-teal-800">
-                        <div class="font-medium mb-2">Lieferdetails:</div>
+                        <div class="font-medium mb-2">Lieferdetails (gespeichert):</div>
                         <div><strong>Adresse:</strong> {{ delivery_address }}</div>
                         <div><strong>Lieferung:</strong> {{ delivery_datetime|date:"d.m.Y H:i" }}</div>
                         <div><strong>Rückgabe:</strong> {{ return_datetime|date:"d.m.Y H:i" }}</div>
                         {% if delivery_instructions %}
                         <div><strong>Anweisungen:</strong> {{ delivery_instructions }}</div>
                         {% endif %}
+                        <div class="mt-2 text-xs text-teal-600">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Wählen Sie "Lieferung + Aufbau/Abbau" um diese Details zu verwenden
+                        </div>
                     </div>
                 </div>
                 {% endif %}
@@ -428,6 +438,7 @@ function getCSRFToken() {
         return metaTag.getAttribute('content');
     }
     return null;
+    // Способ доставки не сбрасывается при получении CSRF токена
 }
 
 document.getElementById('inquiry-form').addEventListener('submit', function(e) {
@@ -453,6 +464,7 @@ function removeFromCart(cartKey) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+            // Способ доставки сбрасывается на pickup в backend только если корзина пуста
             location.reload();
         } else {
             showNotification(data.error, 'error');
@@ -505,14 +517,15 @@ function sendInquiry() {
     })
     .then(response => response.json())
     .then(result => {
-        if (result.success) {
-            showSuccessModal(result.message);
-            // Обновляем счетчик корзины в шапке
-            updateCartCount(0);
-        } else {
-            showNotification(result.error, 'error');
-        }
-    })
+            if (result.success) {
+                showSuccessModal(result.message);
+                // Обновляем счетчик корзины в шапке
+                // Способ доставки сбрасывается на pickup в backend при очистке корзины
+                updateCartCount(0);
+            } else {
+                showNotification(result.error, 'error');
+            }
+        })
     .catch(error => {
         console.error('Error:', error);
         showNotification('Fehler beim Senden der Anfrage', 'error');
@@ -527,11 +540,13 @@ function sendInquiry() {
 function showSuccessModal(message) {
     document.getElementById('success-message').textContent = message;
     document.getElementById('success-modal').classList.remove('hidden');
+    // Способ доставки сбрасывается на pickup в backend при очистке корзины
 }
 
 function closeSuccessModal() {
     document.getElementById('success-modal').classList.add('hidden');
     // Перенаправляем на главную страницу
+    // Способ доставки уже сброшен на pickup в backend
     window.location.href = '{% url "main:home" %}';
 }
 
@@ -547,6 +562,7 @@ function showNotification(message, type) {
     setTimeout(() => {
         notification.remove();
     }, 5000);
+    // Способ доставки не сбрасывается при показе уведомлений
 }
 
 function updateCartCount(count) {
@@ -554,6 +570,7 @@ function updateCartCount(count) {
     cartBadges.forEach(badge => {
         badge.textContent = count;
     });
+    // Способ доставки не сбрасывается при обновлении счетчика корзины
 }
 
 function updateDeliveryOption(deliveryOption) {
@@ -568,24 +585,42 @@ function updateDeliveryOption(deliveryOption) {
         })
     })
     .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Обновляем отображение стоимости
-            document.querySelector('[data-delivery-cost]').textContent = data.delivery_cost + '€';
-            document.querySelector('[data-final-total]').textContent = data.final_total + '€';
-            
-            showNotification('Lieferoption aktualisiert', 'success');
-            
-            // Если выбрана доставка, открываем модальное окно для деталей
-            if (deliveryOption === 'delivery') {
-                setTimeout(() => {
-                    openDeliveryDetailsModal();
-                }, 500); // Небольшая задержка для показа уведомления
+            .then(data => {
+            if (data.success) {
+                // Обновляем отображение стоимости
+                document.querySelector('[data-delivery-cost]').textContent = data.delivery_cost + '€';
+                document.querySelector('[data-final-total]').textContent = data.final_total + '€';
+                
+                showNotification('Lieferoption aktualisiert', 'success');
+                
+                // Переключаем радио-кнопку на выбранный способ доставки
+                if (deliveryOption === 'delivery') {
+                    document.getElementById('delivery-delivery').checked = true;
+                    // Открываем модальное окно для деталей
+                    setTimeout(() => {
+                        openDeliveryDetailsModal();
+                    }, 500); // Небольшая задержка для показа уведомления
+                } else if (deliveryOption === 'pickup') {
+                    document.getElementById('delivery-pickup').checked = true;
+                }
+                
+                // Если выбран pickup, скрываем детали доставки
+                if (deliveryOption === 'pickup') {
+                    const deliveryDetails = document.querySelector('.ml-7.mt-3.p-4.bg-teal-50');
+                    if (deliveryDetails) {
+                        deliveryDetails.style.display = 'none';
+                    }
+                } else if (deliveryOption === 'delivery') {
+                    // Если выбран delivery, показываем детали доставки
+                    const deliveryDetails = document.querySelector('.ml-7.mt-3.p-4.bg-teal-50');
+                    if (deliveryDetails) {
+                        deliveryDetails.style.display = 'block';
+                    }
+                }
+            } else {
+                showNotification(data.error, 'error');
             }
-        } else {
-            showNotification(data.error, 'error');
-        }
-    })
+        })
     .catch(error => {
         console.error('Error:', error);
         showNotification('Fehler beim Aktualisieren der Lieferoption', 'error');
@@ -612,11 +647,13 @@ function editDates(cartKey, startDate, endDate, pricePerDay) {
     
     // Update price calculation
     updateEditPriceCalculation();
+    // Способ доставки не сбрасывается при редактировании дат
 }
 
 function closeDateEditModal() {
     document.getElementById('date-edit-modal').classList.add('hidden');
     window.currentEditingCartKey = null;
+    // Не сбрасываем способ доставки при закрытии модального окна редактирования дат
 }
 
 function updateEditPriceCalculation() {
@@ -639,6 +676,7 @@ function updateEditPriceCalculation() {
             document.getElementById('edit-total-price').textContent = '0€';
         }
     }
+    // Способ доставки не сбрасывается при расчете цены редактирования
 }
 
 function saveDateChanges() {
@@ -678,6 +716,7 @@ function saveDateChanges() {
         if (data.success) {
             showNotification('Daten erfolgreich aktualisiert!', 'success');
             closeDateEditModal();
+            // Способ доставки не сбрасывается при изменении дат
             location.reload(); // Перезагружаем страницу для обновления данных
         } else {
             showNotification(data.error, 'error');
@@ -687,6 +726,7 @@ function saveDateChanges() {
         console.error('Error:', error);
         showNotification('Fehler beim Aktualisieren der Daten', 'error');
     });
+    // Способ доставки не сбрасывается при сохранении изменений дат
 }
 
 // Add event listeners for date inputs
@@ -707,15 +747,37 @@ document.addEventListener('DOMContentLoaded', function() {
             saveDeliveryDetails();
         });
     }
+    
+         // Способ доставки устанавливается сервером, не переопределяем
+     
+     // При загрузке страницы скрываем/показываем детали доставки в зависимости от выбранного способа
+     const pickupRadio = document.getElementById('delivery-pickup');
+     const deliveryRadio = document.getElementById('delivery-delivery');
+     const deliveryDetails = document.querySelector('.ml-7.mt-3.p-4.bg-teal-50');
+     
+     if (deliveryDetails) {
+         if (pickupRadio && pickupRadio.checked) {
+             // Если выбран pickup, скрываем детали
+             deliveryDetails.style.display = 'none';
+         } else if (deliveryRadio && deliveryRadio.checked) {
+             // Если выбран delivery, показываем детали
+             deliveryDetails.style.display = 'block';
+         }
+     }
 });
 
 // Delivery details functions
 function openDeliveryDetailsModal() {
     document.getElementById('delivery-details-modal').classList.remove('hidden');
+    
+    // НЕ переключаем автоматически на delivery - пользователь сам выбирает
 }
 
 function closeDeliveryDetailsModal() {
     document.getElementById('delivery-details-modal').classList.add('hidden');
+    
+    // При закрытии модального окна НЕ меняем способ доставки
+    // Пользователь сам решает, что выбрать
 }
 
 function saveDeliveryDetails() {
@@ -750,15 +812,21 @@ function saveDeliveryDetails() {
         body: JSON.stringify(data)
     })
     .then(response => response.json())
-    .then(result => {
-        if (result.success) {
-            showNotification(result.message, 'success');
-            closeDeliveryDetailsModal();
-            location.reload(); // Перезагружаем страницу для обновления данных
-        } else {
-            showNotification(result.error, 'error');
-        }
-    })
+            .then(result => {
+            if (result.success) {
+                showNotification(result.message, 'success');
+                closeDeliveryDetailsModal();
+                
+                // НЕ переключаем автоматически на delivery - пользователь сам выбирает
+                // Показываем подсказку о том, что детали сохранены
+                showNotification('Details gespeichert! Wählen Sie "Lieferung + Aufbau/Abbau" um diese zu verwenden.', 'success');
+                
+                // Перезагружаем страницу для обновления данных
+                location.reload();
+            } else {
+                showNotification(result.error, 'error');
+            }
+        })
     .catch(error => {
         console.error('Error:', error);
         showNotification('Fehler beim Speichern der Lieferdetails', 'error');
@@ -768,6 +836,7 @@ function saveDeliveryDetails() {
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
     });
+    // Способ доставки не сбрасывается при сохранении деталей доставки
 }
 </script>
 {% endblock %} 
