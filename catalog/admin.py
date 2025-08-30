@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from .models import Category, Product, Availability, Booking, Service
+from .models import Category, Product, ProductImage, Availability, Booking, Service
 
 
 @admin.register(Category)
@@ -29,6 +29,24 @@ class CategoryAdmin(admin.ModelAdmin):
     def created_date(self, obj):
         return obj.id  # Простое поле для сортировки
     created_date.short_description = 'ID'
+
+
+@admin.register(ProductImage)
+class ProductImageAdmin(admin.ModelAdmin):
+    list_display = ['product', 'image_preview', 'order', 'created_at']
+    list_filter = ['product', 'created_at']
+    search_fields = ['product__title', 'alt_text']
+    list_editable = ['order']
+    ordering = ['product', 'order']
+    
+    def image_preview(self, obj):
+        if obj.image:
+            return format_html(
+                '<img src="{}" style="max-height: 80px; max-width: 80px;" />',
+                obj.image.url
+            )
+        return "Kein Bild"
+    image_preview.short_description = 'Vorschau'
 
 
 @admin.register(Product)

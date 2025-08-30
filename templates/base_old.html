@@ -382,17 +382,17 @@
                 <div class="flex justify-between h-16 items-center">
                     <!-- Logo -->
                     <div class="flex-shrink-0 flex items-center -ml-4">
-                        <a href="/" class="focus-ring touch-target">
+                        <a href="/" class="button-coral-effect focus-ring touch-target">
                             <img class="h-12 w-auto max-w-48 object-contain navbar-logo" src="{% static 'images/logo.png' %}" alt="Play & Jump Logo">
                         </a>
                     </div>
                     
                     <!-- Desktop Menu -->
                     <div class="hidden md:flex space-x-8 items-center">
-                        <a href="/katalog/" class="nav-link text-gray-700 hover:text-teal-600 font-semibold focus-ring touch-target">Katalog</a>
-                        <a href="/neuigkeiten/" class="nav-link text-gray-700 hover:text-teal-600 font-semibold focus-ring touch-target">Neuigkeiten</a>
-                        <a href="/kontakt/" class="nav-link text-gray-700 hover:text-teal-600 font-semibold focus-ring touch-target">Kontakt</a>
-                        <a href="/cart/" class="nav-link relative text-gray-700 hover:text-teal-600 font-semibold transition flex items-center focus-ring touch-target">
+                        <a href="/katalog/" class="button-coral-effect nav-link text-gray-700 hover:text-teal-600 font-semibold focus-ring touch-target">Katalog</a>
+                        <a href="/neuigkeiten/" class="button-coral-effect nav-link text-gray-700 hover:text-teal-600 font-semibold focus-ring touch-target">Neuigkeiten</a>
+                        <a href="/kontakt/" class="button-coral-effect nav-link text-gray-700 hover:text-teal-600 font-semibold focus-ring touch-target">Kontakt</a>
+                        <a href="/cart/" class="button-coral-effect nav-link relative text-gray-700 hover:text-teal-600 font-semibold transition flex items-center focus-ring touch-target">
                             <svg class="w-6 h-6 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
                             <span class="mobile-hidden">Warenkorb</span>
                             <!-- Счетчик товаров -->
@@ -402,18 +402,18 @@
                             
                             <!-- Dropdown Menu -->
                             <div class="dropdown-menu absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                                <a href="/profile/" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors touch-target">Profil</a>
-                                <a href="/orders/" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors touch-target">Meine Bestellungen</a>
-                                <a href="/settings/" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors touch-target">Adressen</a>
+                                <a href="/profile/" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors touch-target" class="button-coral-effect">Profil</a>
+                                <a href="/orders/" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors touch-target" class="button-coral-effect">Meine Bestellungen</a>
+                                <a href="/settings/" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors touch-target" class="button-coral-effect">Adressen</a>
                                 <hr class="my-1">
-                                <a href="/logout/" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 transition-colors touch-target">Abmelden</a>
+                                <a href="/logout/" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 transition-colors touch-target" class="button-coral-effect">Abmelden</a>
                             </div>
                         </div>
                     </div>
                     
                     <!-- Mobile Menu Button -->
                     <div class="md:hidden flex items-center">
-                        <button id="mobile-menu-button" class="text-gray-700 hover:text-teal-600 focus:outline-none focus-ring touch-target">
+                        <button id="mobile-menu-button" class="button-coral-effect text-gray-700 hover:text-teal-600 focus:outline-none focus-ring touch-target">
                             <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
                             </svg>
@@ -424,10 +424,10 @@
             
             <!-- Mobile Menu -->
             <div id="mobile-menu" class="md:hidden hidden px-4 pb-4 bg-white border-b border-gray-200">
-                <a href="/katalog/" class="mobile-nav-item text-gray-700 hover:text-teal-600 font-semibold transition nav-link touch-target">Katalog</a>
-                <a href="/neuigkeiten/" class="mobile-nav-item text-gray-700 hover:text-teal-600 font-semibold transition nav-link touch-target">Neuigkeiten</a>
-                <a href="/kontakt/" class="mobile-nav-item text-gray-700 hover:text-teal-600 font-semibold transition nav-link touch-target">Kontakt</a>
-                <a href="/cart/" class="mobile-nav-item text-gray-700 hover:text-teal-600 font-semibold transition flex items-center nav-link touch-target">
+                                        <a href="/katalog/" class="button-coral-effect mobile-nav-item text-gray-700 hover:text-teal-600 font-semibold transition nav-link touch-target">Katalog</a>
+                        <a href="/neuigkeiten/" class="button-coral-effect mobile-nav-item text-gray-700 hover:text-teal-600 font-semibold transition nav-link touch-target">Neuigkeiten</a>
+                        <a href="/kontakt/" class="button-coral-effect mobile-nav-item text-gray-700 hover:text-teal-600 font-semibold transition nav-link touch-target">Kontakt</a>
+                <a href="/cart/" class="button-coral-effect mobile-nav-item text-gray-700 hover:text-teal-600 font-semibold transition flex items-center nav-link touch-target">
                     <svg class="w-6 h-6 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
                     Warenkorb <span class="ml-1 bg-teal-600 text-white text-xs rounded-full px-2 py-0.5 cart-count cart-badge">0</span>
                 </a>
@@ -452,9 +452,9 @@
                         <span class="text-gray-400 text-sm">&copy; 2025 Play & Jump. Alle Rechte vorbehalten.</span>
                     </div>
                     <div class="flex space-x-6 text-sm">
-                        <a href="/impressum/" class="text-gray-400 hover:text-teal-400 transition">Impressum</a>
-                        <a href="/datenschutz/" class="text-gray-400 hover:text-teal-400 transition">Datenschutz</a>
-                        <a href="/agb/" class="text-gray-400 hover:text-teal-400 transition">AGB</a>
+                        <a href="/impressum/" class="button-coral-effect text-gray-400 hover:text-teal-400 transition">Impressum</a>
+                        <a href="/datenschutz/" class="button-coral-effect text-gray-400 hover:text-teal-400 transition">Datenschutz</a>
+                        <a href="/agb/" class="button-coral-effect text-gray-400 hover:text-teal-400 transition">AGB</a>
                     </div>
                 </div>
             </div>

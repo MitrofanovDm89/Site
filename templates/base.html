@@ -98,6 +98,23 @@
         }
         
         /* Mobile Grid */
+        
+        /* Эффект кораллового цвета при нажатии на все кнопки */
+        .button-coral-effect:active {
+            color: #ff7f50 !important; /* Коралловый цвет */
+            transition: color 0.1s ease;
+        }
+        
+        /* Для кнопок с иконками */
+        .button-coral-effect:active i {
+            color: #ff7f50 !important;
+        }
+        
+        /* Для кнопок с текстом */
+        .button-coral-effect:active span,
+        .button-coral-effect:active {
+            color: #ff7f50 !important;
+        }
         .mobile-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -159,17 +176,17 @@
                 <div class="flex justify-between h-18 items-center">
                     <!-- Logo -->
                     <div class="flex-shrink-0 flex items-center -ml-4">
-                        <a href="/" class="focus-ring touch-target">
+                        <a href="/" class="button-coral-effect focus-ring touch-target">
                             <img class="h-16 w-auto max-w-64 object-contain navbar-logo" src="{% static 'images/logo.png' %}" alt="Play & Jump Logo">
                         </a>
                     </div>
                     
                     <!-- Desktop Menu -->
                     <div class="hidden md:flex space-x-8 items-center">
-                        <a href="/katalog/" class="nav-link text-gray-700 hover:text-teal-600 font-semibold focus-ring touch-target">Katalog</a>
-                        <a href="/neuigkeiten/" class="nav-link text-gray-700 hover:text-teal-600 font-semibold focus-ring touch-target">Neuigkeiten</a>
-                        <a href="/kontakt/" class="nav-link text-gray-700 hover:text-teal-600 font-semibold focus-ring touch-target">Kontakt</a>
-                        <a href="/cart/" class="nav-link relative text-gray-700 hover:text-teal-600 font-semibold transition flex items-center focus-ring touch-target">
+                        <a href="/katalog/" class="button-coral-effect nav-link text-gray-700 hover:text-teal-600 font-semibold focus-ring touch-target">Katalog</a>
+                        <a href="/neuigkeiten/" class="button-coral-effect nav-link text-gray-700 hover:text-teal-600 font-semibold focus-ring touch-target">Neuigkeiten</a>
+                        <a href="/kontakt/" class="button-coral-effect nav-link text-gray-700 hover:text-teal-600 font-semibold focus-ring touch-target">Kontakt</a>
+                        <a href="/cart/" class="button-coral-effect nav-link relative text-gray-700 hover:text-teal-600 font-semibold transition flex items-center focus-ring touch-target">
                             <svg class="w-6 h-6 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
                             <span class="mobile-hidden">Warenkorb</span>
                             <!-- Счетчик товаров -->
@@ -179,7 +196,7 @@
                     
                     <!-- Mobile Menu Button -->
                     <div class="md:hidden flex items-center">
-                        <button id="mobile-menu-button" class="text-gray-700 hover:text-teal-600 focus:outline-none focus-ring touch-target">
+                        <button id="mobile-menu-button" class="button-coral-effect text-gray-700 hover:text-teal-600 focus:outline-none focus-ring touch-target">
                             <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
                             </svg>
@@ -190,10 +207,10 @@
             
             <!-- Mobile Menu -->
             <div id="mobile-menu" class="md:hidden hidden px-4 pb-4 bg-white border-b border-gray-200">
-                <a href="/katalog/" class="mobile-nav-item text-gray-700 hover:text-teal-600 font-semibold transition nav-link touch-target">Katalog</a>
-                <a href="/neuigkeiten/" class="mobile-nav-item text-gray-700 hover:text-teal-600 font-semibold transition nav-link touch-target">Neuigkeiten</a>
-                <a href="/kontakt/" class="mobile-nav-item text-gray-700 hover:text-teal-600 font-semibold transition nav-link touch-target">Kontakt</a>
-                <a href="/cart/" class="mobile-nav-item text-gray-700 hover:text-teal-600 font-semibold transition flex items-center nav-link touch-target">
+                <a href="/katalog/" class="button-coral-effect mobile-nav-item text-gray-700 hover:text-teal-600 font-semibold transition nav-link touch-target">Katalog</a>
+                <a href="/neuigkeiten/" class="button-coral-effect mobile-nav-item text-gray-700 hover:text-teal-600 font-semibold transition nav-link touch-target">Neuigkeiten</a>
+                <a href="/kontakt/" class="button-coral-effect mobile-nav-item text-gray-700 hover:text-teal-600 font-semibold transition nav-link touch-target">Kontakt</a>
+                <a href="/cart/" class="button-coral-effect mobile-nav-item text-gray-700 hover:text-teal-600 font-semibold transition flex items-center nav-link touch-target">
                     <svg class="w-6 h-6 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
                     Warenkorb <span class="ml-1 bg-teal-600 text-white text-xs rounded-full px-2 py-0.5 cart-badge">0</span>
                 </a>
@@ -213,15 +230,15 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
                 <div class="flex flex-col md:flex-row justify-between items-center">
                     <div class="flex items-center mb-4 md:mb-0">
-                        <a href="/" class="focus-ring touch-target">
+                        <a href="/" class="button-coral-effect focus-ring touch-target">
                             <img src="{% static 'images/logo.png' %}" alt="Play & Jump Logo" class="h-16 w-auto max-w-64 object-contain mr-3" style="filter: brightness(0) invert(1);">
                         </a>
                         <span class="text-gray-400 text-sm">&copy; 2025 Play & Jump. Alle Rechte vorbehalten.</span>
                     </div>
                     <div class="flex space-x-6 text-sm">
-                        <a href="/impressum/" class="text-gray-400 hover:text-teal-400 transition">Impressum</a>
-                        <a href="/datenschutz/" class="text-gray-400 hover:text-teal-400 transition">Datenschutz</a>
-                        <a href="/agb/" class="text-gray-400 hover:text-teal-400 transition">AGB</a>
+                        <a href="/impressum/" class="button-coral-effect text-gray-400 hover:text-teal-400 transition">Impressum</a>
+                        <a href="/datenschutz/" class="button-coral-effect text-gray-400 hover:text-teal-400 transition">Datenschutz</a>
+                        <a href="/agb/" class="button-coral-effect text-gray-400 hover:text-teal-400 transition">AGB</a>
                     </div>
                 </div>
             </div>
@@ -270,6 +287,50 @@
                         block: 'start'
                     });
                 }
+            });
+        });
+        
+        // Добавляем эффект кораллового цвета при нажатии на все кнопки
+        document.addEventListener('DOMContentLoaded', function() {
+            // Находим все кнопки с классом button-coral-effect
+            const buttons = document.querySelectorAll('.button-coral-effect');
+            
+            buttons.forEach(button => {
+                button.addEventListener('mousedown', function() {
+                    // Добавляем класс для активного состояния
+                    this.style.color = '#ff7f50';
+                    this.style.transition = 'color 0.1s ease';
+                    
+                    // Для кнопок с иконками
+                    const icons = this.querySelectorAll('i');
+                    icons.forEach(icon => {
+                        icon.style.color = '#ff7f50';
+                    });
+                });
+                
+                button.addEventListener('mouseup', function() {
+                    // Возвращаем исходный цвет
+                    this.style.color = '';
+                    this.style.transition = '';
+                    
+                    // Для кнопок с иконками
+                    const icons = this.querySelectorAll('i');
+                    icons.forEach(icon => {
+                        icon.style.color = '';
+                    });
+                });
+                
+                button.addEventListener('mouseleave', function() {
+                    // Возвращаем исходный цвет при уходе мыши
+                    this.style.color = '';
+                    this.style.transition = '';
+                    
+                    // Для кнопок с иконками
+                    const icons = this.querySelectorAll('i');
+                    icons.forEach(icon => {
+                        icon.style.color = '';
+                    });
+                });
             });
         });
     </script>

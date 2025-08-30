@@ -4,13 +4,58 @@
 {% block title %}{{ product.title }} – Play & Jump{% endblock %}
 
 {% block content %}
+<style>
+/* Image Slider Styles */
+.image-slide {
+    display: none;
+    width: 100%;
+    height: 100%;
+}
+
+.image-slide.active {
+    display: block;
+}
+
+.image-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#image-slider {
+    position: relative;
+    width: 100%;
+    height: 24rem; /* h-96 */
+}
+
+/* Smooth transitions */
+.image-slide {
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* Navigation buttons hover effects */
+#prev-btn:hover, #next-btn:hover {
+    transform: translateY(-50%) scale(1.1);
+}
+
+/* Dots navigation */
+#dots-container button {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#dots-container button:hover {
+    transform: scale(1.2);
+}
+</style>
+
 <div class="min-h-screen bg-gray-50 py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Breadcrumb -->
         <nav class="flex mb-8" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
                 <li class="inline-flex items-center">
-                    <a href="{% url 'catalog:catalog_index' %}" class="text-gray-600 hover:text-teal-600 transition">
+                    <a href="{% url 'catalog:catalog_index' %}" class="button-coral-effect text-gray-600 hover:text-teal-600 transition">
                         <i class="fas fa-home mr-2"></i>
                         Katalog
                     </a>
@@ -18,7 +63,7 @@
                 <li>
                     <div class="flex items-center">
                         <i class="fas fa-chevron-right text-gray-400 mx-2"></i>
-                        <a href="{% url 'catalog:category_detail' slug=product.category.slug %}" class="text-gray-600 hover:text-teal-600 transition">
+                        <a href="{% url 'catalog:category_detail' slug=product.category.slug %}" class="button-coral-effect text-gray-600 hover:text-teal-600 transition">
                             {{ product.category.name }}
                         </a>
                     </div>
@@ -36,16 +81,52 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <!-- Product Images -->
             <div class="space-y-6">
-                {% if product.image %}
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                    <img src="{{ product.image.url }}" alt="{{ product.title }}" 
-                         class="w-full h-96 object-cover">
+                <!-- Image Slider -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden relative">
+                    <div id="image-slider" class="relative">
+                        {% if product.image %}
+                        <div class="image-slide active">
+                            <img src="{{ product.image.url }}" alt="{{ product.title }}" 
+                                 class="w-full h-96 object-cover">
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Additional images can be added here -->
+                        {% if product.additional_images.all %}
+                            {% for image in product.additional_images.all %}
+                            <div class="image-slide">
+                                <img src="{{ image.image.url }}" alt="{{ product.title }}" 
+                                     class="w-full h-96 object-cover">
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                        
+                        {% if not product.image and not product.additional_images.all %}
+                        <div class="image-slide active">
+                            <div class="bg-teal-500 h-96 flex items-center justify-center">
+                                <i class="fas fa-image text-white text-6xl"></i>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Navigation Arrows -->
+                    {% if product.image or product.additional_images.all %}
+                    <button id="prev-btn" class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition-all duration-200 z-10">
+                        <i class="fas fa-chevron-left text-xl"></i>
+                    </button>
+                    <button id="next-btn" class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition-all duration-200 z-10">
+                        <i class="fas fa-chevron-right text-xl"></i>
+                    </button>
+                    {% endif %}
+                    
+                    <!-- Dots Navigation -->
+                    {% if product.image or product.additional_images.all %}
+                    <div id="dots-container" class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
+                        <!-- Dots will be generated by JavaScript -->
+                    </div>
+                    {% endif %}
                 </div>
-                {% else %}
-                <div class="bg-teal-500 rounded-xl h-96 flex items-center justify-center">
-                    <i class="fas fa-image text-white text-6xl"></i>
-                </div>
-                {% endif %}
                 
                                  <!-- Availability Calendar -->
                  <div class="bg-white rounded-xl shadow-lg p-6">
@@ -69,7 +150,7 @@
                      
                      <button id="add-to-cart-from-calendar" 
                              onclick="openDateSelectionModal()" 
-                             class="w-full bg-teal-500 text-white py-2 px-4 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 hidden">
+                             class="button-coral-effect w-full bg-teal-500 text-white py-2 px-4 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 hidden">
                          <i class="fas fa-cart-plus mr-2"></i>
                          In den Warenkorb hinzufügen
                      </button>
@@ -141,13 +222,13 @@
                 <!-- Action Buttons -->
                 <div class="space-y-4">
                     <button onclick="openDateSelectionModal()" 
-                            class="w-full bg-teal-500 text-white py-4 px-6 rounded-xl font-semibold text-lg hover:shadow-lg transition-all duration-300 hover:-translate-y-1 flex items-center justify-center">
+                            class="button-coral-effect w-full bg-teal-500 text-white py-4 px-6 rounded-xl font-semibold text-lg hover:shadow-lg transition-all duration-300 hover:-translate-y-1 flex items-center justify-center">
                         <i class="fas fa-cart-plus mr-3"></i>
                         In den Warenkorb
                     </button>
                     
                     <a href="tel:015906787102" 
-                       class="w-full border-2 border-teal-600 text-teal-600 py-4 px-6 rounded-xl font-semibold text-lg hover:bg-teal-600 hover:text-white transition-all duration-300 flex items-center justify-center">
+                       class="button-coral-effect w-full border-2 border-teal-600 text-teal-600 py-4 px-6 rounded-xl font-semibold text-lg hover:bg-teal-600 hover:text-white transition-all duration-300 flex items-center justify-center">
                         <i class="fas fa-phone mr-3"></i>
                         0159 06787102 anrufen
                     </a>
@@ -188,7 +269,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {% for related_product in related_products %}
                 <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
-                                            <a href="{% url 'catalog:product_detail' slug=related_product.slug %}" class="block">
+                                            <a href="{% url 'catalog:product_detail' slug=related_product.slug %}" class="button-coral-effect block">
                         {% if related_product.image %}
                         <div class="relative overflow-hidden rounded-t-xl">
                             <img src="{{ related_product.image.url }}" alt="{{ related_product.title }}" 
@@ -225,7 +306,7 @@
         <!-- Back to Category -->
         <div class="mt-12 text-center">
                                     <a href="{% url 'catalog:category_detail' slug=product.category.slug %}" 
-               class="inline-flex items-center text-teal-600 hover:text-teal-700 font-semibold transition">
+               class="button-coral-effect inline-flex items-center text-teal-600 hover:text-teal-700 font-semibold transition">
                 <i class="fas fa-arrow-left mr-2"></i>
                 Zurück zu {{ product.category.name }}
             </a>
@@ -296,16 +377,16 @@ class AvailabilityCalendar {
         let html = `
             <div class="calendar-header mb-4">
                 <div class="flex items-center justify-between">
-                    <button class="calendar-nav-btn p-2 rounded transition-all duration-150 ${canGoPrev ? 'hover:bg-gray-100 cursor-pointer active:bg-gray-200' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}" data-action="prev" ${!canGoPrev ? 'disabled' : ''}>
+                    <button class="button-coral-effect calendar-nav-btn p-2 rounded transition-all duration-150 ${canGoPrev ? 'hover:bg-gray-100 cursor-pointer active:bg-gray-200' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}" data-action="prev" ${!canGoPrev ? 'disabled' : ''}>
                         <i class="fas fa-chevron-left"></i>
                     </button>
                     <div class="flex flex-col items-center">
                         <h4 class="text-lg font-semibold text-gray-900">${monthName}</h4>
-                        <button class="calendar-nav-btn text-xs text-teal-600 hover:text-teal-700 mt-1 transition-colors duration-150 active:text-teal-800" data-action="today">
+                        <button class="button-coral-effect calendar-nav-btn text-xs text-teal-600 hover:text-teal-700 mt-1 transition-colors duration-150 active:text-teal-800" data-action="today">
                             Heute
                         </button>
                     </div>
-                    <button class="calendar-nav-btn p-2 rounded transition-all duration-150 ${canGoNext ? 'hover:bg-gray-100 cursor-pointer active:bg-gray-200' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}" data-action="next" ${!canGoNext ? 'disabled' : ''}>
+                    <button class="button-coral-effect calendar-nav-btn p-2 rounded transition-all duration-150 ${canGoNext ? 'hover:bg-gray-100 cursor-pointer active:bg-gray-200' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}" data-action="next" ${!canGoNext ? 'disabled' : ''}>
                         <i class="fas fa-chevron-right"></i>
                     </button>
                 </div>
@@ -564,7 +645,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-2xl font-bold text-gray-900">Datum auswählen</h3>
-                <button onclick="closeDateSelectionModal()" class="text-gray-400 hover:text-gray-600 text-2xl">
+                <button onclick="closeDateSelectionModal()" class="button-coral-effect text-gray-400 hover:text-gray-600 text-2xl">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -597,11 +678,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 <div class="flex gap-3 pt-4">
                     <button onclick="closeDateSelectionModal()" 
-                            class="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+                            class="button-coral-effect flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
                         Abbrechen
                     </button>
                     <button onclick="addToCartWithDates()" 
-                            class="flex-1 px-4 py-2 bg-teal-500 text-white rounded-lg hover:shadow-lg transition-all duration-300">
+                            class="button-coral-effect flex-1 px-4 py-2 bg-teal-500 text-white rounded-lg hover:shadow-lg transition-all duration-300">
                         In den Warenkorb hinzufügen
                     </button>
                 </div>
@@ -749,5 +830,94 @@ function updateCartCount(count) {
         badge.textContent = count;
     });
 }
+
+// Image Slider functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const slider = document.getElementById('image-slider');
+    const slides = document.querySelectorAll('.image-slide');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const dotsContainer = document.getElementById('dots-container');
+    
+    if (!slider || slides.length <= 1) return;
+    
+    let currentSlide = 0;
+    
+    // Create dots navigation
+    slides.forEach((_, index) => {
+        const dot = document.createElement('button');
+        dot.className = `w-3 h-3 rounded-full transition-all duration-200 ${
+            index === 0 ? 'bg-white' : 'bg-white bg-opacity-50'
+        }`;
+        dot.addEventListener('click', () => goToSlide(index));
+        dotsContainer.appendChild(dot);
+    });
+    
+    function showSlide(index) {
+        slides.forEach((slide, i) => {
+            slide.style.display = i === index ? 'block' : 'none';
+            slide.classList.toggle('active', i === index);
+        });
+        
+        // Update dots
+        const dots = dotsContainer.querySelectorAll('button');
+        dots.forEach((dot, i) => {
+            dot.className = `w-3 h-3 rounded-full transition-all duration-200 ${
+                i === index ? 'bg-white' : 'bg-white bg-opacity-50'
+            }`;
+        });
+        
+        currentSlide = index;
+    }
+    
+    function nextSlide() {
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide);
+    }
+    
+    function prevSlide() {
+        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+        showSlide(currentSlide);
+    }
+    
+    function goToSlide(index) {
+        showSlide(index);
+    }
+    
+    // Event listeners
+    if (nextBtn) nextBtn.addEventListener('click', nextSlide);
+    if (prevBtn) prevBtn.addEventListener('click', prevSlide);
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowLeft') prevSlide();
+        if (e.key === 'ArrowRight') nextSlide();
+    });
+    
+    // Touch/swipe support for mobile
+    let startX = 0;
+    let endX = 0;
+    
+    slider.addEventListener('touchstart', function(e) {
+        startX = e.touches[0].clientX;
+    });
+    
+    slider.addEventListener('touchend', function(e) {
+        endX = e.changedTouches[0].clientX;
+        handleSwipe();
+    });
+    
+    function handleSwipe() {
+        const threshold = 50;
+        if (endX - startX > threshold) {
+            prevSlide(); // Swipe right
+        } else if (startX - endX > threshold) {
+            nextSlide(); // Swipe left
+        }
+    }
+    
+    // Initialize first slide
+    showSlide(0);
+});
 </script>
 {% endblock %} 

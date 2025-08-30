@@ -62,7 +62,7 @@
                 </div>
                 {% else %}
                 <!-- Regular card for other categories -->
-                <a href="{% url 'catalog:category_detail' slug=category.slug %}" class="block">
+                <a href="{% url 'catalog:category_detail' slug=category.slug %}" class="button-coral-effect block">
                     {% if category.image %}
                     <div class="relative overflow-hidden rounded-t-xl">
                         <img src="{{ category.image.url }}" alt="{{ category.name }}" 
@@ -94,7 +94,7 @@
                 </div>
                 
                 {% if category.slug == 'hupfburgen' or category.slug == 'spiele-unterhaltung' or category.slug == 'vermietung' %}
-                <a href="{% url 'catalog:category_detail' slug=category.slug %}" class="block absolute inset-0"></a>
+                <a href="{% url 'catalog:category_detail' slug=category.slug %}" class="button-coral-effect block absolute inset-0"></a>
                 {% endif %}
             </div>
             {% endfor %}
@@ -117,10 +117,10 @@
                     Unsere Experten helfen Ihnen gerne bei der Auswahl der perfekten Produkte für Ihr Event.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a href="/kontakt/" class="bg-white text-teal-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+                    <a href="/kontakt/" class="button-coral-effect bg-white text-teal-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
                         Kontakt aufnehmen
                     </a>
-                    <a href="tel:015906787102" class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-teal-600 transition">
+                    <a href="tel:015906787102" class="button-coral-effect border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-teal-600 transition">
                         <i class="fas fa-phone mr-2"></i>0159 06787102
                     </a>
                 </div>
