@@ -256,7 +256,7 @@
                         <option value="">Produkt auswählen</option>
                         {% for product in products %}
                         <option value="{{ product.id }}" data-price="{{ product.price|default:0 }}">
-                            {{ product.title }} {% if product.price %}({{ product.price }}€/Tag){% endif %}
+                            {{ product.title }} {% if product.price %}({{ product.price }}€/Tag){% else %}(Preis auf Anfrage){% endif %}
                         </option>
                         {% endfor %}
                     </select>

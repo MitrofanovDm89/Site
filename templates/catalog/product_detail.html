@@ -664,7 +664,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="bg-gray-50 p-4 rounded-lg">
                     <div class="flex justify-between items-center mb-2">
                         <span class="text-sm text-gray-600">Preis pro Tag:</span>
-                        <span class="font-bold text-teal-600">{{ product.price|default:0|floatformat:0 }}€</span>
+                        {% if product.price %}
+                        <span class="font-bold text-teal-600">{{ product.price|floatformat:0 }}€</span>
+                        {% else %}
+                        <span class="font-bold text-gray-600">Preis auf Anfrage</span>
+                        {% endif %}
                     </div>
                     <div class="flex justify-between items-center mb-2">
                         <span class="text-sm text-gray-600">Anzahl Tage:</span>
@@ -672,7 +676,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                     <div class="flex justify-between items-center">
                         <span class="text-sm text-gray-600">Gesamtpreis:</span>
-                        <span id="total-price" class="font-bold text-teal-600 text-lg">{{ product.price|default:0|floatformat:0 }}€</span>
+                        {% if product.price %}
+                        <span id="total-price" class="font-bold text-teal-600 text-lg">{{ product.price|floatformat:0 }}€</span>
+                        {% else %}
+                        <span id="total-price" class="font-bold text-gray-600 text-lg">Preis auf Anfrage</span>
+                        {% endif %}
                     </div>
                 </div>
                 
@@ -734,7 +742,11 @@ function closeDateSelectionModal() {
 function updatePriceCalculation() {
     const startDate = document.getElementById('start-date').value;
     const endDate = document.getElementById('end-date').value;
-    const pricePerDay = {{ product.price|default:0|floatformat:0 }};
+    {% if product.price %}
+    const pricePerDay = {{ product.price|floatformat:0 }};
+    {% else %}
+    const pricePerDay = 0;
+    {% endif %}
     
     if (startDate && endDate) {
         const start = new Date(startDate);
@@ -742,13 +754,21 @@ function updatePriceCalculation() {
         
         if (end >= start) {
             const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+            {% if product.price %}
             const totalPrice = pricePerDay * days;
+            document.getElementById('total-price').textContent = totalPrice + '€';
+            {% else %}
+            document.getElementById('total-price').textContent = 'Preis auf Anfrage';
+            {% endif %}
             
             document.getElementById('duration-days').textContent = days;
-            document.getElementById('total-price').textContent = totalPrice + '€';
         } else {
             document.getElementById('duration-days').textContent = '0';
+            {% if product.price %}
             document.getElementById('total-price').textContent = '0€';
+            {% else %}
+            document.getElementById('total-price').textContent = 'Preis auf Anfrage';
+            {% endif %}
         }
     }
 }

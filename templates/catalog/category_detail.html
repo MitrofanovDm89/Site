@@ -69,18 +69,22 @@
                     {% endif %}
                     
                     <div class="product-actions">
-                        {% if product.price %}
-                        <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center justify-between">
+                            {% if product.price %}
                             <div class="text-2xl font-bold text-teal-600">
                                 {{ product.price }} €
                             </div>
+                            {% else %}
+                            <div class="text-lg font-semibold text-gray-600">
+                                Preis auf Anfrage
+                            </div>
+                            {% endif %}
+                            
+                            <a href="{% url 'catalog:product_detail' slug=product.slug %}" class="details-button">
+                                Details
+                                <i class="fas fa-arrow-right ml-2"></i>
+                            </a>
                         </div>
-                        {% endif %}
-                        
-                        <a href="{% url 'catalog:product_detail' slug=product.slug %}" class="details-button">
-                            Details
-                            <i class="fas fa-arrow-right ml-2"></i>
-                        </a>
                     </div>
                 </div>
             </div>
@@ -181,13 +185,11 @@
 
 .product-actions {
     margin-top: auto !important;
-    padding-top: 0.5rem !important;
+    padding-top: 1rem !important;
     border-top: 1px solid #e5e7eb !important;
 }
 
 .details-button {
-    width: 100% !important;
-    text-align: center !important;
     padding: 0.5rem 1rem !important;
     background-color: #0d9488 !important;
     color: white !important;
@@ -197,6 +199,7 @@
     transition: all 0.2s ease !important;
     text-decoration: none !important;
     display: inline-block !important;
+    white-space: nowrap !important;
 }
 
 .details-button:hover {

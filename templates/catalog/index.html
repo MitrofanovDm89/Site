@@ -43,7 +43,11 @@
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                                 <div class="absolute bottom-4 left-4 text-white">
                                     <h3 class="text-lg font-semibold">{{ product.title }}</h3>
+                                    {% if product.price %}
                                     <p class="text-sm opacity-90">{{ product.price }}€</p>
+                                    {% else %}
+                                    <p class="text-sm opacity-90">Preis auf Anfrage</p>
+                                    {% endif %}
                                 </div>
                             </div>
                             {% empty %}
