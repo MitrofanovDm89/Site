@@ -256,56 +256,53 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Zusätzliche Produkte -->
+                {% if fixed_products %}
+                <div class="mt-8">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Zusätzliche Produkte</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {% for fixed_product in fixed_products %}
+                        <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 border-2 border-teal-200">
+                            <a href="{% url 'catalog:product_detail' slug=fixed_product.slug %}" class="block">
+                                {% if fixed_product.image %}
+                                <div class="relative overflow-hidden rounded-t-lg">
+                                    <img src="{{ fixed_product.image.url }}" alt="{{ fixed_product.title }}" 
+                                         class="w-full h-24 object-cover transition-transform duration-300 hover:scale-105">
+                                </div>
+                                {% else %}
+                                <div class="h-24 bg-teal-500 rounded-t-lg flex items-center justify-center">
+                                    <i class="fas fa-image text-white text-xl"></i>
+                                </div>
+                                {% endif %}
+                                
+                                <div class="p-3">
+                                    <h4 class="font-semibold text-gray-900 text-sm line-clamp-2">
+                                        {{ fixed_product.title }}
+                                    </h4>
+                                    
+                                    {% if fixed_product.price %}
+                                    <div class="text-sm font-bold text-teal-600">
+                                        {{ fixed_product.price }} €
+                                    </div>
+                                    {% else %}
+                                    <div class="text-xs font-semibold text-gray-600">
+                                        Preis auf Anfrage
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </div>
 
         <!-- Related Products -->
         {% if related_products %}
         <div class="mt-16">
-            <!-- Zusätzliche Produkte (Fixed Products) -->
-            {% if fixed_products %}
-            <div class="mb-12">
-                <h2 class="text-3xl font-bold text-gray-900 mb-8">
-                    Zusätzliche Produkte
-                </h2>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {% for fixed_product in fixed_products %}
-                    <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-2 border-teal-200">
-                        <a href="{% url 'catalog:product_detail' slug=fixed_product.slug %}" class="button-coral-effect block">
-                            {% if fixed_product.image %}
-                            <div class="relative overflow-hidden rounded-t-xl">
-                                <img src="{{ fixed_product.image.url }}" alt="{{ fixed_product.title }}" 
-                                     class="w-full h-32 object-cover transition-transform duration-300 hover:scale-105">
-                            </div>
-                            {% else %}
-                            <div class="h-32 bg-teal-500 rounded-t-xl flex items-center justify-center">
-                                <i class="fas fa-image text-white text-2xl"></i>
-                            </div>
-                            {% endif %}
-                            
-                            <div class="p-4">
-                                <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2">
-                                    {{ fixed_product.title }}
-                                </h3>
-                                
-                                {% if fixed_product.price %}
-                                <div class="text-lg font-bold text-teal-600">
-                                    {{ fixed_product.price }} €
-                                </div>
-                                {% else %}
-                                <div class="text-sm font-semibold text-gray-600">
-                                    Preis auf Anfrage
-                                </div>
-                                {% endif %}
-                            </div>
-                        </a>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-            {% endif %}
-            
             <!-- Ähnliche Produkte (Additional Products) -->
             {% if additional_products %}
             <div>
