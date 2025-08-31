@@ -49,18 +49,28 @@ def cart(request):
             print(f"DEBUG: Product found: {product.title}")
             
             # Рассчитываем цену и количество дней
-            if start_date and end_date and price_per_day:
+            if start_date and end_date:
                 start = datetime.strptime(start_date, '%Y-%m-%d').date()
                 end = datetime.strptime(end_date, '%Y-%m-%d').date()
                 duration_days = (end - start).days + 1
-                subtotal = float(price_per_day) * duration_days
+                # Для товаров с Price auf Anfrage используем 0 как цену
+                if price_per_day and price_per_day > 0:
+                    subtotal = float(price_per_day) * duration_days
+                else:
+                    subtotal = 0.0  # Price auf Anfrage
             else:
                 # Если нет дат, устанавливаем сегодня + 1 день
                 today = date.today()
                 start_date = today.strftime('%Y-%m-%d')
                 end_date = (today.replace(day=today.day + 1)).strftime('%Y-%m-%d')
                 duration_days = 1
-                subtotal = float(product.price) if product.price else 0.0
+                # Для товаров с Price auf Anfrage используем 0 как цену
+                if product.price and product.price > 0:
+                    subtotal = float(product.price)
+                    price_per_day = float(product.price)
+                else:
+                    subtotal = 0.0  # Price auf Anfrage
+                    price_per_day = 0.0
                 
                 # Обновляем корзину с датами
                 if cart_key in cart_items:
@@ -68,7 +78,7 @@ def cart(request):
                         'product_id': product_id,
                         'start_date': start_date,
                         'end_date': end_date,
-                        'price_per_day': float(product.price) if product.price else 0
+                        'price_per_day': price_per_day
                     }
             
             products.append({
