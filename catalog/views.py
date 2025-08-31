@@ -344,10 +344,9 @@ def product_detail(request, slug):
             category=product.category, 
             is_active=True
         ).exclude(id__in=excluded_ids).order_by('?')[:remaining_slots]
-        
-        related_products = list(fixed_products) + list(additional_products)
-    else:
-        related_products = fixed_products[:4]  # Ограничиваем максимум 4 товарами
+    
+    # related_products теперь содержит только additional_products (без фиксированных)
+    related_products = list(additional_products)
 
     # Get booked dates for the next 3 months
     today = date.today()
