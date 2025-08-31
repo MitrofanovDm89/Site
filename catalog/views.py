@@ -370,6 +370,8 @@ def product_detail(request, slug):
     return render(request, 'catalog/product_detail.html', {
         'product': product,
         'related_products': related_products,
+        'fixed_products': fixed_products,
+        'additional_products': additional_products,
         'booked_dates': json.dumps(booked_dates),
         'bookings': bookings,
     }) 
