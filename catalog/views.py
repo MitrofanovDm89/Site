@@ -335,6 +335,8 @@ def product_detail(request, slug):
     
     # Добавляем случайные товары из той же категории до общего количества 4
     remaining_slots = 4 - len(fixed_products)
+    additional_products = []
+    
     if remaining_slots > 0:
         # Исключаем текущий товар и уже добавленные фиксированные
         excluded_ids = [product.id] + [p.id for p in fixed_products]

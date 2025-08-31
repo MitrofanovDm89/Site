@@ -296,6 +296,14 @@
                         {% endfor %}
                     </div>
                 </div>
+                {% else %}
+                <!-- DEBUG: Нет fixed_products -->
+                <div class="mt-8 p-4 bg-red-100 border-2 border-red-500 rounded-lg">
+                    <h3 class="text-lg font-bold text-red-800 mb-2">DEBUG: Нет fixed_products</h3>
+                    <p class="text-sm text-red-700">fixed_products: {{ fixed_products|length }}</p>
+                    <p class="text-sm text-red-700">additional_products: {{ additional_products|length }}</p>
+                    <p class="text-sm text-red-700">related_products: {{ related_products|length }}</p>
+                </div>
                 {% endif %}
             </div>
         </div>
