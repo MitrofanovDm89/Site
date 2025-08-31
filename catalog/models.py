@@ -2,6 +2,7 @@ from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.utils.text import slugify
+from ckeditor.fields import RichTextField
 
 
 class Category(models.Model):
@@ -23,7 +24,7 @@ class Category(models.Model):
 class Product(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
-    description = models.TextField(blank=True)
+    description = RichTextField(blank=True, config_name='product_description')
     image = models.ImageField(upload_to="products/")
     price = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
     is_active = models.BooleanField(default=True)
@@ -33,7 +34,7 @@ class Product(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse('product_detail', args=[self.slug])
+        return reverse('catalog:product_detail', args=[self.slug])
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -53,6 +54,37 @@ class ProductImage(models.Model):
     
     def __str__(self):
         return f"{self.product.title} - Image {self.order + 1}"
+
+
+class News(models.Model):
+    """Модель для новостей"""
+    title = models.CharField(max_length=200, verbose_name="Заголовок")
+    slug = models.SlugField(unique=True, verbose_name="URL")
+    content = models.TextField(verbose_name="Содержание")
+    excerpt = models.TextField(max_length=500, blank=True, verbose_name="Краткое описание")
+    image = models.ImageField(upload_to='news/', blank=True, null=True, verbose_name="Главное изображение")
+    video_url = models.URLField(blank=True, null=True, verbose_name="URL видео (YouTube/Vimeo)")
+    is_published = models.BooleanField(default=True, verbose_name="Опубликовано")
+    published_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата публикации")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+    author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Автор")
+    featured = models.BooleanField(default=False, verbose_name="Рекомендуемая новость")
+    
+    class Meta:
+        ordering = ['-published_at']
+        verbose_name = "Новость"
+        verbose_name_plural = "Новости"
+    
+    def __str__(self):
+        return self.title
+    
+    def get_absolute_url(self):
+        return reverse('catalog:news_detail', args=[self.slug])
+    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
 
 
 class Availability(models.Model):

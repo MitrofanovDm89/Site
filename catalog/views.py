@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.views import View
 import json
-from .models import Product, Category, Availability, Booking, Service
+from .models import Product, Category, Availability, Booking, Service, News
 
 
 def catalog_index(request):
@@ -44,6 +44,38 @@ def catalog_index(request):
     }
     
     return render(request, 'catalog/all_products.html', context)
+
+
+def news_list(request):
+    """Список всех опубликованных новостей"""
+    news = News.objects.filter(is_published=True).order_by('-published_at')
+    
+    # Получаем рекомендуемые новости отдельно
+    featured_news = news.filter(featured=True)[:3]
+    regular_news = news.filter(featured=False)[:6]
+    
+    context = {
+        'featured_news': featured_news,
+        'regular_news': regular_news,
+        'all_news': news,
+    }
+    return render(request, 'catalog/news_list.html', context)
+
+
+def news_detail(request, slug):
+    """Детальная страница новости"""
+    news = get_object_or_404(News, slug=slug, is_published=True)
+    
+    # Получаем похожие новости (по категории или тегу)
+    related_news = News.objects.filter(
+        is_published=True
+    ).exclude(id=news.id).order_by('-published_at')[:3]
+    
+    context = {
+        'news': news,
+        'related_news': related_news,
+    }
+    return render(request, 'catalog/news_detail.html', context)
 
 
 @staff_member_required

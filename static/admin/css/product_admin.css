@@ -1,0 +1,101 @@
+/* Улучшения для админки продуктов */
+
+/* Drag & Drop зона */
+.drag-drop-zone {
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    background: #f9f9f9;
+    margin: 10px 0;
+    transition: all 0.3s ease;
+}
+
+.drag-drop-zone.dragover {
+    border-color: #007cba;
+    background: #e7f3ff;
+}
+
+.drag-drop-zone .drag-text {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.drag-drop-zone .drag-hint {
+    color: #999;
+    font-size: 12px;
+}
+
+/* Улучшения для inline изображений */
+.inline-group .inline-related {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    padding: 15px;
+    background: #fff;
+}
+
+.inline-group .inline-related:hover {
+    border-color: #007cba;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Кнопка массовой загрузки */
+.bulk-upload-btn {
+    background: #007cba;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 10px 0;
+    font-size: 14px;
+}
+
+.bulk-upload-btn:hover {
+    background: #005a87;
+}
+
+/* Счетчик изображений */
+.image-counter {
+    background: #e7f3ff;
+    color: #007cba;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+/* Улучшения для превью */
+.image-preview-container {
+    position: relative;
+    display: inline-block;
+}
+
+.image-preview-container .image-actions {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    display: none;
+}
+
+.image-preview-container:hover .image-actions {
+    display: block;
+}
+
+.image-actions button {
+    background: rgba(0,0,0,0.7);
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 2px 6px;
+    margin-left: 2px;
+    cursor: pointer;
+    font-size: 10px;
+}
+
+.image-actions button:hover {
+    background: rgba(0,0,0,0.9);
+}

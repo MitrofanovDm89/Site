@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ news.title }} - Play & Jump{% endblock %}
+
+{% block content %}
+<!-- News Detail Section -->
+<section class="py-20 bg-gradient-to-br from-teal-50 to-coral-50">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Back Button -->
+        <div class="mb-8">
+            <a href="{% url 'catalog:news_list' %}" class="inline-flex items-center text-teal-600 hover:text-teal-700 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Zurück zu den Neuigkeiten
+            </a>
+        </div>
+
+        <!-- News Article -->
+        <article class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <!-- Header Image -->
+            {% if news.image %}
+            <div class="h-64 md:h-96 overflow-hidden">
+                <img src="{{ news.image.url }}" alt="{{ news.title }}" class="w-full h-full object-cover">
+            </div>
+            {% endif %}
+
+            <div class="p-8">
+                <!-- Meta Information -->
+                <div class="flex items-center text-sm text-gray-500 mb-4">
+                    <i class="fas fa-calendar mr-2"></i>
+                    <span>{{ news.published_at|date:"d.m.Y" }}</span>
+                    <span class="mx-2">•</span>
+                    <i class="fas fa-user mr-2"></i>
+                    <span>{{ news.author.get_full_name|default:news.author.username }}</span>
+                    {% if news.featured %}
+                    <span class="ml-2 px-2 py-1 bg-coral-100 text-coral-800 text-xs rounded-full">Empfohlen</span>
+                    {% endif %}
+                </div>
+
+                <!-- Title -->
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">{{ news.title }}</h1>
+
+                <!-- Excerpt -->
+                {% if news.excerpt %}
+                <div class="text-xl text-gray-600 mb-8 p-4 bg-gray-50 rounded-lg border-l-4 border-teal-500">
+                    {{ news.excerpt }}
+                </div>
+                {% endif %}
+
+                <!-- Video (if exists) -->
+                {% if news.video_url %}
+                <div class="mb-8">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4">Video</h3>
+                    <div class="relative pb-[56.25%] h-0 rounded-lg overflow-hidden">
+                        {% if 'youtube.com' in news.video_url or 'youtu.be' in news.video_url %}
+                            {% if 'youtube.com/watch?v=' in news.video_url %}
+                                {% with video_id=news.video_url|slice:"32:" %}
+                                <iframe 
+                                    src="https://www.youtube.com/embed/{{ video_id }}" 
+                                    frameborder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen
+                                    class="absolute top-0 left-0 w-full h-full">
+                                </iframe>
+                                {% endwith %}
+                            {% elif 'youtu.be/' in news.video_url %}
+                                {% with video_id=news.video_url|slice:"17:" %}
+                                <iframe 
+                                    src="https://www.youtube.com/embed/{{ video_id }}" 
+                                    frameborder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen
+                                    class="absolute top-0 left-0 w-full h-full">
+                                </iframe>
+                                {% endwith %}
+                            {% endif %}
+                        {% elif 'vimeo.com' in news.video_url %}
+                            {% with video_id=news.video_url|slice:"18:" %}
+                            <iframe 
+                                src="https://player.vimeo.com/video/{{ video_id }}" 
+                                frameborder="0" 
+                                allow="autoplay; fullscreen; picture-in-picture" 
+                                allowfullscreen
+                                class="absolute top-0 left-0 w-full h-full">
+                            </iframe>
+                            {% endwith %}
+                        {% else %}
+                            <div class="absolute top-0 left-0 w-full h-full bg-gray-200 flex items-center justify-center">
+                                <p class="text-gray-500">Video kann nicht abgespielt werden</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Content -->
+                <div class="prose prose-lg max-w-none text-gray-700 leading-relaxed">
+                    {{ news.content|linebreaks }}
+                </div>
+
+                <!-- Footer -->
+                <div class="mt-8 pt-6 border-t border-gray-200">
+                    <div class="flex items-center justify-between text-sm text-gray-500">
+                        <span>Zuletzt aktualisiert: {{ news.updated_at|date:"d.m.Y H:i" }}</span>
+                        <div class="flex space-x-4">
+                            <a href="#" class="text-teal-600 hover:text-teal-700 transition-colors">
+                                <i class="fab fa-facebook mr-1"></i> Teilen
+                            </a>
+                            <a href="#" class="text-teal-600 hover:text-teal-700 transition-colors">
+                                <i class="fab fa-twitter mr-1"></i> Tweet
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <!-- Related News -->
+        {% if related_news %}
+        <div class="mt-16">
+            <h2 class="text-2xl font-bold text-gray-800 mb-8 text-center">Ähnliche Neuigkeiten</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {% for related in related_news %}
+                <article class="bg-white rounded-lg shadow-md overflow-hidden hover-lift">
+                    {% if related.image %}
+                    <div class="h-32 overflow-hidden">
+                        <img src="{{ related.image.url }}" alt="{{ related.title }}" class="w-full h-full object-cover">
+                    </div>
+                    {% else %}
+                    <div class="h-32 bg-gradient-to-br from-teal-500 to-coral-500 flex items-center justify-center">
+                        <i class="fas fa-newspaper text-white text-2xl"></i>
+                    </div>
+                    {% endif %}
+                    <div class="p-4">
+                        <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2">{{ related.title }}</h3>
+                        <div class="text-xs text-gray-500 mb-2">{{ related.published_at|date:"d.m.Y" }}</div>
+                        <a href="{% url 'catalog:news_detail' related.slug %}" class="text-teal-600 hover:text-teal-700 text-sm font-medium">
+                            Weiterlesen →
+                        </a>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

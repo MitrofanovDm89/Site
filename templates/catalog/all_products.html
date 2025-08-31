@@ -102,9 +102,9 @@
         {% if products %}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {% for product in products %}
-            <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+            <div class="product-card bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                 <!-- Product Image -->
-                <div class="relative overflow-hidden rounded-t-lg">
+                <div class="product-image-container relative overflow-hidden rounded-t-lg">
                     {% if product.image %}
                     <img src="{{ product.image.url }}" 
                          alt="{{ product.title }}" 
@@ -126,36 +126,32 @@
                 </div>
 
                 <!-- Product Info -->
-                <div class="p-4">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+                <div class="product-info-container">
+                    <h3 class="product-title text-lg font-semibold text-gray-900">
                         {{ product.title }}
                     </h3>
                     
                     {% if product.description %}
-                    <p class="text-gray-600 text-sm mb-3 line-clamp-3">
-                        {{ product.description }}
-                    </p>
+                    <div class="product-description text-gray-600 text-sm">
+                        {{ product.description|safe }}
+                    </div>
                     {% endif %}
 
-                                         <!-- Price and Details Button -->
-                     {% if product.price %}
-                     <div class="flex items-center justify-between mb-3">
-                         <span class="text-2xl font-bold text-teal-600">
-                             {{ product.price }}€
-                         </span>
-                         <a href="{% url 'catalog:product_detail' slug=product.slug %}" 
-                            class="button-coral-effect px-6 py-2 bg-teal-600 text-white text-center rounded-lg hover:bg-teal-700 transition-colors text-sm">
-                             Details
-                         </a>
-                     </div>
-                                         {% else %}
-                     <div class="flex items-center justify-end mb-3">
-                         <a href="{% url 'catalog:product_detail' slug=product.slug %}" 
-                            class="button-coral-effect px-6 py-2 bg-teal-600 text-white text-center rounded-lg hover:bg-teal-700 transition-colors text-sm">
-                             Details
-                         </a>
-                     </div>
-                     {% endif %}
+                    <!-- Price and Details Button -->
+                    <div class="product-actions">
+                        {% if product.price %}
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-2xl font-bold text-teal-600">
+                                {{ product.price }}€
+                            </span>
+                        </div>
+                        {% endif %}
+                        
+                        <a href="{% url 'catalog:product_detail' slug=product.slug %}" 
+                           class="details-button">
+                            Details
+                        </a>
+                    </div>
                 </div>
             </div>
             {% endfor %}
@@ -194,6 +190,70 @@
 
 
 <style>
+/* Фиксированное позиционирование кнопок в карточках продуктов */
+.product-card {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    position: relative !important;
+}
+
+.product-image-container {
+    flex-shrink: 0 !important;
+}
+
+.product-info-container {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 1rem !important;
+}
+
+.product-title {
+    margin-bottom: 0.5rem !important;
+    min-height: 2.5rem !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+}
+
+.product-description {
+    margin-bottom: 1rem !important;
+    flex: 1 !important;
+    min-height: 3rem !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 3 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+}
+
+.product-actions {
+    margin-top: auto !important;
+    padding-top: 0.5rem !important;
+    border-top: 1px solid #e5e7eb !important;
+}
+
+.details-button {
+    width: 100% !important;
+    text-align: center !important;
+    padding: 0.5rem 1rem !important;
+    background-color: #0d9488 !important;
+    color: white !important;
+    border-radius: 0.5rem !important;
+    font-weight: 600 !important;
+    font-size: 0.875rem !important;
+    transition: all 0.2s ease !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+}
+
+.details-button:hover {
+    background-color: #0f766e !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
 .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;

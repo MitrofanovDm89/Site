@@ -2,7 +2,81 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from .models import Category, Product, ProductImage, Availability, Booking, Service
+from .models import Category, Product, ProductImage, Availability, Booking, Service, News
+from django.db import models
+from ckeditor.widgets import CKEditorWidget
+
+
+class ProductImageInline(admin.TabularInline):
+    model = ProductImage
+    extra = 10  # Показывать 10 пустых полей для добавления
+    fields = ['image', 'alt_text', 'order']
+    ordering = ['order']
+    
+    def get_formset(self, request, obj=None, **kwargs):
+        formset = super().get_formset(request, obj, **kwargs)
+        # Устанавливаем начальный порядок для новых изображений
+        if obj:
+            last_order = obj.additional_images.aggregate(
+                models.Max('order')
+            )['order__max'] or 0
+            formset.form.base_fields['order'].initial = last_order + 1
+        return formset
+    
+    def get_extra(self, request, obj=None, **kwargs):
+        """Динамически определяем количество дополнительных полей"""
+        if obj:
+            # Если редактируем существующий продукт, показываем меньше полей
+            return 5
+        # Если создаем новый продукт, показываем больше полей
+        return 10
+    
+    class Media:
+        css = {
+            'all': ('admin/css/product_image_inline.css',)
+        }
+        js = ('admin/js/product_image_inline.js',)
+
+
+@admin.register(News)
+class NewsAdmin(admin.ModelAdmin):
+    list_display = ['title', 'author', 'is_published', 'featured', 'published_at', 'image_preview']
+    list_filter = ['is_published', 'featured', 'published_at', 'author']
+    search_fields = ['title', 'content', 'excerpt']
+    prepopulated_fields = {'slug': ('title',)}
+    list_editable = ['is_published', 'featured']
+    readonly_fields = ['published_at', 'updated_at', 'image_preview']
+    date_hierarchy = 'published_at'
+    
+    fieldsets = (
+        ('Основная информация', {
+            'fields': ('title', 'slug', 'excerpt', 'content')
+        }),
+        ('Медиа', {
+            'fields': ('image', 'image_preview', 'video_url')
+        }),
+        ('Настройки', {
+            'fields': ('is_published', 'featured', 'author')
+        }),
+        ('Даты', {
+            'fields': ('published_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def image_preview(self, obj):
+        if obj.image:
+            return format_html(
+                '<img src="{}" style="max-height: 100px; max-width: 150px; border-radius: 8px;" />',
+                obj.image.url
+            )
+        return "Нет изображения"
+    image_preview.short_description = "Превью"
+    
+    def save_model(self, request, obj, form, change):
+        if not change:  # Если это новая новость
+            obj.author = request.user
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(Category)
@@ -51,12 +125,17 @@ class ProductImageAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['title', 'category', 'price', 'is_active', 'image_preview', 'booking_count']
+    list_display = ['title', 'category', 'price', 'is_active', 'image_preview', 'booking_count', 'image_count']
     list_filter = ['category', 'is_active', 'price']
     search_fields = ['title', 'description']
     prepopulated_fields = {'slug': ('title',)}
     list_editable = ['is_active', 'price']
-    readonly_fields = ['image_preview', 'booking_count']
+    readonly_fields = ['image_preview', 'booking_count', 'image_count']
+    inlines = [ProductImageInline]
+    
+    formfield_overrides = {
+        models.TextField: {'widget': CKEditorWidget(config_name='product_description')},
+    }
     
     fieldsets = (
         ('Grundinformationen', {
@@ -65,8 +144,14 @@ class ProductAdmin(admin.ModelAdmin):
         ('Preis & Status', {
             'fields': ('price', 'is_active')
         }),
-        ('Bild', {
-            'fields': ('image', 'image_preview')
+        ('Hauptbild', {
+            'fields': ('image', 'image_preview'),
+            'description': 'Das Hauptbild des Produkts (wird als Vorschaubild verwendet)'
+        }),
+        ('Zusätzliche Bilder', {
+            'fields': (),
+            'description': 'Ziehen Sie mehrere Bilder hierher oder verwenden Sie die Felder unten. Sie können auch den Befehl "python manage.py bulk_upload_images" verwenden.',
+            'classes': ('collapse',)
         }),
     )
     
@@ -79,6 +164,14 @@ class ProductAdmin(admin.ModelAdmin):
         return "Kein Bild"
     image_preview.short_description = 'Vorschau'
     
+    def image_count(self, obj):
+        count = obj.additional_images.count()
+        if count > 0:
+            url = reverse('admin:catalog_productimage_changelist') + f'?product__id__exact={obj.id}'
+            return format_html('<a href="{}">{} Bilder</a>', url, count)
+        return "0 Bilder"
+    image_count.short_description = 'Zusätzliche Bilder'
+    
     def booking_count(self, obj):
         count = obj.bookings.count()
         if count > 0:
@@ -86,7 +179,12 @@ class ProductAdmin(admin.ModelAdmin):
             return format_html('<a href="{}">{} Buchungen</a>', url, count)
         return "0 Buchungen"
     booking_count.short_description = 'Buchungen'
-
+    
+    class Media:
+        css = {
+            'all': ('admin/css/product_admin.css',)
+        }
+        js = ('admin/js/product_admin.js',)
 
 
 

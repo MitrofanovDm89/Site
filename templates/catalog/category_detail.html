@@ -40,55 +40,49 @@
         {% if products %}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {% for product in products %}
-            <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
-                <a href="{% url 'catalog:product_detail' slug=product.slug %}" class="button-coral-effect block">
-                    {% if product.image %}
-                    <div class="relative overflow-hidden rounded-t-xl">
-                        <img src="{{ product.image.url }}" alt="{{ product.title }}" 
-                             class="w-full h-48 object-cover transition-transform duration-300 hover:scale-105">
-                        <div class="absolute top-4 right-4">
-                            <span class="bg-teal-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                                Verfügbar
-                            </span>
-                        </div>
+            <div class="product-card bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                {% if product.image %}
+                <div class="product-image-container relative overflow-hidden rounded-t-xl">
+                    <img src="{{ product.image.url }}" alt="{{ product.title }}" 
+                         class="w-full h-48 object-cover transition-transform duration-300 hover:scale-105">
+                    <div class="absolute top-4 right-4">
+                        <span class="bg-teal-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                            Verfügbar
+                        </span>
                     </div>
-                    {% else %}
-                    <div class="h-48 bg-teal-500 rounded-t-xl flex items-center justify-center">
-                        <i class="fas fa-image text-white text-4xl"></i>
+                </div>
+                {% else %}
+                <div class="product-image-container h-48 bg-teal-500 rounded-t-xl flex items-center justify-center">
+                    <i class="fas fa-image text-white text-4xl"></i>
+                </div>
+                {% endif %}
+                
+                <div class="product-info-container">
+                    <h2 class="product-title text-xl font-bold text-gray-900 hover:text-teal-600 transition">
+                        {{ product.title }}
+                    </h2>
+                    
+                    {% if product.description %}
+                    <div class="product-description text-gray-600 text-sm">
+                        {{ product.description|safe }}
                     </div>
                     {% endif %}
                     
-                    <div class="p-6">
-                        <h2 class="text-xl font-bold text-gray-900 mb-3 hover:text-teal-600 transition line-clamp-2">
-                            {{ product.title }}
-                        </h2>
-                        
-                        {% if product.description %}
-                        <p class="text-gray-600 text-sm mb-4 line-clamp-3">
-                            {{ product.description|truncatewords:15 }}
-                        </p>
-                        {% endif %}
-                        
-                        <div class="flex items-center justify-between">
-                            {% if product.price %}
+                    <div class="product-actions">
+                        {% if product.price %}
+                        <div class="flex items-center justify-between mb-3">
                             <div class="text-2xl font-bold text-teal-600">
                                 {{ product.price }} €
                             </div>
-                            {% else %}
-                            <div class="text-lg font-semibold text-gray-600">
-                                Preis auf Anfrage
-                            </div>
-                            {% endif %}
-                            
-                            <div class="flex items-center">
-                                <span class="bg-teal-600 text-white px-3 py-2 rounded-lg font-semibold text-sm hover:bg-teal-700 transition-colors">
-                                    Details
-                                    <i class="fas fa-arrow-right ml-2"></i>
-                                </span>
-                            </div>
                         </div>
+                        {% endif %}
+                        
+                        <a href="{% url 'catalog:product_detail' slug=product.slug %}" class="details-button">
+                            Details
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
                     </div>
-                </a>
+                </div>
             </div>
             {% endfor %}
         </div>
@@ -147,6 +141,70 @@
 </div>
 
 <style>
+/* Фиксированное позиционирование кнопок в карточках продуктов */
+.product-card {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    position: relative !important;
+}
+
+.product-image-container {
+    flex-shrink: 0 !important;
+}
+
+.product-info-container {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 1rem !important;
+}
+
+.product-title {
+    margin-bottom: 0.5rem !important;
+    min-height: 2.5rem !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+}
+
+.product-description {
+    margin-bottom: 1rem !important;
+    flex: 1 !important;
+    min-height: 3rem !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 3 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+}
+
+.product-actions {
+    margin-top: auto !important;
+    padding-top: 0.5rem !important;
+    border-top: 1px solid #e5e7eb !important;
+}
+
+.details-button {
+    width: 100% !important;
+    text-align: center !important;
+    padding: 0.5rem 1rem !important;
+    background-color: #0d9488 !important;
+    color: white !important;
+    border-radius: 0.5rem !important;
+    font-weight: 600 !important;
+    font-size: 0.875rem !important;
+    transition: all 0.2s ease !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+}
+
+.details-button:hover {
+    background-color: #0f766e !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
 .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;

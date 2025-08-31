@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Neuigkeiten - Play & Jump{% endblock %}
+
+{% block content %}
+<!-- News Section -->
+<section class="py-20 bg-gradient-to-br from-teal-50 to-coral-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                <span class="gradient-text">Neuigkeiten</span>
+            </h1>
+            <p class="text-xl text-gray-600">
+                Bleiben Sie auf dem Laufenden mit unseren neuesten Angeboten und Events.
+            </p>
+        </div>
+
+        {% if featured_news %}
+        <!-- Featured News Section -->
+        <div class="mb-16">
+            <h2 class="text-2xl font-bold text-gray-800 mb-8 text-center">Empfohlene Neuigkeiten</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {% for news in featured_news %}
+                <article class="bg-white rounded-xl shadow-lg overflow-hidden hover-lift transform transition-all duration-300 hover:scale-105">
+                    {% if news.image %}
+                    <div class="h-48 overflow-hidden">
+                        <img src="{{ news.image.url }}" alt="{{ news.title }}" class="w-full h-full object-cover">
+                    </div>
+                    {% else %}
+                    <div class="h-48 bg-gradient-to-br from-teal-500 to-coral-500 flex items-center justify-center">
+                        <i class="fas fa-newspaper text-white text-4xl"></i>
+                    </div>
+                    {% endif %}
+                    <div class="p-6">
+                        <div class="flex items-center text-sm text-gray-500 mb-2">
+                            <i class="fas fa-calendar mr-2"></i>
+                            <span>{{ news.published_at|date:"d.m.Y" }}</span>
+                            {% if news.featured %}
+                            <span class="ml-2 px-2 py-1 bg-coral-100 text-coral-800 text-xs rounded-full">Empfohlen</span>
+                            {% endif %}
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-3">{{ news.title }}</h3>
+                        {% if news.excerpt %}
+                        <p class="text-gray-600 mb-4">{{ news.excerpt }}</p>
+                        {% endif %}
+                        <a href="{% url 'catalog:news_detail' news.slug %}" class="button-coral-effect text-teal-600 font-semibold hover:text-teal-700 transition">
+                            Weiterlesen →
+                        </a>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Regular News Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for news in regular_news %}
+            <article class="bg-white rounded-xl shadow-lg overflow-hidden hover-lift">
+                {% if news.image %}
+                <div class="h-48 overflow-hidden">
+                    <img src="{{ news.image.url }}" alt="{{ news.title }}" class="w-full h-full object-cover">
+                </div>
+                {% else %}
+                <div class="h-48 bg-gradient-to-br from-teal-500 to-coral-500 flex items-center justify-center">
+                    <i class="fas fa-newspaper text-white text-4xl"></i>
+                </div>
+                {% endif %}
+                <div class="p-6">
+                    <div class="flex items-center text-sm text-gray-500 mb-2">
+                        <i class="fas fa-calendar mr-2"></i>
+                        <span>{{ news.published_at|date:"d.m.Y" }}</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">{{ news.title }}</h3>
+                    {% if news.excerpt %}
+                    <p class="text-gray-600 mb-4">{{ news.excerpt }}</p>
+                    {% endif %}
+                    <a href="{% url 'catalog:news_detail' news.slug %}" class="button-coral-effect text-teal-600 font-semibold hover:text-teal-700 transition">
+                        Weiterlesen →
+                    </a>
+                </div>
+            </article>
+            {% empty %}
+            <!-- No News Message -->
+            <div class="col-span-full text-center py-12">
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <i class="fas fa-newspaper text-6xl text-gray-300 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-600 mb-2">Keine Neuigkeiten verfügbar</h3>
+                    <p class="text-gray-500">Schauen Sie später wieder vorbei für neue Updates.</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if all_news.count > 9 %}
+        <!-- Load More Button -->
+        <div class="text-center mt-12">
+            <button class="bg-gradient-to-r from-teal-500 to-coral-500 text-white px-8 py-3 rounded-lg font-semibold hover:from-teal-600 hover:to-coral-600 transition-all duration-300 transform hover:scale-105">
+                Mehr Neuigkeiten laden
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

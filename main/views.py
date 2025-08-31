@@ -143,7 +143,7 @@ def add_to_cart(request):
             
             if not product_id:
                 return JsonResponse({'success': False, 'error': 'Product ID is required'})
-            
+                
             if not start_date or not end_date:
                 return JsonResponse({'success': False, 'error': 'Start and end dates are required'})
             
@@ -159,7 +159,7 @@ def add_to_cart(request):
             
             if end < start:
                 return JsonResponse({'success': False, 'error': 'End date must be after start date'})
-            
+                
             # Инициализируем корзину в сессии
             if 'cart' not in request.session:
                 request.session['cart'] = {}
@@ -179,7 +179,7 @@ def add_to_cart(request):
                 'end_date': end_date,
                 'price_per_day': float(product.price) if product.price else 0
             }
-            
+                
             request.session.modified = True
             
             return JsonResponse({
@@ -222,13 +222,13 @@ def remove_from_cart(request):
                         del request.session['return_datetime']
                     if 'delivery_instructions' in request.session:
                         del request.session['delivery_instructions']
-                    request.session.modified = True
-            
-            return JsonResponse({
-                'success': True,
-                'message': 'Товар удален из корзины',
-                'cart_count': len(cart)
-            })
+                request.session.modified = True
+                
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Товар удален из корзины',
+                    'cart_count': len(cart)
+                })
             
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
@@ -254,19 +254,19 @@ def update_cart_dates(request):
             
             if end < start:
                 return JsonResponse({'success': False, 'error': 'End date must be after start date'})
-            
+                
             cart = request.session.get('cart', {})
             if cart_key in cart:
                 # Обновляем даты
                 cart[cart_key]['start_date'] = start_date
                 cart[cart_key]['end_date'] = end_date
                 request.session.modified = True
-                
+                        
                 # Пересчитываем цену
                 duration_days = (end - start).days + 1
                 price_per_day = cart[cart_key]['price_per_day']
                 new_subtotal = price_per_day * duration_days
-                
+            
                 return JsonResponse({
                     'success': True,
                     'message': 'Даты обновлены',
@@ -338,7 +338,7 @@ def update_delivery_details(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            
+                
             # Проверяем, что выбран способ доставки
             if request.session.get('delivery_option') != 'delivery':
                 return JsonResponse({'success': False, 'error': 'Lieferung muss ausgewählt werden'})
@@ -391,7 +391,7 @@ def send_inquiry(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            
+                
             # Получаем данные формы
             customer_name = data.get('customer_name', '').strip()
             customer_email = data.get('customer_email', '').strip()
@@ -586,7 +586,7 @@ Anfrage-Details:
                 if 'delivery_instructions' in request.session:
                     del request.session['delivery_instructions']
                 request.session.modified = True
-                
+            
                 return JsonResponse({
                     'success': True,
                     'message': 'Anfrage erfolgreich gesendet! Wir werden uns in Kürze bei Ihnen melden.'
@@ -635,9 +635,10 @@ def vermietung(request):
 
 
 def neuigkeiten(request):
-    return render(request, 'main/neuigkeiten.html') 
+    """Страница новостей - перенаправляет на новую систему"""
+    return redirect('catalog:news_list')
 
 
 def cookie_richtlinie(request):
     """Cookie-Richtlinie (EU) page view"""
-    return render(request, 'main/cookie_richtlinie.html') 
+    return render(request, 'main/cookie_richtlinie.html')
