@@ -4,12 +4,12 @@
 {% block title %}Warenkorb – Play & Jump{% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-gradient-to-br from-teal-50 to-coral-50 py-8">
+<div class="min-h-screen bg-gradient-to-br from-teal-50 to-coral-50 py-20">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header -->
-        <div class="text-center mb-8">
+        <div class="text-center mb-16">
             <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-                <span class="text-teal-600">Warenkorb</span>
+                <span class="gradient-text">Warenkorb</span>
             </h1>
             <p class="text-xl text-gray-600">
                 Überprüfen Sie Ihre Auswahl und senden Sie eine Anfrage.
@@ -94,16 +94,16 @@
             <h2 class="text-2xl font-bold text-gray-900 mb-6">Lieferoptionen</h2>
             
             <div class="space-y-4">
-                                 <div class="flex items-center">
-                     <input type="radio" id="delivery-pickup" name="delivery_option" value="pickup" 
+                <div class="flex items-center">
+                    <input type="radio" id="delivery-pickup" name="delivery_option" value="pickup" 
                             {% if delivery_option == 'pickup' %}checked{% endif %}
                             onchange="updateDeliveryOption('pickup')"
                             class="w-4 h-4 text-teal-600 bg-gray-100 border-gray-300 focus:ring-teal-500">
-                     <label for="delivery-pickup" class="ml-3 text-lg font-medium text-gray-900">
-                         Selbstabholung (kostenlos)
-                     </label>
-                     {% if delivery_address %}
-                     <button onclick="openDeliveryDetailsModal()" 
+                    <label for="delivery-pickup" class="ml-3 text-lg font-medium text-gray-900">
+                        Selbstabholung (kostenlos)
+                    </label>
+                    {% if delivery_address %}
+                    <button onclick="openDeliveryDetailsModal()" 
                              class="button-coral-effect ml-3 text-sm text-teal-600 hover:text-teal-800 underline">
                          Details bearbeiten
                      </button>
