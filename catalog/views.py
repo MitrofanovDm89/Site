@@ -334,18 +334,14 @@ def product_detail(request, slug):
         pass
     
     # Добавляем случайные товары из той же категории до общего количества 4
-    remaining_slots = 4 - len(fixed_products)
-    additional_products = []
+    # Исключаем текущий товар и уже добавленные фиксированные
+    excluded_ids = [product.id] + [p.id for p in fixed_products]
+    additional_products = Product.objects.filter(
+        category=product.category, 
+        is_active=True
+    ).exclude(id__in=excluded_ids).order_by('?')[:4]
     
-    if remaining_slots > 0:
-        # Исключаем текущий товар и уже добавленные фиксированные
-        excluded_ids = [product.id] + [p.id for p in fixed_products]
-        additional_products = Product.objects.filter(
-            category=product.category, 
-            is_active=True
-        ).exclude(id__in=excluded_ids).order_by('?')[:remaining_slots]
-    
-    # related_products теперь содержит только additional_products (без фиксированных)
+    # related_products содержит 4 случайных товара (без фиксированных)
     related_products = list(additional_products)
 
     # Get booked dates for the next 3 months
