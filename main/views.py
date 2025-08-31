@@ -111,6 +111,9 @@ def cart(request):
         pass
     
     # Отладочная информация
+    print(f"DEBUG cart view: cart_items = {cart_items}")
+    print(f"DEBUG cart view: products = {products}")
+    print(f"DEBUG cart view: len(products) = {len(products)}")
     print(f"DEBUG: delivery_address = {delivery_address}")
     print(f"DEBUG: delivery_datetime = {delivery_datetime}")
     print(f"DEBUG: return_datetime = {return_datetime}")
@@ -610,7 +613,20 @@ Anfrage-Details:
 def cart_count(request):
     """Получение количества товаров в корзине"""
     cart_items = request.session.get('cart', {})
-    return JsonResponse({'count': len(cart_items)})
+    
+    # Подсчитываем только валидные товары (с product_id)
+    valid_count = 0
+    for cart_key, cart_data in cart_items.items():
+        if isinstance(cart_data, dict) and 'product_id' in cart_data:
+            valid_count += 1
+        elif isinstance(cart_data, str):  # Старый формат
+            valid_count += 1
+    
+    # Отладочная информация
+    print(f"DEBUG cart_count: cart_items = {cart_items}")
+    print(f"DEBUG cart_count: valid_count = {valid_count}")
+    
+    return JsonResponse({'count': valid_count})
 
 
 def kontakt(request):
