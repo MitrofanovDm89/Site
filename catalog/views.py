@@ -314,11 +314,38 @@ def category_detail(request, slug):
 def product_detail(request, slug):
     product = get_object_or_404(Product, slug=slug, is_active=True)
 
-    # Get related products from same category
-    related_products = Product.objects.filter(
-        category=product.category, 
-        is_active=True
-    ).exclude(id=product.id)[:4]
+    # Всегда включаем два конкретных товара
+    fixed_products = []
+    
+    # Gebläse Schalldämmung (ID 30)
+    try:
+        geblaese = Product.objects.get(id=30, is_active=True)
+        if geblaese.id != product.id:  # Не показываем текущий товар
+            fixed_products.append(geblaese)
+    except Product.DoesNotExist:
+        pass
+    
+    # Stromerzeuger (ID 35)
+    try:
+        stromerzeuger = Product.objects.get(id=35, is_active=True)
+        if stromerzeuger.id != product.id:  # Не показываем текущий товар
+            fixed_products.append(stromerzeuger)
+    except Product.DoesNotExist:
+        pass
+    
+    # Добавляем случайные товары из той же категории до общего количества 4
+    remaining_slots = 4 - len(fixed_products)
+    if remaining_slots > 0:
+        # Исключаем текущий товар и уже добавленные фиксированные
+        excluded_ids = [product.id] + [p.id for p in fixed_products]
+        additional_products = Product.objects.filter(
+            category=product.category, 
+            is_active=True
+        ).exclude(id__in=excluded_ids).order_by('?')[:remaining_slots]
+        
+        related_products = list(fixed_products) + list(additional_products)
+    else:
+        related_products = fixed_products[:4]  # Ограничиваем максимум 4 товарами
 
     # Get booked dates for the next 3 months
     today = date.today()

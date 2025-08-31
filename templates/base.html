@@ -83,6 +83,15 @@
             transition: all 0.3s ease;
         }
         
+        /* Header and Footer Scroll Animations */
+        header {
+            transition: transform 0.3s ease;
+        }
+        
+        footer {
+            transition: transform 0.3s ease;
+        }
+        
         .mobile-nav-item:last-child {
             border-bottom: none;
         }
@@ -248,13 +257,13 @@
     <footer class="bg-gray-900 text-white">
         <!-- Bottom Footer -->
         <div class="bg-gray-950">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
-                <div class="flex flex-col md:flex-row justify-between items-center">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 h-16 flex items-center">
+                <div class="flex flex-col md:flex-row justify-between items-center w-full">
                     <div class="flex items-center mb-4 md:mb-0">
                         <a href="/" class="button-coral-effect focus-ring touch-target">
                             <img src="{% static 'images/logo.png' %}" alt="Play & Jump Logo" class="h-16 w-auto max-w-64 object-contain mr-3" style="filter: brightness(0) invert(1);">
                         </a>
-                        <span class="text-gray-400 text-sm">&copy; 2025 Play & Jump. Alle Rechte vorbehalten.</span>
+                        <span id="copyright-text" class="text-gray-400 text-sm cursor-pointer hover:text-gray-300 transition">&copy; 2025 Play & Jump. Alle Rechte vorbehalten.</span>
                     </div>
                     <div class="flex space-x-6 text-sm">
                         <a href="/impressum/" class="button-coral-effect text-gray-400 hover:text-teal-400 transition">Impressum</a>
@@ -298,6 +307,59 @@
         // Обновляем счетчик при загрузке страницы
         document.addEventListener('DOMContentLoaded', updateCartCount);
         
+        // Функция для скрытия/показа хедера и футера при скролле
+        let lastScrollTop = 0;
+        let header = document.querySelector('header');
+        let footer = document.querySelector('footer');
+        let isHeaderVisible = true;
+        let isFooterVisible = true; // Футер изначально виден
+        
+        // Инициализация: футер виден, хедер виден при загрузке страницы
+        function initializeHeaderFooter() {
+            // Ничего не делаем - оставляем все как есть
+        }
+        
+        function handleScroll() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight;
+            const scrollBottom = documentHeight - scrollTop - windowHeight;
+            
+            // Определяем направление скролла
+            const scrollingDown = scrollTop > lastScrollTop;
+            const scrollingUp = scrollTop < lastScrollTop;
+            
+            // Показываем/скрываем футер при скролле вниз/вверх
+            if (scrollingDown && scrollBottom < 100 && !isFooterVisible) {
+                footer.style.transform = 'translateY(0)';
+                footer.style.transition = 'transform 0.3s ease';
+                isFooterVisible = true;
+                
+                // Когда появляется футер - скрываем хедер
+                header.style.transform = 'translateY(-100%)';
+                header.style.transition = 'transform 0.3s ease';
+                isHeaderVisible = false;
+            } else if (scrollingUp && scrollBottom > 100 && isFooterVisible) {
+                footer.style.transform = 'translateY(100%)';
+                footer.style.transition = 'transform 0.3s ease';
+                isFooterVisible = false;
+                
+                // Когда скрывается футер - показываем хедер
+                header.style.transform = 'translateY(0)';
+                header.style.transition = 'transform 0.3s ease';
+                isHeaderVisible = true;
+            }
+            
+            lastScrollTop = scrollTop;
+        }
+        
+        // Инициализируем при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeHeaderFooter();
+            // Добавляем обработчик скролла
+            window.addEventListener('scroll', handleScroll);
+        });
+        
         // Smooth scroll for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
@@ -308,6 +370,30 @@
                         behavior: 'smooth',
                         block: 'start'
                     });
+                }
+            });
+        });
+        
+        // Показ метки разработчика при клике на копирайт
+        document.addEventListener('DOMContentLoaded', function() {
+            const copyrightText = document.getElementById('copyright-text');
+            let clickCount = 0;
+            let originalText = copyrightText.textContent;
+            
+            copyrightText.addEventListener('click', function() {
+                clickCount++;
+                
+                if (clickCount === 1) {
+                    // Первый клик - показываем метку разработчика
+                    this.textContent = 'Powered by dlktsprdct@gmail.com';
+                    this.style.color = '#20B2AA'; // Teal цвет
+                    this.style.fontWeight = '500';
+                } else if (clickCount === 2) {
+                    // Второй клик - возвращаем оригинальный текст
+                    this.textContent = originalText;
+                    this.style.color = '';
+                    this.style.fontWeight = '';
+                    clickCount = 0;
                 }
             });
         });

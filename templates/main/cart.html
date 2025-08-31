@@ -83,7 +83,7 @@
             <!-- Total -->
             <div class="mt-6 pt-6 border-t border-gray-200">
                 <div class="flex justify-between items-center">
-                    <span class="text-2xl font-bold text-gray-900">Gesamtpreis:</span>
+                    <span class="text-2xl font-bold text-gray-900">Preis:</span>
                     <span class="text-3xl font-bold text-teal-600">{{ total_price }}€</span>
                 </div>
             </div>
@@ -402,8 +402,6 @@
                             name="delivery_datetime"
                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                             value="{{ delivery_datetime }}"
-                            min=""
-                            max=""
                             required>
                         <div class="mt-1 text-xs text-gray-500" id="delivery-hint">
                             Lieferung muss vor dem ersten Tag der Miete erfolgen.
@@ -473,6 +471,12 @@ function getCSRFToken() {
 document.getElementById('inquiry-form').addEventListener('submit', function(e) {
     e.preventDefault();
     sendInquiry();
+});
+
+// Добавляем обработчик для формы доставки
+document.getElementById('delivery-details-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    saveDeliveryDetails();
 });
 
 function removeFromCart(cartKey) {
@@ -771,15 +775,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Delivery details form handling
     const deliveryDetailsForm = document.getElementById('delivery-details-form');
     if (deliveryDetailsForm) {
-        deliveryDetailsForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            saveDeliveryDetails();
-        });
+        // Способ доставки устанавливается сервером, не переопределяем
     }
-    
-         // Способ доставки устанавливается сервером, не переопределяем
      
-     // При загрузке страницы скрываем/показываем детали доставки в зависимости от выбранного способа
+    // При загрузке страницы скрываем/показываем детали доставки в зависимости от выбранного способа
     const pickupRadio = document.getElementById('delivery-pickup');
     const deliveryRadio = document.getElementById('delivery-delivery');
     const deliveryDetails = document.querySelector('.ml-7.mt-3.p-4.bg-teal-50');
@@ -833,8 +832,14 @@ function setupDeliveryDateConstraints() {
     
     // Берем первый товар (если несколько, можно расширить логику)
     const firstItem = cartItems[0];
-    const startDate = firstItem.getAttribute('data-start-date');
-    const endDate = firstItem.getAttribute('data-end-date');
+    const startDate = firstItem.getAttribute('data-start-date'); // '2025-09-05'
+    const endDate = firstItem.getAttribute('data-end-date');     // '2025-09-06'
+    
+    console.log('=== DEBUG: setupDeliveryDateConstraints ===');
+    console.log('Cart items found:', cartItems.length);
+    console.log('First item data-start-date:', startDate);
+    console.log('First item data-end-date:', endDate);
+    console.log('==========================================');
     
     if (!startDate || !endDate) return;
     
@@ -846,11 +851,11 @@ function setupDeliveryDateConstraints() {
         const todayStr = today.toISOString().slice(0, 16);
         deliveryInput.min = todayStr;
         
-                 // Максимальная дата: первый день аренды (включительно)
-         // Используем UTC время, чтобы избежать проблем с часовыми поясами
-         const startDateTime = new Date(startDate + 'T23:59:59.999Z'); // Конец дня в UTC
-         const startDateTimeStr = startDateTime.toISOString().slice(0, 16);
-         deliveryInput.max = startDateTimeStr;
+        // Максимальная дата: первый день аренды (включительно)
+        // Создаем дату на конец первого дня аренды
+        const startDateTime = new Date(startDate + 'T23:59:59');
+        const startDateTimeStr = startDateTime.toISOString().slice(0, 16);
+        deliveryInput.max = startDateTimeStr;
         
         // Отладочная информация
         console.log('=== DEBUG: Delivery Date Constraints ===');
@@ -872,12 +877,11 @@ function setupDeliveryDateConstraints() {
     // Устанавливаем ограничения для поля забора
     const returnInput = document.getElementById('return-datetime');
     if (returnInput) {
-                 // Минимальная дата: день окончания аренды (включительно)
-         // Принудительно устанавливаем на начало дня окончания аренды
-         // Используем UTC время, чтобы избежать проблем с часовыми поясами
-         const endDateTime = new Date(endDate + 'T00:00:00.000Z');
-         const endDateTimeStr = endDateTime.toISOString().slice(0, 16);
-         returnInput.min = endDateTimeStr;
+        // Минимальная дата: день окончания аренды (включительно)
+        // Принудительно устанавливаем на начало дня окончания аренды
+        const endDateTime = new Date(endDate + 'T00:00:00');
+        const endDateTimeStr = endDateTime.toISOString().slice(0, 16);
+        returnInput.min = endDateTimeStr;
         
         // Максимальная дата: +5 дней после окончания аренды
         const maxReturnDate = new Date(endDate);
@@ -958,17 +962,36 @@ function saveDeliveryDetails() {
     const cartItems = document.querySelectorAll('[data-start-date][data-end-date]');
     if (cartItems.length > 0) {
         const firstItem = cartItems[0];
-        const rentalStartDate = new Date(firstItem.getAttribute('data-start-date'));
-        const rentalEndDate = new Date(firstItem.getAttribute('data-end-date'));
+        const rentalStartDateStr = firstItem.getAttribute('data-start-date'); // '2025-09-05'
+        const rentalEndDateStr = firstItem.getAttribute('data-end-date');     // '2025-09-06'
         
-        // Проверяем, что доставка не позже первого дня аренды
-        if (deliveryDate.getTime() > rentalStartDate.getTime()) {
+        // ОТЛАДОЧНАЯ ИНФОРМАЦИЯ
+        console.log('=== DEBUG: Date Validation ===');
+        console.log('Cart item data-start-date:', rentalStartDateStr);
+        console.log('Cart item data-end-date:', rentalEndDateStr);
+        console.log('Delivery date from form:', deliveryDate);
+        console.log('Return date from form:', returnDate);
+        console.log('================================');
+        
+        // Преобразуем даты доставки и возврата в строки формата YYYY-MM-DD для сравнения
+        const deliveryDateStr = deliveryDate.toISOString().slice(0, 10); // '2025-09-05'
+        const returnDateStr = returnDate.toISOString().slice(0, 10);     // '2025-09-06'
+        
+        console.log('Delivery date string:', deliveryDateStr);
+        console.log('Return date string:', returnDateStr);
+        console.log('Rental start date string:', rentalStartDateStr);
+        console.log('Rental end date string:', rentalEndDateStr);
+        
+        // Проверяем, что доставка не позже первого дня аренды (включительно)
+        // Сравниваем строки дат напрямую
+        if (deliveryDateStr > rentalStartDateStr) {
             showNotification('Das Lieferdatum kann nicht nach dem ersten Tag der Miete liegen.', 'error');
             return;
         }
         
-        // Проверяем, что забор не раньше последнего дня аренды
-        if (returnDate.getTime() < rentalEndDate.getTime()) {
+        // Проверяем, что забор не раньше последнего дня аренды (включительно)
+        // Сравниваем строки дат напрямую
+        if (returnDateStr < rentalEndDateStr) {
             showNotification('Das Rückgabedatum kann nicht vor dem letzten Tag der Miete liegen.', 'error');
             return;
         }
