@@ -27,20 +27,26 @@ def cart(request):
     
     for cart_key, cart_data in cart_items.items():
         try:
+            print(f"DEBUG: Processing cart_key = {cart_key}, cart_data = {cart_data}")
+            
             # Проверяем, является ли это новым форматом корзины с датами
             if isinstance(cart_data, dict):
                 product_id = cart_data['product_id']
                 start_date = cart_data.get('start_date')
                 end_date = cart_data.get('end_date')
                 price_per_day = cart_data.get('price_per_day', 0)
+                print(f"DEBUG: New format - product_id = {product_id}, start_date = {start_date}, end_date = {end_date}, price_per_day = {price_per_day}")
             else:
                 # Старый формат (только product_id и quantity) - конвертируем
                 product_id = cart_key
                 start_date = None
                 end_date = None
                 price_per_day = 0
+                print(f"DEBUG: Old format - product_id = {product_id}")
             
+            print(f"DEBUG: Trying to get product with id = {product_id}")
             product = Product.objects.get(id=product_id, is_active=True)
+            print(f"DEBUG: Product found: {product.title}")
             
             # Рассчитываем цену и количество дней
             if start_date and end_date and price_per_day:
@@ -81,7 +87,30 @@ def cart(request):
             total_price += float(subtotal)
             
         except Product.DoesNotExist:
+            print(f"DEBUG: Product with id {product_id} does not exist or is not active")
             continue
+        except Exception as e:
+            print(f"DEBUG: Error processing cart item: {e}")
+            continue
+    
+    # Очищаем корзину от несуществующих товаров
+    invalid_keys = []
+    for cart_key, cart_data in cart_items.items():
+        if isinstance(cart_data, dict) and 'product_id' in cart_data:
+            try:
+                Product.objects.get(id=cart_data['product_id'], is_active=True)
+            except Product.DoesNotExist:
+                invalid_keys.append(cart_key)
+        elif isinstance(cart_data, str):
+            try:
+                Product.objects.get(id=cart_key, is_active=True)
+            except Product.DoesNotExist:
+                invalid_keys.append(cart_key)
+    
+    # Удаляем несуществующие товары
+    for key in invalid_keys:
+        del cart_items[key]
+        print(f"DEBUG cart view: Removed invalid item with key: {key}")
     
     # Сохраняем обновленную корзину
     if cart_items:
@@ -616,11 +645,30 @@ def cart_count(request):
     
     # Подсчитываем только валидные товары (с product_id)
     valid_count = 0
+    invalid_keys = []
+    
     for cart_key, cart_data in cart_items.items():
         if isinstance(cart_data, dict) and 'product_id' in cart_data:
-            valid_count += 1
+            try:
+                # Проверяем, существует ли товар
+                product = Product.objects.get(id=cart_data['product_id'], is_active=True)
+                valid_count += 1
+            except Product.DoesNotExist:
+                invalid_keys.append(cart_key)
         elif isinstance(cart_data, str):  # Старый формат
-            valid_count += 1
+            try:
+                product = Product.objects.get(id=cart_key, is_active=True)
+                valid_count += 1
+            except Product.DoesNotExist:
+                invalid_keys.append(cart_key)
+    
+    # Удаляем несуществующие товары из корзины
+    if invalid_keys:
+        for key in invalid_keys:
+            del cart_items[key]
+        request.session['cart'] = cart_items
+        request.session.modified = True
+        print(f"DEBUG cart_count: Removed invalid items: {invalid_keys}")
     
     # Отладочная информация
     print(f"DEBUG cart_count: cart_items = {cart_items}")
