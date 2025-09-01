@@ -195,6 +195,38 @@
             .mobile-hidden {
                 display: none;
             }
+            
+            /* Mobile Footer Fixes */
+            footer {
+                position: relative !important;
+                transform: none !important;
+                transition: none !important;
+            }
+            
+            footer .max-w-7xl {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+            
+            footer .flex-col {
+                text-align: center;
+            }
+            
+            footer .flex.space-x-6 {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 1rem;
+            }
+            
+            footer .flex.space-x-6 a {
+                font-size: 0.875rem;
+                padding: 0.5rem;
+            }
+            
+            #copyright-text {
+                font-size: 0.75rem;
+                margin-top: 0.5rem;
+            }
         }
     </style>
 </head>
@@ -320,6 +352,11 @@
         }
         
         function handleScroll() {
+            // Отключаем анимации футера на мобильных устройствах
+            if (window.innerWidth <= 768) {
+                return;
+            }
+            
             const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
             const windowHeight = window.innerHeight;
             const documentHeight = document.documentElement.scrollHeight;
