@@ -17,3 +17,28 @@ DEBUG cart_count: cart_items = {'14_2025-09-01_2025-09-02': {'product_id': 14, '
 DEBUG cart_count: valid_count = 1
 DEBUG cart_count: cart_items = {'14_2025-09-01_2025-09-02': {'product_id': 14, 'start_date': '2025-09-01', 'end_date': '2025-09-02', 'price_per_day': 20.0}}
 DEBUG cart_count: valid_count = 1
+DEBUG cart_count: cart_items = {'14_2025-09-01_2025-09-02': {'product_id': 14, 'start_date': '2025-09-01', 'end_date': '2025-09-02', 'price_per_day': 20.0}}
+DEBUG cart_count: valid_count = 1
+DEBUG: Processing cart_key = 14_2025-09-01_2025-09-02, cart_data = {'product_id': 14, 'start_date': '2025-09-01', 'end_date': '2025-09-02', 'price_per_day': 20.0}
+DEBUG: New format - product_id = 14, start_date = 2025-09-01, end_date = 2025-09-02, price_per_day = 20.0
+DEBUG: Trying to get product with id = 14
+DEBUG: Product found: 4 gewinnt XXL
+DEBUG cart view: cart_items = {'14_2025-09-01_2025-09-02': {'product_id': 14, 'start_date': '2025-09-01', 'end_date': '2025-09-02', 'price_per_day': 20.0}}
+DEBUG cart view: products = [{'id': 14, 'title': '4 gewinnt XXL', 'price': Decimal('20.00'), 'subtotal': 40.0, 'start_date': '2025-09-01', 'end_date': '2025-09-02', 'duration_days': 2, 'cart_key': '14_2025-09-01_2025-09-02', 'price_per_day': 20.0, 'image': <ImageFieldFile: products/4-x-gewinnt.jpeg>}]
+DEBUG cart view: len(products) = 1
+DEBUG: delivery_address = 
+DEBUG: delivery_datetime = 
+DEBUG: return_datetime = 
+DEBUG: delivery_instructions = 
+DEBUG cart_count: cart_items = {'14_2025-09-01_2025-09-02': {'product_id': 14, 'start_date': '2025-09-01', 'end_date': '2025-09-02', 'price_per_day': 20.0}}
+DEBUG cart_count: valid_count = 1
+DEBUG cart_count: cart_items = {'14_2025-09-01_2025-09-02': {'product_id': 14, 'start_date': '2025-09-01', 'end_date': '2025-09-02', 'price_per_day': 20.0}}
+DEBUG cart_count: valid_count = 1
+DEBUG cart_count: cart_items = {'14_2025-09-01_2025-09-02': {'product_id': 14, 'start_date': '2025-09-01', 'end_date': '2025-09-02', 'price_per_day': 20.0}}
+DEBUG cart_count: valid_count = 1
+DEBUG cart_count: cart_items = {'14_2025-09-01_2025-09-02': {'product_id': 14, 'start_date': '2025-09-01', 'end_date': '2025-09-02', 'price_per_day': 20.0}}
+DEBUG cart_count: valid_count = 1
+DEBUG cart_count: cart_items = {'14_2025-09-01_2025-09-02': {'product_id': 14, 'start_date': '2025-09-01', 'end_date': '2025-09-02', 'price_per_day': 20.0}}
+DEBUG cart_count: valid_count = 1
+DEBUG cart_count: cart_items = {'14_2025-09-01_2025-09-02': {'product_id': 14, 'start_date': '2025-09-01', 'end_date': '2025-09-02', 'price_per_day': 20.0}}
+DEBUG cart_count: valid_count = 1
