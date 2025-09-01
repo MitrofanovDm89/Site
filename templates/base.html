@@ -196,37 +196,33 @@
                 display: none;
             }
             
-            /* Mobile Footer Fixes - Полное исправление */
+            /* Mobile Footer Fixes - ИСПРАВЛЕНИЕ С АНИМАЦИЯМИ */
             body {
-                display: flex;
-                flex-direction: column;
-                min-height: 100vh;
                 margin: 0;
                 padding: 0;
+                min-height: 100vh;
             }
             
             main {
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-            }
-            
-            .content-wrapper {
-                flex: 1;
-                padding-bottom: 0;
+                min-height: calc(100vh - 200px);
+                padding-bottom: 100px;
             }
             
             footer {
-                position: relative !important;
-                bottom: auto !important;
-                left: auto !important;
-                right: auto !important;
-                transform: none !important;
-                transition: none !important;
-                z-index: 40;
-                width: 100%;
-                margin-top: auto;
-                flex-shrink: 0;
+                position: fixed !important;
+                bottom: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                width: 100% !important;
+                transform: translateY(100%) !important;
+                transition: transform 0.3s ease !important;
+                z-index: 1000 !important;
+                background: #111827 !important;
+            }
+            
+            /* Класс для показа футера через JavaScript */
+            footer.footer-visible {
+                transform: translateY(0) !important;
             }
             
             footer .max-w-7xl {
@@ -323,22 +319,19 @@
 
     <!-- Footer -->
     <footer class="bg-gray-900 text-white">
-        <!-- Bottom Footer -->
-        <div class="bg-gray-950">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 h-16 flex items-center">
-                <div class="flex flex-col md:flex-row justify-between items-center w-full">
-                    <div class="flex items-center mb-4 md:mb-0">
-                        <a href="/" class="button-coral-effect focus-ring touch-target">
-                            <img src="{% static 'images/logo.png' %}" alt="Play & Jump Logo" class="h-16 w-auto max-w-64 object-contain mr-3" style="filter: brightness(0) invert(1);">
-                        </a>
-                        <span id="copyright-text" class="text-gray-400 text-sm cursor-pointer hover:text-gray-300 transition">&copy; 2025 Play & Jump. Alle Rechte vorbehalten.</span>
-                    </div>
-                    <div class="flex space-x-6 text-sm">
-                        <a href="/impressum/" class="button-coral-effect text-gray-400 hover:text-teal-400 transition">Impressum</a>
-                        <a href="/datenschutz/" class="button-coral-effect text-gray-400 hover:text-teal-400 transition">Datenschutz</a>
-                        <a href="/agb/" class="button-coral-effect text-gray-400 hover:text-teal-400 transition">AGB</a>
-                        <a href="/cookie-richtlinie/" class="button-coral-effect text-gray-400 hover:text-teal-400 transition">Cookie-Richtlinie</a>
-                    </div>
+        <div class="max-w-7xl mx-auto pl-0 pr-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex flex-col md:flex-row justify-between items-center w-full">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <a href="/" class="button-coral-effect focus-ring touch-target">
+                        <img src="{% static 'images/logo.png' %}" alt="Play & Jump Logo" class="h-16 w-auto max-w-64 object-contain mr-3" style="filter: grayscale(100%) brightness(0) invert(1);">
+                    </a>
+                    <span id="copyright-text" class="text-gray-400 text-sm cursor-pointer hover:text-gray-300 transition">&copy; 2025 Play & Jump. Alle Rechte vorbehalten.</span>
+                </div>
+                <div class="flex space-x-6 text-sm">
+                    <a href="/impressum/" class="button-coral-effect text-gray-400 hover:text-teal-400 transition">Impressum</a>
+                    <a href="/datenschutz/" class="button-coral-effect text-gray-400 hover:text-teal-400 transition">Datenschutz</a>
+                    <a href="/agb/" class="button-coral-effect text-gray-400 hover:text-teal-400 transition">AGB</a>
+                    <a href="/cookie-richtlinie/" class="button-coral-effect text-gray-400 hover:text-teal-400 transition">Cookie-Richtlinie</a>
                 </div>
             </div>
         </div>
@@ -380,7 +373,7 @@
         let header = document.querySelector('header');
         let footer = document.querySelector('footer');
         let isHeaderVisible = true;
-        let isFooterVisible = true; // Футер изначально виден
+        let isFooterVisible = false; // Футер изначально скрыт
         
         // Инициализация: футер виден, хедер виден при загрузке страницы
         function initializeHeaderFooter() {
@@ -388,36 +381,35 @@
         }
         
         function handleScroll() {
-            // Отключаем анимации футера на мобильных устройствах
-            if (window.innerWidth <= 768) {
-                return;
-            }
-            
             const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            const windowHeight = window.innerHeight;
-            const documentHeight = document.documentElement.scrollHeight;
-            const scrollBottom = documentHeight - scrollTop - windowHeight;
             
             // Определяем направление скролла
             const scrollingDown = scrollTop > lastScrollTop;
             const scrollingUp = scrollTop < lastScrollTop;
             
-            // Показываем/скрываем футер при скролле вниз/вверх
-            if (scrollingDown && scrollBottom < 100 && !isFooterVisible) {
-                footer.style.transform = 'translateY(0)';
-                footer.style.transition = 'transform 0.3s ease';
+            // Отладочная информация
+            console.log('Scroll:', scrollTop, 'Down:', scrollingDown, 'Footer visible:', isFooterVisible);
+            
+            // НОВАЯ ЛОГИКА: Когда скроллим вниз - показываем футер, скрываем хедер
+            if (scrollingDown && scrollTop > 100 && !isFooterVisible) {
+                console.log('Показываем футер!');
+                // Показываем футер через CSS класс
+                footer.classList.add('footer-visible');
                 isFooterVisible = true;
                 
-                // Когда появляется футер - скрываем хедер
+                // Скрываем хедер
                 header.style.transform = 'translateY(-100%)';
                 header.style.transition = 'transform 0.3s ease';
                 isHeaderVisible = false;
-            } else if (scrollingUp && scrollBottom > 100 && isFooterVisible) {
-                footer.style.transform = 'translateY(100%)';
-                footer.style.transition = 'transform 0.3s ease';
+            } 
+            // Когда скроллим вверх - скрываем футер, показываем хедер
+            else if (scrollingUp && scrollTop < 100 && isFooterVisible) {
+                console.log('Скрываем футер!');
+                // Скрываем футер через CSS класс
+                footer.classList.remove('footer-visible');
                 isFooterVisible = false;
                 
-                // Когда скрывается футер - показываем хедер
+                // Показываем хедер
                 header.style.transform = 'translateY(0)';
                 header.style.transition = 'transform 0.3s ease';
                 isHeaderVisible = true;
@@ -428,9 +420,13 @@
         
         // Инициализируем при загрузке страницы
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM загружен, инициализируем...');
+            console.log('Header:', header);
+            console.log('Footer:', footer);
             initializeHeaderFooter();
             // Добавляем обработчик скролла
             window.addEventListener('scroll', handleScroll);
+            console.log('Обработчик скролла добавлен');
         });
         
         // Smooth scroll for anchor links
