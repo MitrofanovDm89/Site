@@ -5,7 +5,7 @@
 
 {% block content %}
 <div class="min-h-screen bg-gradient-to-br from-teal-50 to-coral-50 py-20">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
         <!-- Header -->
         <div class="text-center mb-16">
             <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -17,53 +17,70 @@
         </div>
 
         <!-- Filters and Search -->
-        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-            <div class="flex flex-col lg:flex-row gap-4 items-center justify-between">
+        <div class="bg-white rounded-lg shadow-md p-3 sm:p-6 mb-8">
+            <div class="flex flex-col gap-4">
                 <!-- Search -->
-                <div class="flex-1 max-w-md">
+                <div class="w-full">
                     <form method="GET" class="flex">
                         <input type="text" 
                                name="search" 
                                value="{{ search_query|default:'' }}"
                                placeholder="Produkt suchen..." 
-                               class="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                               class="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
                         <button type="submit" 
-                                class="button-coral-effect px-6 py-2 bg-teal-600 text-white rounded-r-lg hover:bg-teal-700 transition-colors">
+                                class="button-coral-effect px-4 py-2 bg-teal-600 text-white rounded-r-lg hover:bg-teal-700 transition-colors">
                             <i class="fas fa-search"></i>
                         </button>
                     </form>
                 </div>
 
-                <!-- Category Filter -->
-                <form method="GET" class="flex items-center gap-4">
-                    <label class="text-gray-700 font-medium">Kategorie:</label>
-                    <select name="category" 
-                            onchange="this.form.submit()" 
-                            class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
-                        <option value="">Alle Kategorien</option>
-                        {% for category in categories %}
-                        <option value="{{ category.slug }}" 
-                                {% if selected_category == category.slug %}selected{% endif %}>
-                            {{ category.name }}
-                        </option>
-                        {% endfor %}
-                    </select>
+                <!-- Filters Row -->
+                <div class="flex flex-col gap-3">
+                    <!-- Category Filter -->
+                    <div class="w-full">
+                        <form method="GET" class="flex flex-col sm:flex-row sm:items-center gap-2">
+                            <label class="text-gray-700 font-medium text-sm">Kategorie:</label>
+                            <select name="category" 
+                                    onchange="this.form.submit()" 
+                                    class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                                <option value="">Alle Kategorien</option>
+                                {% for category in categories %}
+                                <option value="{{ category.slug }}" 
+                                        {% if selected_category == category.slug %}selected{% endif %}>
+                                    {{ category.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            
+                            <!-- Hidden search field to preserve search query -->
+                            {% if search_query %}
+                            <input type="hidden" name="search" value="{{ search_query }}">
+                            {% endif %}
+                        </form>
+                    </div>
                     
                     <!-- Sort -->
-                    <label class="text-gray-700 font-medium">Sortieren:</label>
-                    <select name="sort" 
-                            onchange="this.form.submit()" 
-                            class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
-                        <option value="title" {% if sort_by == 'title' %}selected{% endif %}>Name A-Z</option>
-                        <option value="price" {% if sort_by == 'price' %}selected{% endif %}>Preis aufsteigend</option>
-                        <option value="price_desc" {% if sort_by == 'price_desc' %}selected{% endif %}>Preis absteigend</option>
-                    </select>
-                    
-                    <!-- Hidden search field to preserve search query -->
-                    {% if search_query %}
-                    <input type="hidden" name="search" value="{{ search_query }}">
-                    {% endif %}
-                </form>
+                    <div class="w-full">
+                        <form method="GET" class="flex flex-col sm:flex-row sm:items-center gap-2">
+                            <label class="text-gray-700 font-medium text-sm">Sortieren:</label>
+                            <select name="sort" 
+                                    onchange="this.form.submit()" 
+                                    class="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent">
+                                <option value="title" {% if sort_by == 'title' %}selected{% endif %}>Name A-Z</option>
+                                <option value="price" {% if sort_by == 'price' %}selected{% endif %}>Preis ↑</option>
+                                <option value="price_desc" {% if sort_by == 'price_desc' %}selected{% endif %}>Preis ↓</option>
+                            </select>
+                            
+                            <!-- Hidden fields to preserve other filters -->
+                            {% if search_query %}
+                            <input type="hidden" name="search" value="{{ search_query }}">
+                            {% endif %}
+                            {% if selected_category %}
+                            <input type="hidden" name="category" value="{{ selected_category }}">
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
             </div>
 
             <!-- Active Filters Display -->
@@ -100,7 +117,7 @@
 
         <!-- Products Grid -->
         {% if products %}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {% for product in products %}
             <div class="product-card bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                 <!-- Product Image -->
@@ -274,6 +291,32 @@
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+}
+
+/* Mobile Responsive Fixes */
+@media (max-width: 640px) {
+    .product-card {
+        margin: 0 !important;
+    }
+    
+    .product-info-container {
+        padding: 0.75rem !important;
+    }
+    
+    .product-title {
+        font-size: 1rem !important;
+        min-height: 2rem !important;
+    }
+    
+    .product-description {
+        font-size: 0.875rem !important;
+        min-height: 2.5rem !important;
+    }
+    
+    .details-button {
+        font-size: 0.7rem !important;
+        padding: 0.25rem 0.5rem !important;
+    }
 }
 </style>
 {% endblock %} 
