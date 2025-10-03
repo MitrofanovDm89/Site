@@ -132,18 +132,28 @@ class Booking(models.Model):
         return (self.end_date - self.start_date).days + 1
 
 
-class Service(models.Model):
-    title = models.CharField(max_length=200)
-    slug = models.SlugField(unique=True)
-    description = models.TextField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    image = models.ImageField(upload_to='services/', blank=True, null=True)
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
+
+
+class MissingProduct(models.Model):
+    """Модель для управления дополнительными товарами в разделе Zusätzliche Produkte"""
+    title = models.CharField(max_length=200, verbose_name="Название")
+    slug = models.SlugField(unique=True, verbose_name="URL")
+    description = models.TextField(blank=True, verbose_name="Описание")
+    image = models.ImageField(upload_to="missing_products/", verbose_name="Изображение")
+    price = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True, verbose_name="Цена")
+    is_active = models.BooleanField(default=True, verbose_name="Активен")
+    order = models.PositiveIntegerField(default=0, verbose_name="Порядок отображения")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
     
     class Meta:
-        ordering = ['title']
+        ordering = ['order', 'created_at']
+        verbose_name = "Zusätzliche Produkte"
+        verbose_name_plural = "Zusätzliche Produkte"
     
     def __str__(self):
         return self.title
@@ -151,4 +161,9 @@ class Service(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
-        super().save(*args, **kwargs) 
+        super().save(*args, **kwargs)
+    
+    @classmethod
+    def get_active_missing_products(cls, limit=2):
+        """Возвращает активные дополнительные товары (максимум 2)"""
+        return cls.objects.filter(is_active=True).order_by('order', 'created_at')[:limit] 

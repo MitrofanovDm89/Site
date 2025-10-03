@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from .models import Category, Product, ProductImage, Availability, Booking, Service, News
+from .models import Category, Product, ProductImage, Availability, Booking, News, MissingProduct
 from django.db import models
 from ckeditor.widgets import CKEditorWidget
 
@@ -201,25 +201,6 @@ class AvailabilityAdmin(admin.ModelAdmin):
     duration_days.short_description = 'Dauer (Tage)'
 
 
-@admin.register(Service)
-class ServiceAdmin(admin.ModelAdmin):
-    list_display = ['title', 'price', 'is_active', 'image_preview', 'created_at']
-    list_filter = ['is_active', 'price']
-    search_fields = ['title', 'description']
-    prepopulated_fields = {'slug': ('title',)}
-    list_editable = ['is_active', 'price']
-    readonly_fields = ['image_preview', 'created_at', 'updated_at']
-    
-    def image_preview(self, obj):
-        if obj.image:
-            return format_html(
-                '<img src="{}" style="max-height: 50px; max-width: 50px;" />',
-                obj.image.url
-            )
-        return "Kein Bild"
-    image_preview.short_description = 'Vorschau'
-
-
 # Настройка админки
 admin.site.site_header = "Play & Jump Admin"
 admin.site.site_title = "Play & Jump"
@@ -258,3 +239,58 @@ admin.site.register(Booking, BookingAdmin)
 
 # Добавляем ссылку на страницу управления бронированиями в админ-панель
 # (без замены стандартного admin.site)
+
+
+@admin.register(MissingProduct)
+class MissingProductAdmin(admin.ModelAdmin):
+    list_display = ['title', 'price', 'is_active', 'order', 'image_preview', 'created_at']
+    list_filter = ['is_active', 'price']
+    search_fields = ['title', 'description']
+    prepopulated_fields = {'slug': ('title',)}
+    list_editable = ['is_active', 'price', 'order']
+    readonly_fields = ['image_preview', 'created_at', 'updated_at']
+    
+    fieldsets = (
+        ('Основная информация', {
+            'fields': ('title', 'slug', 'description')
+        }),
+        ('Цена и статус', {
+            'fields': ('price', 'is_active', 'order')
+        }),
+        ('Изображение', {
+            'fields': ('image', 'image_preview')
+        }),
+        ('Даты', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def image_preview(self, obj):
+        if obj.image:
+            return format_html(
+                '<img src="{}" style="max-height: 100px; max-width: 100px;" />',
+                obj.image.url
+            )
+        return "Нет изображения"
+    image_preview.short_description = 'Превью'
+    
+    def get_queryset(self, request):
+        """Ограничиваем количество записей до 2"""
+        qs = super().get_queryset(request)
+        return qs
+    
+    def has_add_permission(self, request):
+        """Ограничиваем добавление до 2 записей"""
+        if MissingProduct.objects.count() >= 2:
+            return False
+        return super().has_add_permission(request)
+    
+    def save_model(self, request, obj, form, change):
+        """Автоматически устанавливаем порядок если не указан"""
+        if not obj.order:
+            max_order = MissingProduct.objects.aggregate(
+                models.Max('order')
+            )['order__max'] or 0
+            obj.order = max_order + 1
+        super().save_model(request, obj, form, change)

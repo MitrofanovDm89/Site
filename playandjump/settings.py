@@ -140,5 +140,8 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'dlktsprdct@gmail.com'
-EMAIL_HOST_PASSWORD = ''  # Пароль приложения Gmail
-DEFAULT_FROM_EMAIL = 'dlktsprdct@gmail.com' 
+EMAIL_HOST_PASSWORD = 'ВСТАВЬТЕ_СЮДА_ПАРОЛЬ_ПРИЛОЖЕНИЯ'  # Пароль приложения Gmail
+DEFAULT_FROM_EMAIL = 'dlktsprdct@gmail.com'
+
+# Email encoding settings
+EMAIL_CHARSET = 'utf-8' 

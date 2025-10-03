@@ -1,11 +1,14 @@
 from django.shortcuts import render, redirect
-from django.shortcuts import render, redirect
 from django.http import JsonResponse
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
 from django.conf import settings
+from django.utils.encoding import force_str
 import json
+import logging
 from catalog.models import Product
 from datetime import datetime, date
+
+logger = logging.getLogger(__name__)
 
 
 def home(request):
@@ -27,7 +30,7 @@ def cart(request):
     
     for cart_key, cart_data in cart_items.items():
         try:
-            print(f"DEBUG: Processing cart_key = {cart_key}, cart_data = {cart_data}")
+            logger.debug(f"Processing cart_key = {cart_key}, cart_data = {cart_data}")
             
             # Проверяем, является ли это новым форматом корзины с датами
             if isinstance(cart_data, dict):
@@ -35,18 +38,18 @@ def cart(request):
                 start_date = cart_data.get('start_date')
                 end_date = cart_data.get('end_date')
                 price_per_day = cart_data.get('price_per_day', 0)
-                print(f"DEBUG: New format - product_id = {product_id}, start_date = {start_date}, end_date = {end_date}, price_per_day = {price_per_day}")
+                logger.debug(f"New format - product_id = {product_id}, start_date = {start_date}, end_date = {end_date}, price_per_day = {price_per_day}")
             else:
                 # Старый формат (только product_id и quantity) - конвертируем
                 product_id = cart_key
                 start_date = None
                 end_date = None
                 price_per_day = 0
-                print(f"DEBUG: Old format - product_id = {product_id}")
+                logger.debug(f"Old format - product_id = {product_id}")
             
-            print(f"DEBUG: Trying to get product with id = {product_id}")
+            logger.debug(f"Trying to get product with id = {product_id}")
             product = Product.objects.get(id=product_id, is_active=True)
-            print(f"DEBUG: Product found: {product.title}")
+            logger.debug(f"Product found: {product.title}")
             
             # Рассчитываем цену и количество дней
             if start_date and end_date:
@@ -97,10 +100,10 @@ def cart(request):
             total_price += float(subtotal)
             
         except Product.DoesNotExist:
-            print(f"DEBUG: Product with id {product_id} does not exist or is not active")
+            logger.debug(f"Product with id {product_id} does not exist or is not active")
             continue
         except Exception as e:
-            print(f"DEBUG: Error processing cart item: {e}")
+            logger.debug(f"Error processing cart item: {e}")
             continue
     
     # Очищаем корзину от несуществующих товаров
@@ -120,7 +123,7 @@ def cart(request):
     # Удаляем несуществующие товары
     for key in invalid_keys:
         del cart_items[key]
-        print(f"DEBUG cart view: Removed invalid item with key: {key}")
+        logger.debug(f"Removed invalid item with key: {key}")
     
     # Сохраняем обновленную корзину
     if cart_items:
@@ -128,7 +131,7 @@ def cart(request):
         request.session.modified = True
     
     # Рассчитываем стоимость доставки
-    delivery_cost = 60.0 if delivery_option == 'delivery' else 0.0
+    delivery_cost = 70.0 if delivery_option == 'delivery' else 0.0
     final_total = total_price + delivery_cost
     
     # Получаем данные доставки из сессии
@@ -150,13 +153,13 @@ def cart(request):
         pass
     
     # Отладочная информация
-    print(f"DEBUG cart view: cart_items = {cart_items}")
-    print(f"DEBUG cart view: products = {products}")
-    print(f"DEBUG cart view: len(products) = {len(products)}")
-    print(f"DEBUG: delivery_address = {delivery_address}")
-    print(f"DEBUG: delivery_datetime = {delivery_datetime}")
-    print(f"DEBUG: return_datetime = {return_datetime}")
-    print(f"DEBUG: delivery_instructions = {delivery_instructions}")
+    logger.debug(f"cart_items = {cart_items}")
+    logger.debug(f"products = {products}")
+    logger.debug(f"len(products) = {len(products)}")
+    logger.debug(f"delivery_address = {delivery_address}")
+    logger.debug(f"delivery_datetime = {delivery_datetime}")
+    logger.debug(f"return_datetime = {return_datetime}")
+    logger.debug(f"delivery_instructions = {delivery_instructions}")
     
     context = {
         'cart_items': products,
@@ -226,7 +229,7 @@ def add_to_cart(request):
             
             return JsonResponse({
                 'success': True,
-                'message': f'{product.title} добавлен в корзину',
+                'message': f'{product.title} wurde in den Warenkorb gelegt',
                 'cart_count': len(cart)
             })
             
@@ -359,7 +362,7 @@ def update_delivery_option(request):
                         subtotal = float(price_per_day) * duration_days
                         total_price += subtotal
             
-            delivery_cost = 60.0 if delivery_option == 'delivery' else 0.0
+            delivery_cost = 70.0 if delivery_option == 'delivery' else 0.0
             final_total = total_price + delivery_cost
             
             return JsonResponse({
@@ -508,14 +511,27 @@ def send_inquiry(request):
                     'error': 'Корзина пуста'
                 })
             
-            # Формируем сообщение
+            # Формируем сообщение с безопасным кодированием
+            def safe_encode(text):
+                if text:
+                    try:
+                        return text.encode('utf-8').decode('utf-8')
+                    except:
+                        return str(text)
+                return 'Nicht angegeben'
+            
+            customer_name_safe = safe_encode(customer_name)
+            customer_email_safe = safe_encode(customer_email)
+            customer_phone_safe = safe_encode(customer_phone)
+            comment_safe = safe_encode(comment)
+            
             message = f"""
 Neue Anfrage von der Play & Jump Website
 
-Kunde: {customer_name or 'Nicht angegeben'}
-Email: {customer_email or 'Nicht angegeben'}
-Telefon: {customer_phone or 'Nicht angegeben'}
-Kommentar: {comment or 'Nicht angegeben'}
+Kunde: {customer_name_safe}
+Email: {customer_email_safe}
+Telefon: {customer_phone_safe}
+Kommentar: {comment_safe}
 
 Lieferoption: {'Lieferung + Aufbau/Abbau' if request.session.get('delivery_option') == 'delivery' else 'Selbstabholung'}
 
@@ -530,7 +546,7 @@ Ausgewählte Produkte:
             
             # Добавляем информацию о доставке
             delivery_option = request.session.get('delivery_option', 'pickup')
-            delivery_cost = 60.0 if delivery_option == 'delivery' else 0.0
+            delivery_cost = 70.0 if delivery_option == 'delivery' else 0.0
             total_price = sum(product['subtotal'] for product in products)
             final_total = total_price + delivery_cost
             
@@ -558,13 +574,15 @@ Ausgewählte Produkte:
             
             # Отправляем email администратору
             try:
-                send_mail(
+                email = EmailMessage(
                     subject='Neue Anfrage von der Play & Jump Website',
-                    message=message,
+                    body=message,
                     from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=['dlktsprdct@gmail.com'],
-                    fail_silently=False,
+                    to=['dlktsprdct@gmail.com'],
                 )
+                email.content_subtype = 'plain'
+                email.encoding = 'utf-8'
+                email.send(fail_silently=False)
                 
                 # Отправляем подтверждение клиенту (если указан email)
                 if customer_email:
@@ -606,13 +624,15 @@ Anfrage-Details:
                         
                     confirmation_message += f"\nGesamt: {final_total}€"
                     
-                    send_mail(
+                    confirmation_email = EmailMessage(
                         subject='Ihre Anfrage wurde erhalten - Play & Jump',
-                        message=confirmation_message,
+                        body=confirmation_message,
                         from_email=settings.DEFAULT_FROM_EMAIL,
-                        recipient_list=[customer_email],
-                        fail_silently=True,
+                        to=[customer_email],
                     )
+                    confirmation_email.content_subtype = 'plain'
+                    confirmation_email.encoding = 'utf-8'
+                    confirmation_email.send(fail_silently=True)
                 
                 # Очищаем корзину и данные доставки только при успешной отправке заявки
                 request.session['cart'] = {}
@@ -678,11 +698,11 @@ def cart_count(request):
             del cart_items[key]
         request.session['cart'] = cart_items
         request.session.modified = True
-        print(f"DEBUG cart_count: Removed invalid items: {invalid_keys}")
+        logger.debug(f"Removed invalid items: {invalid_keys}")
     
     # Отладочная информация
-    print(f"DEBUG cart_count: cart_items = {cart_items}")
-    print(f"DEBUG cart_count: valid_count = {valid_count}")
+    logger.debug(f"cart_items = {cart_items}")
+    logger.debug(f"valid_count = {valid_count}")
     
     return JsonResponse({'count': valid_count})
 

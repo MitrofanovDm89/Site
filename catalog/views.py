@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.views import View
 import json
-from .models import Product, Category, Availability, Booking, Service, News
+from .models import Product, Category, Availability, Booking, News, MissingProduct
 
 
 def catalog_index(request):
@@ -314,34 +314,18 @@ def category_detail(request, slug):
 def product_detail(request, slug):
     product = get_object_or_404(Product, slug=slug, is_active=True)
 
-    # Всегда включаем два конкретных товара
-    fixed_products = []
-    
-    # Gebläse Schalldämmung (ID 30)
-    try:
-        geblaese = Product.objects.get(id=30, is_active=True)
-        if geblaese.id != product.id:  # Не показываем текущий товар
-            fixed_products.append(geblaese)
-    except Product.DoesNotExist:
-        pass
-    
-    # Stromerzeuger (ID 35)
-    try:
-        stromerzeuger = Product.objects.get(id=35, is_active=True)
-        if stromerzeuger.id != product.id:  # Не показываем текущий товар
-            fixed_products.append(stromerzeuger)
-    except Product.DoesNotExist:
-        pass
+    # Получаем отсутствующие товары из админки (максимум 2)
+    missing_products = MissingProduct.get_active_missing_products(limit=2)
     
     # Добавляем случайные товары из той же категории до общего количества 4
-    # Исключаем текущий товар и уже добавленные фиксированные
-    excluded_ids = [product.id] + [p.id for p in fixed_products]
+    # Исключаем текущий товар и уже добавленные отсутствующие товары
+    excluded_ids = [product.id]
     additional_products = Product.objects.filter(
         category=product.category, 
         is_active=True
     ).exclude(id__in=excluded_ids).order_by('?')[:4]
     
-    # related_products содержит 4 случайных товара (без фиксированных)
+    # related_products содержит 4 случайных товара (без отсутствующих)
     related_products = list(additional_products)
 
     # Get booked dates for the next 3 months
@@ -367,7 +351,7 @@ def product_detail(request, slug):
     return render(request, 'catalog/product_detail.html', {
         'product': product,
         'related_products': related_products,
-        'fixed_products': fixed_products,
+        'missing_products': missing_products,
         'additional_products': additional_products,
         'booked_dates': json.dumps(booked_dates),
         'bookings': bookings,

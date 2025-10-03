@@ -125,7 +125,7 @@
                            onchange="updateDeliveryOption('delivery')"
                            class="w-4 h-4 text-teal-600 bg-gray-100 border-gray-300 focus:ring-teal-500">
                     <label for="delivery-delivery" class="ml-3 text-lg font-medium text-gray-900">
-                        Lieferung + Aufbau/Abbau (60€)
+                        Lieferung + Aufbau/Abbau (70€)
                     </label>
                     {% if delivery_address %}
                     <button onclick="openDeliveryDetailsModal()" 
@@ -166,8 +166,9 @@
                 
                 <div class="mt-4 p-4 bg-blue-50 rounded-lg">
                     <p class="text-sm text-blue-800">
-                        <strong>Hinweis:</strong> Die Lieferung erfolgt im Umkreis von 30 km von unserem Unternehmen. 
-                        Inklusive Aufbau, Abbau und Demontage der Ausrüstung.
+                        <strong>Hinweis:</strong> Die Lieferung erfolgt im Umkreis von 30 km von unserem Unternehmen (70€). 
+                        Jeder zusätzliche Kilometer kostet 50 Cent. Inklusive Aufbau, Abbau und Demontage der Ausrüstung.
+                        Ab Januar 2026: Preise + Mehrwertsteuer!
                     </p>
                 </div>
             </div>
@@ -206,7 +207,9 @@
                                id="customer-name" 
                                name="customer_name"
                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                               placeholder="Ihr Name">
+                               placeholder="Ihr Name"
+                               autocomplete="off"
+                               data-lpignore="true">
                     </div>
                     
                     <div>
@@ -218,6 +221,8 @@
                                name="customer_email"
                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                                placeholder="ihre.email@example.com"
+                               autocomplete="off"
+                               data-lpignore="true"
                                required>
                     </div>
                 </div>
@@ -231,7 +236,9 @@
                                id="customer-phone" 
                                name="customer_phone"
                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-                               placeholder="+49 123 456789">
+                               placeholder="+49 123 456789"
+                               autocomplete="off"
+                               data-lpignore="true">
                     </div>
                     
                     <div class="flex items-end">
