@@ -134,13 +134,13 @@ CKEDITOR_CONFIGS = {
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Email Configuration
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Для разработки
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # Для продакшена
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Для разработки
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # Для продакшена
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'dlktsprdct@gmail.com'
-EMAIL_HOST_PASSWORD = 'ВСТАВЬТЕ_СЮДА_ПАРОЛЬ_ПРИЛОЖЕНИЯ'  # Пароль приложения Gmail
+EMAIL_HOST_PASSWORD = 'ЗАМЕНИТЕ_НА_ПАРОЛЬ_ПРИЛОЖЕНИЯ'  # Пароль приложения Gmail
 DEFAULT_FROM_EMAIL = 'dlktsprdct@gmail.com'
 
 # Email encoding settings
