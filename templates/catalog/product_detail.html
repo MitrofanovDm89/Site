@@ -470,11 +470,17 @@ class AvailabilityCalendar {
                 classes += ' bg-gray-100 text-gray-400 cursor-not-allowed';
             } else if (isBooked) {
                 classes += ' bg-red-500 text-white cursor-not-allowed';
-            } else if (isStartDate) {
+            } else if (isStartDate && this.selectionState === 'complete') {
+                // Темно-зеленая для завершенного начала
                 classes += ' bg-teal-600 text-white font-bold ring-2 ring-teal-800';
-            } else if (isEndDate) {
+            } else if (isEndDate && this.selectionState === 'complete') {
+                // Темно-зеленая для завершенного конца  
                 classes += ' bg-teal-600 text-white font-bold ring-2 ring-teal-800';
+            } else if (isStartDate && this.selectionState === 'start_temp') {
+                // Светло-зеленая для временного начала
+                classes += ' bg-teal-200 text-teal-900 font-semibold border-2 border-teal-400';
             } else if (isInRange) {
+                // Светло-зеленая для середины
                 classes += ' bg-teal-200 text-teal-900';
             } else {
                 classes += ' hover:bg-teal-100 text-gray-900';
@@ -565,22 +571,22 @@ class AvailabilityCalendar {
         document.addEventListener('click', this._clickHandler);
     }
     
-    // Новая логика выбора дат: первый клик - начало, второй - конец, третий - сброс
+    // Улучшенная логика выбора дат: первый клик - светло-зеленая, второй - завершает выбор
     handleDateClick(selectedDate) {
         if (this.selectionState === 'none') {
-            // Первый клик - устанавливаем начальную дату
+            // Первый клик - устанавливаем начальную дату (светло-зеленая)
             this.startDate = new Date(selectedDate);
             this.endDate = null;
-            this.selectionState = 'start';
-        } else if (this.selectionState === 'start') {
-            // Второй клик - устанавливаем конечную дату
+            this.selectionState = 'start_temp';
+        } else if (this.selectionState === 'start_temp') {
+            // Второй клик - завершаем выбор
             if (selectedDate >= this.startDate) {
                 this.endDate = new Date(selectedDate);
                 this.selectionState = 'complete';
             } else {
                 // Если конечная дата раньше начальной, меняем их местами
-                this.endDate = new Date(this.startDate);
                 this.startDate = new Date(selectedDate);
+                this.endDate = new Date(this.startDate);
                 this.selectionState = 'complete';
             }
         } else if (this.selectionState === 'complete') {
@@ -631,11 +637,11 @@ class AvailabilityCalendar {
             if (addToCartBtn) {
                 addToCartBtn.classList.remove('hidden');
             }
-        } else if (this.startDate) {
-            // Скрываем кнопку, если выбран только один день
+        } else if (this.startDate && this.selectionState === 'start_temp') {
+            // Показываем кнопку даже для одного дня (считаем как один день бронировки)
             const addToCartBtn = document.getElementById('add-to-cart-from-calendar');
             if (addToCartBtn) {
-                addToCartBtn.classList.add('hidden');
+                addToCartBtn.classList.remove('hidden');
             }
         }
     }
@@ -765,10 +771,22 @@ function openDateSelectionModal() {
     document.getElementById('end-date').min = today;
     
     // Use dates from calendar if they are selected, otherwise use defaults
-    if (window.calendar && window.calendar.startDate && window.calendar.endDate) {
-        // Use selected dates from calendar
+    if (window.calendar && window.calendar.startDate) {
+        // Use selected date from calendar
         document.getElementById('start-date').value = window.calendar.formatDateForData(window.calendar.startDate);
-        document.getElementById('end-date').value = window.calendar.formatDateForData(window.calendar.endDate);
+        
+        if (window.calendar.endDate) {
+            // Есть конечная дата - используем её
+            document.getElementById('end-date').value = window.calendar.formatDateForData(window.calendar.endDate);
+        } else if (window.calendar.selectionState === 'start_temp') {
+            // Только один день - дублируем дату (от и до одинаково)
+            document.getElementById('end-date').value = window.calendar.formatDateForData(window.calendar.startDate);
+        } else {
+            // По умолчанию - завтра
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            document.getElementById('end-date').value = tomorrow.toISOString().split('T')[0];
+        }
     } else {
         // Set default dates (today and tomorrow)
         const tomorrow = new Date();
