@@ -736,3 +736,100 @@ def neuigkeiten(request):
 def cookie_richtlinie(request):
     """Cookie-Richtlinie (EU) page view"""
     return render(request, 'main/cookie_richtlinie.html')
+
+
+def send_contact(request):
+    """Отправка сообщения через контактную форму"""
+    if request.method == 'POST':
+        try:
+            # Получаем данные из JSON
+            data = json.loads(request.body)
+            first_name = data.get('first_name', '').strip()
+            last_name = data.get('last_name', '').strip()
+            email = data.get('email', '').strip()
+            phone = data.get('phone', '').strip()
+            message = data.get('message', '').strip()
+            
+            # Сохраняем оригинальные данные с немецкими символами
+            # Заменяем символы только в email тексте для Windows консоли
+            
+            # Валидация
+            if not email:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'E-Mail-Adresse ist erforderlich'
+                })
+            
+            if not message:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Nachricht ist erforderlich'
+                })
+            
+            # Формируем имя
+            full_name = f"{first_name} {last_name}".strip()
+            if not full_name:
+                full_name = "Unbekannt"
+            
+            # Функция для замены символов только для Windows консоли
+            def console_safe(text):
+                if text:
+                    replacements = {
+                        'ü': 'ue', 'Ü': 'Ue',
+                        'ö': 'oe', 'Ö': 'Oe', 
+                        'ä': 'ae', 'Ä': 'Ae',
+                        'ß': 'ss'
+                    }
+                    for old, new in replacements.items():
+                        text = text.replace(old, new)
+                return text
+            
+            # Формируем текст письма с оригинальными символами
+            email_subject = f"Neue Kontaktanfrage von {full_name}"
+            email_body = f"""
+Neue Kontaktanfrage über die Website:
+
+Name: {full_name}
+E-Mail: {email}
+Telefon: {phone or 'Nicht angegeben'}
+
+Nachricht:
+{message}
+
+---
+Diese Nachricht wurde über das Kontaktformular auf playandjump.de gesendet.
+"""
+            
+            # Отправляем email
+            try:
+                send_mail(
+                    subject=email_subject,
+                    message=email_body,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[settings.DEFAULT_FROM_EMAIL],
+                    fail_silently=False,
+                )
+            except UnicodeEncodeError:
+                # Если ошибка кодировки, используем безопасную версию для консоли
+                logger.warning("Unicode encoding error, using console-safe version")
+                send_mail(
+                    subject=console_safe(email_subject),
+                    message=console_safe(email_body),
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[settings.DEFAULT_FROM_EMAIL],
+                    fail_silently=False,
+                )
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Ihre Nachricht wurde erfolgreich gesendet!'
+            })
+            
+        except Exception as e:
+            logger.error(f"Error sending contact form: {e}")
+            return JsonResponse({
+                'success': False,
+                'message': 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.'
+            })
+    
+    return JsonResponse({'success': False, 'message': 'Method not allowed'})
