@@ -176,6 +176,8 @@ coverage.xml
 samples/
 examples/
 reference_projects/
+SAMPLE/
+SAMPLE1/
 
 # Debug and test files
 test-*.html

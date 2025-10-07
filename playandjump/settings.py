@@ -134,8 +134,8 @@ CKEDITOR_CONFIGS = {
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Email Configuration
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Для разработки
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # Для продакшена
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Для разработки
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # Для тестирования
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True

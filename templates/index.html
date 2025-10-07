@@ -36,7 +36,7 @@
       <span class="gradient-text">Play & Jump</span>
     </h1>
          <div class="h-24 md:h-28 flex items-center justify-center mb-8">
-       <p id="hero-description" class="mobile-text md:text-xl text-white/90 max-w-3xl mx-auto animate-fade-in-up text-center">
+       <p id="hero-description" class="mobile-text md:text-xl text-white max-w-3xl mx-auto animate-fade-in-up text-center hero-description-text">
          Seit vielen Jahren bieten wir hochwertige Hüpfburgen, Gesellschaftsspiele und Unterhaltungsgeräte 
          für alle Altersgruppen an. Wir sind Ihr Partner für unvergessliche Kinderfeste und Events.
        </p>
@@ -681,12 +681,18 @@ function toggleTestimonial(id) {
          /* Hero title with better readability */
          .hero-title {
              color: #ffffff;
-             text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.9);
+             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(0, 0, 0, 0.5);
          }
          
          .hero-title .gradient-text {
              color: #ffffff;
-             text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.9);
+             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(0, 0, 0, 0.5);
+         }
+         
+         /* Hero description text with same shadow style as title */
+         .hero-description-text {
+             color: #ffffff;
+             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(0, 0, 0, 0.5);
          }
          
          /* Touch-friendly buttons */
