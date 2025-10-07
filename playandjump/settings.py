@@ -139,9 +139,9 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Для ра�
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'dlktsprdct@gmail.com'
-EMAIL_HOST_PASSWORD = 'ЗАМЕНИТЕ_НА_ПАРОЛЬ_ПРИЛОЖЕНИЯ'  # Пароль приложения Gmail
-DEFAULT_FROM_EMAIL = 'dlktsprdct@gmail.com'
+EMAIL_HOST_USER = 'playandjump.de@gmail.com'
+EMAIL_HOST_PASSWORD = 'kfuowvtoqsmxffng'  # Пароль приложения Gmail
+DEFAULT_FROM_EMAIL = 'playandjump.de@gmail.com'
 
 # Email encoding settings
 EMAIL_CHARSET = 'utf-8' 
