@@ -800,13 +800,13 @@ Nachricht:
 Diese Nachricht wurde über das Kontaktformular auf playandjump.de gesendet.
 """
             
-            # Отправляем email
+            # Отправляем email на правильный адрес
             try:
                 send_mail(
                     subject=email_subject,
                     message=email_body,
                     from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[settings.DEFAULT_FROM_EMAIL],
+                    recipient_list=['playandjump.de@gmail.com'],
                     fail_silently=False,
                 )
             except UnicodeEncodeError:
@@ -816,7 +816,7 @@ Diese Nachricht wurde über das Kontaktformular auf playandjump.de gesendet.
                     subject=console_safe(email_subject),
                     message=console_safe(email_body),
                     from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[settings.DEFAULT_FROM_EMAIL],
+                    recipient_list=['playandjump.de@gmail.com'],
                     fail_silently=False,
                 )
             
