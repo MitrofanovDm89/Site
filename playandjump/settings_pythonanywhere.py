@@ -19,7 +19,9 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     '.pythonanywhere.com',
-    'yourusername.pythonanywhere.com',  # Замените на ваш домен
+    'dlktsprdct.pythonanywhere.com',
+    'playandjump.de',
+    'www.playandjump.de',
 ]
 
 # Application definition
@@ -31,6 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'whitenoise.runserver_nostatic',  # Для статических файлов
+    'ckeditor',
     'catalog',
     'main',
 ]
@@ -105,10 +108,40 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'dlktsprdct@gmail.com'
+EMAIL_HOST_USER = 'playandjump.de@gmail.com'
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'ЗАМЕНИТЕ_НА_ПАРОЛЬ_ПРИЛОЖЕНИЯ')
-DEFAULT_FROM_EMAIL = 'dlktsprdct@gmail.com'
+DEFAULT_FROM_EMAIL = 'playandjump.de@gmail.com'
 EMAIL_CHARSET = 'utf-8'
+
+# CKEditor Configuration
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'Custom',
+        'toolbar_Custom': [
+            ['Bold', 'Italic', 'Underline'],
+            ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent'],
+            ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+            ['Link', 'Unlink'],
+            ['RemoveFormat', 'Source'],
+        ],
+        'height': 300,
+        'width': '100%',
+        'removePlugins': 'stylesheetparser',
+        'allowedContent': True,
+    },
+    'product_description': {
+        'toolbar': 'Simple',
+        'toolbar_Simple': [
+            ['Bold', 'Italic'],
+            ['NumberedList', 'BulletedList'],
+            ['Link', 'Unlink'],
+        ],
+        'height': 200,
+        'width': '100%',
+        'removePlugins': 'stylesheetparser',
+        'allowedContent': True,
+    }
+}
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField' 

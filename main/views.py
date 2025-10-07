@@ -578,7 +578,7 @@ Ausgewählte Produkte:
                     subject='Neue Anfrage von der Play & Jump Website',
                     body=message,
                     from_email=settings.DEFAULT_FROM_EMAIL,
-                    to=['dlktsprdct@gmail.com'],
+                    to=['playandjump.de@gmail.com'],
                 )
                 email.content_subtype = 'plain'
                 email.encoding = 'utf-8'
