@@ -129,7 +129,9 @@ class Booking(models.Model):
     
     @property
     def duration_days(self):
-        return (self.end_date - self.start_date).days + 1
+        if self.end_date and self.start_date:
+            return (self.end_date - self.start_date).days + 1
+        return 0
 
 
     def save(self, *args, **kwargs):
