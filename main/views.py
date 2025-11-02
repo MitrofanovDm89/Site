@@ -8,6 +8,50 @@ import logging
 from catalog.models import Product
 from datetime import datetime, date
 
+def format_date_dmy(date_str):
+    """Преобразует дату из формата YYYY-MM-DD в DD-MM-YYYY"""
+    if not date_str:
+        return date_str
+    try:
+        # Если это ISO datetime формат (2025-11-05T10:00), берем только дату
+        if 'T' in date_str:
+            date_part = date_str.split('T')[0]
+        else:
+            date_part = date_str
+        
+        date_obj = datetime.strptime(date_part, '%Y-%m-%d').date()
+        return date_obj.strftime('%d-%m-%Y')
+    except (ValueError, AttributeError):
+        # Если формат не подходит, возвращаем как есть
+        return date_str
+
+def format_datetime_dmy(datetime_str):
+    """Преобразует datetime из формата YYYY-MM-DDTHH:MM в DD-MM-YYYY HH:MM"""
+    if not datetime_str:
+        return datetime_str
+    try:
+        if 'T' in datetime_str:
+            # ISO datetime формат (2025-11-05T10:00)
+            dt = datetime.strptime(datetime_str.split('+')[0].split('.')[0], '%Y-%m-%dT%H:%M')
+            return dt.strftime('%d-%m-%Y %H:%M')
+        else:
+            # Просто дата
+            return format_date_dmy(datetime_str)
+    except (ValueError, AttributeError):
+        # Если формат не подходит, возвращаем как есть
+        return datetime_str
+
+def format_price(price):
+    """Форматирует цену, убирая .0 если это целое число"""
+    try:
+        price_float = float(price)
+        if price_float.is_integer():
+            return str(int(price_float))
+        else:
+            return str(price_float)
+    except (ValueError, TypeError):
+        return str(price)
+
 logger = logging.getLogger(__name__)
 
 
@@ -540,9 +584,13 @@ Ausgewählte Produkte:
             
             for product in products:
                 if product.get('start_date') and product.get('end_date'):
-                    message += f"- {product['title']} ({product['start_date']} bis {product['end_date']}, {product['duration_days']} Tage) = {product['subtotal']}€\n"
+                    start_date_formatted = format_date_dmy(product['start_date'])
+                    end_date_formatted = format_date_dmy(product['end_date'])
+                    subtotal_formatted = format_price(product['subtotal'])
+                    message += f"- {product['title']} ({start_date_formatted} bis {end_date_formatted}, {product['duration_days']} Tage) = {subtotal_formatted}€\n"
                 else:
-                    message += f"- {product['title']} = {product['subtotal']}€\n"
+                    subtotal_formatted = format_price(product['subtotal'])
+                    message += f"- {product['title']} = {subtotal_formatted}€\n"
             
             # Добавляем информацию о доставке
             delivery_option = request.session.get('delivery_option', 'pickup')
@@ -550,9 +598,9 @@ Ausgewählte Produkte:
             total_price = sum(product['subtotal'] for product in products)
             final_total = total_price + delivery_cost
             
-            message += f"\nMietpreis: {total_price}€"
+            message += f"\nMietpreis: {format_price(total_price)}€"
             if delivery_option == 'delivery':
-                message += f"\nLieferung + Aufbau/Abbau: {delivery_cost}€"
+                message += f"\nLieferung + Aufbau/Abbau: {format_price(delivery_cost)}€"
                 
                 # Добавляем детали доставки
                 delivery_address = request.session.get('delivery_address', '')
@@ -564,13 +612,15 @@ Ausgewählte Produkte:
                     message += f"\n\nLieferdetails:"
                     message += f"\nAdresse: {delivery_address}"
                     if delivery_datetime:
-                        message += f"\nLieferung: {delivery_datetime}"
+                        delivery_datetime_formatted = format_datetime_dmy(delivery_datetime)
+                        message += f"\nLieferung: {delivery_datetime_formatted}"
                     if return_datetime:
-                        message += f"\nRückgabe: {return_datetime}"
+                        return_datetime_formatted = format_datetime_dmy(return_datetime)
+                        message += f"\nRückgabe: {return_datetime_formatted}"
                     if delivery_instructions:
                         message += f"\nAnweisungen: {delivery_instructions}"
                 
-            message += f"\nGesamt: {final_total}€"
+            message += f"\nGesamt: {format_price(final_total)}€"
             
             # Отправляем email администратору
             try:
@@ -598,13 +648,17 @@ Anfrage-Details:
                     
                     for product in products:
                         if product.get('start_date') and product.get('end_date'):
-                            confirmation_message += f"- {product['title']} ({product['start_date']} bis {product['end_date']}, {product['duration_days']} Tage) = {product['subtotal']}€\n"
+                            start_date_formatted = format_date_dmy(product['start_date'])
+                            end_date_formatted = format_date_dmy(product['end_date'])
+                            subtotal_formatted = format_price(product['subtotal'])
+                            confirmation_message += f"- {product['title']} ({start_date_formatted} bis {end_date_formatted}, {product['duration_days']} Tage) = {subtotal_formatted}€\n"
                         else:
-                            confirmation_message += f"- {product['title']} = {product['subtotal']}€\n"
+                            subtotal_formatted = format_price(product['subtotal'])
+                            confirmation_message += f"- {product['title']} = {subtotal_formatted}€\n"
                     
-                    confirmation_message += f"\nMietpreis: {total_price}€"
+                    confirmation_message += f"\nMietpreis: {format_price(total_price)}€"
                     if delivery_option == 'delivery':
-                        confirmation_message += f"\nLieferung + Aufbau/Abbau: {delivery_cost}€"
+                        confirmation_message += f"\nLieferung + Aufbau/Abbau: {format_price(delivery_cost)}€"
                         
                         # Добавляем детали доставки
                         delivery_address = request.session.get('delivery_address', '')
@@ -616,13 +670,15 @@ Anfrage-Details:
                             confirmation_message += f"\n\nLieferdetails:"
                             confirmation_message += f"\nAdresse: {delivery_address}"
                             if delivery_datetime:
-                                confirmation_message += f"\nLieferung: {delivery_datetime}"
+                                delivery_datetime_formatted = format_datetime_dmy(delivery_datetime)
+                                confirmation_message += f"\nLieferung: {delivery_datetime_formatted}"
                             if return_datetime:
-                                confirmation_message += f"\nRückgabe: {return_datetime}"
+                                return_datetime_formatted = format_datetime_dmy(return_datetime)
+                                confirmation_message += f"\nRückgabe: {return_datetime_formatted}"
                             if delivery_instructions:
                                 confirmation_message += f"\nAnweisungen: {delivery_instructions}"
                         
-                    confirmation_message += f"\nGesamt: {final_total}€"
+                    confirmation_message += f"\nGesamt: {format_price(final_total)}€"
                     
                     confirmation_email = EmailMessage(
                         subject='Ihre Anfrage wurde erhalten - Play & Jump',
