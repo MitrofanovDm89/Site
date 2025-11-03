@@ -12,6 +12,10 @@ class Category(models.Model):
     image = models.ImageField(upload_to='categories/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        verbose_name = "Kategorie"
+        verbose_name_plural = "Kategorien"
+
     def __str__(self):
         return self.name
 
@@ -29,6 +33,10 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products', null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Produkt"
+        verbose_name_plural = "Produkte"
 
     def __str__(self):
         return self.title
@@ -51,6 +59,8 @@ class ProductImage(models.Model):
     
     class Meta:
         ordering = ['order', 'created_at']
+        verbose_name = "Produktbild"
+        verbose_name_plural = "Produktbilder"
     
     def __str__(self):
         return f"{self.product.title} - Image {self.order + 1}"
@@ -58,22 +68,22 @@ class ProductImage(models.Model):
 
 class News(models.Model):
     """Модель для новостей"""
-    title = models.CharField(max_length=200, verbose_name="Заголовок")
+    title = models.CharField(max_length=200, verbose_name="Titel")
     slug = models.SlugField(unique=True, verbose_name="URL")
-    content = models.TextField(verbose_name="Содержание")
-    excerpt = models.TextField(max_length=500, blank=True, verbose_name="Краткое описание")
-    image = models.ImageField(upload_to='news/', blank=True, null=True, verbose_name="Главное изображение")
-    video_url = models.URLField(blank=True, null=True, verbose_name="URL видео (YouTube/Vimeo)")
-    is_published = models.BooleanField(default=True, verbose_name="Опубликовано")
-    published_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата публикации")
-    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
-    author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Автор")
-    featured = models.BooleanField(default=False, verbose_name="Рекомендуемая новость")
+    content = models.TextField(verbose_name="Inhalt")
+    excerpt = models.TextField(max_length=500, blank=True, verbose_name="Kurzbeschreibung")
+    image = models.ImageField(upload_to='news/', blank=True, null=True, verbose_name="Hauptbild")
+    video_url = models.URLField(blank=True, null=True, verbose_name="Video-URL (YouTube/Vimeo)")
+    is_published = models.BooleanField(default=True, verbose_name="Veröffentlicht")
+    published_at = models.DateTimeField(auto_now_add=True, verbose_name="Veröffentlichungsdatum")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Aktualisierungsdatum")
+    author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Autor")
+    featured = models.BooleanField(default=False, verbose_name="Empfohlene Neuigkeit")
     
     class Meta:
         ordering = ['-published_at']
-        verbose_name = "Новость"
-        verbose_name_plural = "Новости"
+        verbose_name = "Neuigkeit"
+        verbose_name_plural = "Neuigkeiten"
     
     def __str__(self):
         return self.title
@@ -95,6 +105,8 @@ class Availability(models.Model):
 
     class Meta:
         ordering = ['start_date']
+        verbose_name = "Verfügbarkeit"
+        verbose_name_plural = "Verfügbarkeiten"
 
     def __str__(self):
         status = "verfügbar" if self.is_available else "nicht verfügbar"
@@ -123,6 +135,8 @@ class Booking(models.Model):
     
     class Meta:
         ordering = ['-created_at']
+        verbose_name = "Buchung"
+        verbose_name_plural = "Buchungen"
     
     def __str__(self):
         return f"{self.customer_name} - {self.product.title} ({self.start_date} bis {self.end_date})"
@@ -139,15 +153,15 @@ class Booking(models.Model):
 
 class MissingProduct(models.Model):
     """Модель для управления дополнительными товарами в разделе Zusätzliche Produkte"""
-    title = models.CharField(max_length=200, verbose_name="Название")
+    title = models.CharField(max_length=200, verbose_name="Titel")
     slug = models.SlugField(unique=True, verbose_name="URL")
-    description = models.TextField(blank=True, verbose_name="Описание")
-    image = models.ImageField(upload_to="missing_products/", verbose_name="Изображение")
-    price = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True, verbose_name="Цена")
-    is_active = models.BooleanField(default=True, verbose_name="Активен")
-    order = models.PositiveIntegerField(default=0, verbose_name="Порядок отображения")
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
-    updated_at = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+    description = models.TextField(blank=True, verbose_name="Beschreibung")
+    image = models.ImageField(upload_to="missing_products/", verbose_name="Bild")
+    price = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True, verbose_name="Preis")
+    is_active = models.BooleanField(default=True, verbose_name="Aktiv")
+    order = models.PositiveIntegerField(default=0, verbose_name="Anzeigereihenfolge")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Erstellungsdatum")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Aktualisierungsdatum")
     
     class Meta:
         ordering = ['order', 'created_at']

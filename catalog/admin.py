@@ -49,16 +49,16 @@ class NewsAdmin(admin.ModelAdmin):
     date_hierarchy = 'published_at'
     
     fieldsets = (
-        ('Основная информация', {
+        ('Grundinformationen', {
             'fields': ('title', 'slug', 'excerpt', 'content')
         }),
-        ('Медиа', {
+        ('Medien', {
             'fields': ('image', 'image_preview', 'video_url')
         }),
-        ('Настройки', {
+        ('Einstellungen', {
             'fields': ('is_published', 'featured', 'author')
         }),
-        ('Даты', {
+        ('Daten', {
             'fields': ('published_at', 'updated_at'),
             'classes': ('collapse',)
         }),
@@ -70,8 +70,8 @@ class NewsAdmin(admin.ModelAdmin):
                 '<img src="{}" style="max-height: 100px; max-width: 150px; border-radius: 8px;" />',
                 obj.image.url
             )
-        return "Нет изображения"
-    image_preview.short_description = "Превью"
+        return "Kein Bild"
+    image_preview.short_description = "Vorschau"
     
     def save_model(self, request, obj, form, change):
         if not change:  # Если это новая новость
@@ -202,7 +202,7 @@ class AvailabilityAdmin(admin.ModelAdmin):
 
 
 # Настройка админки
-admin.site.site_header = "Play & Jump Admin"
+admin.site.site_header = "Play & Jump Verwaltung"
 admin.site.site_title = "Play & Jump"
 admin.site.index_title = "Willkommen in der Play & Jump Verwaltung"
 
@@ -251,16 +251,16 @@ class MissingProductAdmin(admin.ModelAdmin):
     readonly_fields = ['image_preview', 'created_at', 'updated_at']
     
     fieldsets = (
-        ('Основная информация', {
+        ('Grundinformationen', {
             'fields': ('title', 'slug', 'description')
         }),
-        ('Цена и статус', {
+        ('Preis & Status', {
             'fields': ('price', 'is_active', 'order')
         }),
-        ('Изображение', {
+        ('Bild', {
             'fields': ('image', 'image_preview')
         }),
-        ('Даты', {
+        ('Daten', {
             'fields': ('created_at', 'updated_at'),
             'classes': ('collapse',)
         }),
@@ -272,8 +272,8 @@ class MissingProductAdmin(admin.ModelAdmin):
                 '<img src="{}" style="max-height: 100px; max-width: 100px;" />',
                 obj.image.url
             )
-        return "Нет изображения"
-    image_preview.short_description = 'Превью'
+        return "Kein Bild"
+    image_preview.short_description = 'Vorschau'
     
     def get_queryset(self, request):
         """Ограничиваем количество записей до 2"""
