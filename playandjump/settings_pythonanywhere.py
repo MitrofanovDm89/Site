@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # WhiteNoise не нужен на PythonAnywhere - статические файлы отдаются через Web → Static files
+    'whitenoise.runserver_nostatic',  # Для статических файлов
     'ckeditor',
     'catalog',
     'main',
@@ -40,7 +40,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    # WhiteNoise middleware не нужен на PythonAnywhere - статические файлы отдаются через Web → Static files
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Для статических файлов
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -69,11 +69,9 @@ STATICFILES_DIRS = [
 ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Статические файлы на PythonAnywhere
-# На PythonAnywhere статические файлы отдаются через Web → Static files,
-# поэтому используем стандартный Django storage без манифеста
-# WhiteNoise не используется, так как статика обслуживается встроенным механизмом PythonAnywhere
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+# WhiteNoise для статических файлов
+# Используем версию без манифеста для PythonAnywhere
+STATICFILES_STORAGE = 'whitenoise.storage.WhiteNoiseStaticFilesStorage'
 
 # Media files
 MEDIA_URL = '/media/'
