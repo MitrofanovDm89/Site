@@ -70,8 +70,9 @@ STATICFILES_DIRS = [
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # WhiteNoise для статических файлов
-# Используем версию без манифеста, так как статические файлы отдаются через Web → Static files
-STATICFILES_STORAGE = 'whitenoise.storage.WhiteNoiseStaticFilesStorage'
+# На PythonAnywhere статические файлы отдаются через Web → Static files,
+# поэтому используем стандартный Django storage без манифеста
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 # Media files
 MEDIA_URL = '/media/'
