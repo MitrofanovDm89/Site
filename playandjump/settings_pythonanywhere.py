@@ -70,7 +70,8 @@ STATICFILES_DIRS = [
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # WhiteNoise для статических файлов
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+# Используем версию без манифеста, так как статические файлы отдаются через Web → Static files
+STATICFILES_STORAGE = 'whitenoise.storage.WhiteNoiseStaticFilesStorage'
 
 # Media files
 MEDIA_URL = '/media/'
