@@ -24,6 +24,13 @@ ALLOWED_HOSTS = [
     'www.playandjump.de',
 ]
 
+# CSRF trusted origins - КРИТИЧЕСКИ ВАЖНО для работы сайта!
+CSRF_TRUSTED_ORIGINS = [
+    'https://playandjump.de',
+    'https://www.playandjump.de',
+    'https://dlktsprdct.pythonanywhere.com',
+]
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
