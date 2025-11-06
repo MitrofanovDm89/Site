@@ -19,7 +19,7 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     '.pythonanywhere.com',
-    'dlktsprdct.pythonanywhere.com',
+    'AlexanderSteinke.pythonanywhere.com',  # ← НОВЫЙ USERNAME
     'playandjump.de',
     'www.playandjump.de',
 ]
@@ -28,7 +28,7 @@ ALLOWED_HOSTS = [
 CSRF_TRUSTED_ORIGINS = [
     'https://playandjump.de',
     'https://www.playandjump.de',
-    'https://dlktsprdct.pythonanywhere.com',
+    'https://AlexanderSteinke.pythonanywhere.com',  # ← НОВЫЙ USERNAME
 ]
 
 # Application definition
