@@ -190,7 +190,7 @@ def create_booking(request):
             except Product.DoesNotExist:
                 return JsonResponse({
                     'success': False,
-                    'error': 'Продукт не найден'
+                    'error': 'Produkt nicht gefunden'
                 }, status=400)
             
             # Преобразуем строки дат в объекты date
@@ -202,7 +202,7 @@ def create_booking(request):
             if end_date < start_date:
                 return JsonResponse({
                     'success': False,
-                    'error': 'Дата окончания должна быть не раньше даты начала'
+                    'error': 'Das Enddatum muss am oder nach dem Startdatum liegen'
                 }, status=400)
             
             # Рассчитываем количество дней и общую цену
@@ -269,7 +269,7 @@ def update_booking(request, booking_id):
                 if booking.end_date < booking.start_date:
                     return JsonResponse({
                         'success': False,
-                        'error': 'Дата окончания должна быть не раньше даты начала'
+                        'error': 'Das Enddatum muss am oder nach dem Startdatum liegen'
                     }, status=400)
                 
                 # Рассчитываем новую цену

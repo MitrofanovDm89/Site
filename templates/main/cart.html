@@ -390,7 +390,7 @@
             </div>
             
             <form id="delivery-details-form" class="space-y-6">
-                <!-- Скрытые поля с датами аренды для валидации -->
+                <!-- Hidden fields for rental dates validation -->
                 <input type="hidden" id="rental-start-date" value="">
                 <input type="hidden" id="rental-end-date" value="">
                 
@@ -474,14 +474,16 @@
 
 {% block extra_js %}
 <script>
-// Получаем CSRF токен
+//
+
 function getCSRFToken() {
     const metaTag = document.querySelector('meta[name="csrf-token"]');
     if (metaTag) {
         return metaTag.getAttribute('content');
     }
     return null;
-    // Способ доставки не сбрасывается при получении CSRF токена
+    //
+
 }
 
 document.getElementById('inquiry-form').addEventListener('submit', function(e) {
@@ -489,7 +491,8 @@ document.getElementById('inquiry-form').addEventListener('submit', function(e) {
     sendInquiry();
 });
 
-// Добавляем обработчик для формы доставки
+//
+
 document.getElementById('delivery-details-form').addEventListener('submit', function(e) {
     e.preventDefault();
     saveDeliveryDetails();
@@ -513,7 +516,8 @@ function removeFromCart(cartKey) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Способ доставки сбрасывается на pickup в backend только если корзина пуста
+            //
+
             location.reload();
         } else {
             showNotification(data.error, 'error');
@@ -537,20 +541,23 @@ function sendInquiry() {
         privacy_consent: formData.get('privacy_consent') === 'on'
     };
     
-    // Валидация
+    //
+
     if (!data.customer_email && !data.customer_phone) {
         showNotification('Bitte geben Sie mindestens eine E-Mail-Adresse oder Telefonnummer an.', 'error');
         return;
     }
     
-    // Проверка согласия на обработку персональных данных
+    //
+
     const privacyConsent = formData.get('privacy_consent');
     if (!privacyConsent) {
         showNotification('Bitte stimmen Sie der Verarbeitung Ihrer personenbezogenen Daten zu.', 'error');
         return;
     }
     
-    // Показываем индикатор загрузки
+    //
+
     const submitBtn = form.querySelector('button[type="submit"]');
     const originalText = submitBtn.innerHTML;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Wird gesendet...';
@@ -568,8 +575,10 @@ function sendInquiry() {
     .then(result => {
             if (result.success) {
                 showSuccessModal(result.message);
-                // Обновляем счетчик корзины в шапке
-                // Способ доставки сбрасывается на pickup в backend при очистке корзины
+                //
+
+                //
+
                 updateCartCount(0);
             } else {
                 showNotification(result.error, 'error');
@@ -580,7 +589,8 @@ function sendInquiry() {
         showNotification('Fehler beim Senden der Anfrage', 'error');
     })
     .finally(() => {
-        // Восстанавливаем кнопку
+        //
+
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
     });
@@ -589,13 +599,16 @@ function sendInquiry() {
 function showSuccessModal(message) {
     document.getElementById('success-message').textContent = message;
     document.getElementById('success-modal').classList.remove('hidden');
-    // Способ доставки сбрасывается на pickup в backend при очистке корзины
+    //
+
 }
 
 function closeSuccessModal() {
     document.getElementById('success-modal').classList.add('hidden');
-    // Перенаправляем на главную страницу
-    // Способ доставки уже сброшен на pickup в backend
+    //
+
+    //
+
     window.location.href = '{% url "main:home" %}';
 }
 
@@ -611,7 +624,8 @@ function showNotification(message, type) {
     setTimeout(() => {
         notification.remove();
     }, 5000);
-    // Способ доставки не сбрасывается при показе уведомлений
+    //
+
 }
 
 function updateCartCount(count) {
@@ -619,7 +633,8 @@ function updateCartCount(count) {
     cartBadges.forEach(badge => {
         badge.textContent = count;
     });
-    // Способ доставки не сбрасывается при обновлении счетчика корзины
+    //
+
 }
 
 function updateDeliveryOption(deliveryOption) {
@@ -636,31 +651,37 @@ function updateDeliveryOption(deliveryOption) {
     .then(response => response.json())
             .then(data => {
             if (data.success) {
-                // Обновляем отображение стоимости
+                //
+
                 document.querySelector('[data-delivery-cost]').textContent = data.delivery_cost + '€';
                 document.querySelector('[data-final-total]').textContent = data.final_total + '€';
                 
                 showNotification('Lieferoption aktualisiert', 'success');
                 
-                // Переключаем радио-кнопку на выбранный способ доставки
+                //
+
                 if (deliveryOption === 'delivery') {
                     document.getElementById('delivery-delivery').checked = true;
-                    // Открываем модальное окно для деталей
+                    //
+
                     setTimeout(() => {
                         openDeliveryDetailsModal();
-                    }, 500); // Небольшая задержка для показа уведомления
+                    }, 500); //
+
                 } else if (deliveryOption === 'pickup') {
                     document.getElementById('delivery-pickup').checked = true;
                 }
                 
-                // Если выбран pickup, скрываем детали доставки
+                //
+
                 if (deliveryOption === 'pickup') {
                     const deliveryDetails = document.querySelector('.ml-7.mt-3.p-4.bg-teal-50');
                     if (deliveryDetails) {
                         deliveryDetails.style.display = 'none';
                     }
                 } else if (deliveryOption === 'delivery') {
-                    // Если выбран delivery, показываем детали доставки
+                    //
+
                     const deliveryDetails = document.querySelector('.ml-7.mt-3.p-4.bg-teal-50');
                     if (deliveryDetails) {
                         deliveryDetails.style.display = 'block';
@@ -696,13 +717,15 @@ function editDates(cartKey, startDate, endDate, pricePerDay) {
     
     // Update price calculation
     updateEditPriceCalculation();
-    // Способ доставки не сбрасывается при редактировании дат
+    //
+
 }
 
 function closeDateEditModal() {
     document.getElementById('date-edit-modal').classList.add('hidden');
     window.currentEditingCartKey = null;
-    // Не сбрасываем способ доставки при закрытии модального окна редактирования дат
+    //
+
 }
 
 function updateEditPriceCalculation() {
@@ -725,7 +748,8 @@ function updateEditPriceCalculation() {
             document.getElementById('edit-total-price').textContent = '0€';
         }
     }
-    // Способ доставки не сбрасывается при расчете цены редактирования
+    //
+
 }
 
 function saveDateChanges() {
@@ -747,7 +771,8 @@ function saveDateChanges() {
     
     console.log('Saving date changes:', window.currentEditingCartKey, startDate, endDate);
     
-    // Отправляем запрос на обновление дат
+    //
+
     fetch('{% url "main:update_cart_dates" %}', {
         method: 'POST',
         headers: {
@@ -765,8 +790,10 @@ function saveDateChanges() {
         if (data.success) {
             showNotification('Daten erfolgreich aktualisiert!', 'success');
             closeDateEditModal();
-            // Способ доставки не сбрасывается при изменении дат
-            location.reload(); // Перезагружаем страницу для обновления данных
+            //
+
+            location.reload(); //
+
         } else {
             showNotification(data.error, 'error');
         }
@@ -775,7 +802,8 @@ function saveDateChanges() {
         console.error('Error:', error);
         showNotification('Fehler beim Aktualisieren der Daten', 'error');
     });
-    // Способ доставки не сбрасывается при сохранении изменений дат
+    //
+
 }
 
 // Add event listeners for date inputs
@@ -791,29 +819,35 @@ document.addEventListener('DOMContentLoaded', function() {
     // Delivery details form handling
     const deliveryDetailsForm = document.getElementById('delivery-details-form');
     if (deliveryDetailsForm) {
-        // Способ доставки устанавливается сервером, не переопределяем
+        //
+
     }
      
-    // При загрузке страницы скрываем/показываем детали доставки в зависимости от выбранного способа
+    //
+
     const pickupRadio = document.getElementById('delivery-pickup');
     const deliveryRadio = document.getElementById('delivery-delivery');
     const deliveryDetails = document.querySelector('.ml-7.mt-3.p-4.bg-teal-50');
     
     if (deliveryDetails) {
         if (pickupRadio && pickupRadio.checked) {
-            // Если выбран pickup, скрываем детали
+            //
+
             deliveryDetails.style.display = 'none';
         } else if (deliveryRadio && deliveryRadio.checked) {
-            // Если выбран delivery, показываем детали
+            //
+
             deliveryDetails.style.display = 'block';
         }
     }
     
-    // Проверяем и исправляем неправильные данные доставки
+    //
+
     validateAndFixDeliveryDates();
 });
 
-// Функция для проверки и исправления неправильных данных доставки
+//
+
 function validateAndFixDeliveryDates() {
     const cartItems = document.querySelectorAll('[data-start-date][data-end-date]');
     if (cartItems.length === 0) return;
@@ -822,16 +856,19 @@ function validateAndFixDeliveryDates() {
     const rentalStartDate = new Date(firstItem.getAttribute('data-start-date'));
     const rentalEndDate = new Date(firstItem.getAttribute('data-end-date'));
     
-    // Проверяем, есть ли сохраненные данные доставки
+    //
+
     const deliveryDetails = document.querySelector('.ml-7.mt-3.p-4.bg-teal-50');
     if (!deliveryDetails) return;
     
-    // Если есть неправильные данные, показываем предупреждение
+    //
+
     const returnDateText = deliveryDetails.textContent.match(/Rückgabe:\s*(\d{2}\.\d{2}\.\d{4})/);
     if (returnDateText) {
         const returnDate = new Date(returnDateText[1].split('.').reverse().join('-'));
         if (returnDate < rentalEndDate) {
-            // Показываем предупреждение о неправильных данных
+            //
+
             const warningDiv = document.createElement('div');
             warningDiv.className = 'mt-2 p-2 bg-red-100 border border-red-300 rounded text-red-700 text-xs';
             warningDiv.innerHTML = '<i class="fas fa-exclamation-triangle mr-1"></i>Warnung: Rückgabedatum liegt vor dem Ende der Miete. Bitte korrigieren Sie die Lieferdetails.';
@@ -842,11 +879,13 @@ function validateAndFixDeliveryDates() {
 
 // Delivery details functions
 function setupDeliveryDateConstraints() {
-    // Получаем даты аренды из корзины
+    //
+
     const cartItems = document.querySelectorAll('[data-start-date][data-end-date]');
     if (cartItems.length === 0) return;
     
-    // Берем первый товар (если несколько, можно расширить логику)
+    //
+
     const firstItem = cartItems[0];
     const startDate = firstItem.getAttribute('data-start-date'); // '2025-09-05'
     const endDate = firstItem.getAttribute('data-end-date');     // '2025-09-06'
@@ -859,21 +898,26 @@ function setupDeliveryDateConstraints() {
     
     if (!startDate || !endDate) return;
     
-    // Устанавливаем ограничения для поля доставки
+    //
+
     const deliveryInput = document.getElementById('delivery-datetime');
     if (deliveryInput) {
-        // Минимальная дата: сегодня
+        //
+
         const today = new Date();
         const todayStr = today.toISOString().slice(0, 16);
         deliveryInput.min = todayStr;
         
-        // Максимальная дата: первый день аренды (включительно)
-        // Создаем дату на конец первого дня аренды
+        //
+
+        //
+
         const startDateTime = new Date(startDate + 'T23:59:59');
         const startDateTimeStr = startDateTime.toISOString().slice(0, 16);
         deliveryInput.max = startDateTimeStr;
         
-        // Отладочная информация
+        //
+
         console.log('=== DEBUG: Delivery Date Constraints ===');
         console.log('Start Date from cart:', startDate);
         console.log('Start DateTime object:', startDateTime);
@@ -882,7 +926,8 @@ function setupDeliveryDateConstraints() {
         console.log('Delivery input max attribute:', deliveryInput.max);
         console.log('=======================================');
         
-        // Обновляем подсказку
+        //
+
         const deliveryHint = document.getElementById('delivery-hint');
         if (deliveryHint) {
             const startDateFormatted = startDateTime.toLocaleDateString('de-DE');
@@ -890,22 +935,27 @@ function setupDeliveryDateConstraints() {
         }
     }
     
-    // Устанавливаем ограничения для поля забора
+    //
+
     const returnInput = document.getElementById('return-datetime');
     if (returnInput) {
-        // Минимальная дата: день окончания аренды (включительно)
-        // Принудительно устанавливаем на начало дня окончания аренды
+        //
+
+        //
+
         const endDateTime = new Date(endDate + 'T00:00:00');
         const endDateTimeStr = endDateTime.toISOString().slice(0, 16);
         returnInput.min = endDateTimeStr;
         
-        // Максимальная дата: +5 дней после окончания аренды
+        //
+
         const maxReturnDate = new Date(endDate);
         maxReturnDate.setDate(maxReturnDate.getDate() + 5);
         const maxReturnDateTimeStr = maxReturnDate.toISOString().slice(0, 16);
         returnInput.max = maxReturnDateTimeStr;
         
-        // Отладочная информация
+        //
+
         console.log('=== DEBUG: Return Date Constraints ===');
         console.log('End Date from cart:', endDate);
         console.log('End DateTime object:', endDateTime);
@@ -914,7 +964,8 @@ function setupDeliveryDateConstraints() {
         console.log('Return input max attribute:', returnInput.max);
         console.log('=====================================');
         
-        // Обновляем подсказку
+        //
+
         const returnHint = document.getElementById('return-hint');
         if (returnHint) {
             const endDateFormatted = endDateTime.toLocaleDateString('de-DE');
@@ -927,17 +978,21 @@ function setupDeliveryDateConstraints() {
 function openDeliveryDetailsModal() {
     document.getElementById('delivery-details-modal').classList.remove('hidden');
     
-    // Устанавливаем ограничения на поля ввода дат
+    //
+
     setupDeliveryDateConstraints();
     
-    // НЕ переключаем автоматически на delivery - пользователь сам выбирает
+    //
+
 }
 
 function closeDeliveryDetailsModal() {
     document.getElementById('delivery-details-modal').classList.add('hidden');
     
-    // При закрытии модального окна НЕ меняем способ доставки
-    // Пользователь сам решает, что выбрать
+    //
+
+    //
+
 }
 
 function saveDeliveryDetails() {
@@ -951,37 +1006,43 @@ function saveDeliveryDetails() {
         delivery_instructions: formData.get('delivery_instructions')
     };
     
-    // Валидация
+    //
+
     if (!data.delivery_address || !data.delivery_datetime || !data.return_datetime) {
         showNotification('Bitte füllen Sie alle erforderlichen Felder aus.', 'error');
         return;
     }
     
-    // Дополнительная валидация дат
+    //
+
     const deliveryDate = new Date(data.delivery_datetime);
     const returnDate = new Date(data.return_datetime);
     const today = new Date();
     
-    // Проверяем, что доставка не раньше сегодня
+    //
+
     if (deliveryDate < today) {
         showNotification('Das Lieferdatum kann nicht in der Vergangenheit liegen.', 'error');
         return;
     }
     
-    // Проверяем, что забор не раньше доставки
+    //
+
     if (returnDate <= deliveryDate) {
         showNotification('Das Rückgabedatum muss nach dem Lieferdatum liegen.', 'error');
         return;
     }
     
-    // Получаем даты аренды из корзины для дополнительной валидации
+    //
+
     const cartItems = document.querySelectorAll('[data-start-date][data-end-date]');
     if (cartItems.length > 0) {
         const firstItem = cartItems[0];
         const rentalStartDateStr = firstItem.getAttribute('data-start-date'); // '2025-09-05'
         const rentalEndDateStr = firstItem.getAttribute('data-end-date');     // '2025-09-06'
         
-        // ОТЛАДОЧНАЯ ИНФОРМАЦИЯ
+        //
+
         console.log('=== DEBUG: Date Validation ===');
         console.log('Cart item data-start-date:', rentalStartDateStr);
         console.log('Cart item data-end-date:', rentalEndDateStr);
@@ -989,7 +1050,8 @@ function saveDeliveryDetails() {
         console.log('Return date from form:', returnDate);
         console.log('================================');
         
-        // Преобразуем даты доставки и возврата в строки формата YYYY-MM-DD для сравнения
+        //
+
         const deliveryDateStr = deliveryDate.toISOString().slice(0, 10); // '2025-09-05'
         const returnDateStr = returnDate.toISOString().slice(0, 10);     // '2025-09-06'
         
@@ -998,22 +1060,27 @@ function saveDeliveryDetails() {
         console.log('Rental start date string:', rentalStartDateStr);
         console.log('Rental end date string:', rentalEndDateStr);
         
-        // Проверяем, что доставка не позже первого дня аренды (включительно)
-        // Сравниваем строки дат напрямую
+        //
+
+        //
+
         if (deliveryDateStr > rentalStartDateStr) {
             showNotification('Das Lieferdatum kann nicht nach dem ersten Tag der Miete liegen.', 'error');
             return;
         }
         
-        // Проверяем, что забор не раньше последнего дня аренды (включительно)
-        // Сравниваем строки дат напрямую
+        //
+
+        //
+
         if (returnDateStr < rentalEndDateStr) {
             showNotification('Das Rückgabedatum kann nicht vor dem letzten Tag der Miete liegen.', 'error');
             return;
         }
     }
     
-    // Показываем индикатор загрузки
+    //
+
     const submitBtn = form.querySelector('button[type="submit"]');
     const originalText = submitBtn.innerHTML;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Wird gespeichert...';
@@ -1033,11 +1100,14 @@ function saveDeliveryDetails() {
                 showNotification(result.message, 'success');
                 closeDeliveryDetailsModal();
                 
-                // НЕ переключаем автоматически на delivery - пользователь сам выбирает
-                // Показываем подсказку о том, что детали сохранены
+                //
+
+                //
+
                 showNotification('Details gespeichert! Wählen Sie "Lieferung + Aufbau/Abbau" um diese zu verwenden.', 'success');
                 
-                // Перезагружаем страницу для обновления данных
+                //
+
                 location.reload();
             } else {
                 showNotification(result.error, 'error');
@@ -1048,11 +1118,13 @@ function saveDeliveryDetails() {
         showNotification('Fehler beim Speichern der Lieferdetails', 'error');
     })
     .finally(() => {
-        // Восстанавливаем кнопку
+        //
+
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
     });
-    // Способ доставки не сбрасывается при сохранении деталей доставки
+    //
+
 }
 
 </script>

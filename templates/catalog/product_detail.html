@@ -388,13 +388,15 @@ class AvailabilityCalendar {
         this.render();
         this.attachEventListeners();
         
-        // Добавляем event listener на уровне документа для надежности
+        //
+
         if (this._clickHandler) {
             document.addEventListener('click', this._clickHandler);
         }
     }
     
-    // Исправляем проблему с часовым поясом
+    //
+
     formatDateForData(date) {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -410,12 +412,15 @@ class AvailabilityCalendar {
         const firstDay = new Date(year, month, 1);
         const lastDay = new Date(year, month + 1, 0);
         const startDate = new Date(firstDay);
-        // Исправляем смещение для понедельника как первого дня недели
+        //
+
         const dayOfWeek = firstDay.getDay();
-        const offset = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Воскресенье = 6, остальные дни -1
+        const offset = dayOfWeek === 0 ? 6 : dayOfWeek - 1; //
+
         startDate.setDate(startDate.getDate() - offset);
         
-        // Проверяем, можно ли листать влево и вправо
+        //
+
         const currentDate = new Date();
         const currentYear = currentDate.getFullYear();
         const currentMonth = currentDate.getMonth();
@@ -474,16 +479,20 @@ class AvailabilityCalendar {
             } else if (isBooked) {
                 classes += ' bg-red-500 text-white cursor-not-allowed';
             } else if (isStartDate && this.selectionState === 'complete') {
-                // Темно-зеленая для завершенного начала
+                //
+
                 classes += ' bg-teal-600 text-white font-bold ring-2 ring-teal-800';
             } else if (isEndDate && this.selectionState === 'complete') {
-                // Темно-зеленая для завершенного конца  
+                //
+
                 classes += ' bg-teal-600 text-white font-bold ring-2 ring-teal-800';
             } else if (isStartDate && this.selectionState === 'start_temp') {
-                // Светло-зеленая для временного начала
+                //
+
                 classes += ' bg-teal-200 text-teal-900 font-semibold border-2 border-teal-400';
             } else if (isInRange) {
-                // Светло-зеленая для середины
+                //
+
                 classes += ' bg-teal-200 text-teal-900';
             } else {
                 classes += ' hover:bg-teal-100 text-gray-900';
@@ -501,14 +510,17 @@ class AvailabilityCalendar {
     }
     
     attachEventListeners() {
-        // Убираем старый event listener, если он есть
+        //
+
         if (this._clickHandler) {
             document.removeEventListener('click', this._clickHandler);
         }
         
-        // Создаем новый handler с правильным контекстом
+        //
+
         this._clickHandler = (e) => {
-            // Проверяем, что клик произошел внутри нашего календаря
+            //
+
             if (!this.container.contains(e.target)) {
                 return;
             }
@@ -517,11 +529,13 @@ class AvailabilityCalendar {
                 const button = e.target.classList.contains('calendar-nav-btn') ? e.target : e.target.closest('.calendar-nav-btn');
                 const action = button.dataset.action;
                 
-                // Мгновенно блокируем кнопку для предотвращения множественных кликов
+                //
+
                 button.disabled = true;
                 button.style.opacity = '0.5';
                 
-                // Мгновенно обновляем месяц
+                //
+
                 if (action === 'prev') {
                     const currentYear = this.currentMonth.getFullYear();
                     const currentMonth = this.currentMonth.getMonth();
@@ -545,10 +559,12 @@ class AvailabilityCalendar {
                     this.currentMonth.setDate(1);
                 }
                 
-                // Мгновенно рендерим новый месяц
+                //
+
                 this.render();
                 
-                // Разблокируем кнопку через небольшую задержку
+                //
+
                 setTimeout(() => {
                     button.disabled = false;
                     button.style.opacity = '1';
@@ -560,7 +576,8 @@ class AvailabilityCalendar {
                     const date = new Date(dateStr);
                     const currentDate = new Date();
                     
-                    // Проверяем, что дата не в прошлом и не забронирована
+                    //
+
                     if (date >= currentDate && !this.isBooked(date)) {
                         this.handleDateClick(date);
                         this.render();
@@ -570,30 +587,36 @@ class AvailabilityCalendar {
             }
         };
         
-        // Добавляем event listener на уровне документа
+        //
+
         document.addEventListener('click', this._clickHandler);
     }
     
-    // Улучшенная логика выбора дат: первый клик - светло-зеленая, второй - завершает выбор
+    //
+
     handleDateClick(selectedDate) {
         if (this.selectionState === 'none') {
-            // Первый клик - устанавливаем начальную дату (светло-зеленая)
+            //
+
             this.startDate = new Date(selectedDate);
             this.endDate = null;
             this.selectionState = 'start_temp';
         } else if (this.selectionState === 'start_temp') {
-            // Второй клик - завершаем выбор
+            //
+
             if (selectedDate >= this.startDate) {
                 this.endDate = new Date(selectedDate);
                 this.selectionState = 'complete';
             } else {
-                // Если конечная дата раньше начальной, меняем их местами
+                //
+
                 this.startDate = new Date(selectedDate);
                 this.endDate = new Date(this.startDate);
                 this.selectionState = 'complete';
             }
         } else if (this.selectionState === 'complete') {
-            // Третий клик - сбрасываем выбор
+            //
+
             this.startDate = null;
             this.endDate = null;
             this.selectionState = 'none';
@@ -617,11 +640,13 @@ class AvailabilityCalendar {
     }
     
     onDateSelected() {
-        // Обновляем статус выбора дат
+        //
+
         this.updateDateSelectionStatus();
         
         if (this.startDate && this.endDate) {
-            // Автоматически заполняем модальное окно выбора дат, если оно открыто
+            //
+
             const startDateInput = document.getElementById('start-date');
             const endDateInput = document.getElementById('end-date');
             
@@ -629,19 +654,22 @@ class AvailabilityCalendar {
                 startDateInput.value = this.formatDateForData(this.startDate);
                 endDateInput.value = this.formatDateForData(this.endDate);
                 
-                // Обновляем расчет цены, если модальное окно открыто
+                //
+
                 if (!document.getElementById('date-selection-modal').classList.contains('hidden')) {
                     updatePriceCalculation();
                 }
             }
             
-            // Показываем кнопку добавления в корзину
+            //
+
             const addToCartBtn = document.getElementById('add-to-cart-from-calendar');
             if (addToCartBtn) {
                 addToCartBtn.classList.remove('hidden');
             }
         } else if (this.startDate && this.selectionState === 'start_temp') {
-            // Показываем кнопку даже для одного дня (считаем как один день бронировки)
+            //
+
             const addToCartBtn = document.getElementById('add-to-cart-from-calendar');
             if (addToCartBtn) {
                 addToCartBtn.classList.remove('hidden');
@@ -672,10 +700,12 @@ class AvailabilityCalendar {
     calculateDaysBetween(startDate, endDate) {
         const timeDiff = endDate.getTime() - startDate.getTime();
         const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-        return daysDiff + 1; // +1 потому что включаем обе даты
+        return daysDiff + 1; //
+
     }
     
-    // Метод для очистки event listener
+    //
+
     destroy() {
         if (this._clickHandler) {
             document.removeEventListener('click', this._clickHandler);
@@ -755,7 +785,8 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
 <script>
-// Получаем CSRF токен
+//
+
 function getCSRFToken() {
     const metaTag = document.querySelector('meta[name="csrf-token"]');
     if (metaTag) {
@@ -779,13 +810,16 @@ function openDateSelectionModal() {
         document.getElementById('start-date').value = window.calendar.formatDateForData(window.calendar.startDate);
         
         if (window.calendar.endDate) {
-            // Есть конечная дата - используем её
+            //
+
             document.getElementById('end-date').value = window.calendar.formatDateForData(window.calendar.endDate);
         } else if (window.calendar.selectionState === 'start_temp') {
-            // Только один день - дублируем дату (от и до одинаково)
+            //
+
             document.getElementById('end-date').value = window.calendar.formatDateForData(window.calendar.startDate);
         } else {
-            // По умолчанию - завтра
+            //
+
             const tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1);
             document.getElementById('end-date').value = tomorrow.toISOString().split('T')[0];

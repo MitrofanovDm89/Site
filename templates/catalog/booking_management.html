@@ -375,7 +375,8 @@ function initializeCalendar() {
         dayMaxEvents: true,
         weekends: true,
         events: function(info, successCallback, failureCallback) {
-            // Получаем данные бронирований
+            //
+
             fetch(`{% url 'catalog:get_bookings_data' %}?start=${info.startStr}&end=${info.endStr}`)
                 .then(response => response.json())
                 .then(data => {
@@ -387,22 +388,26 @@ function initializeCalendar() {
                 });
         },
         select: function(info) {
-            // При выборе даты открываем форму создания бронирования
+            //
+
             openBookingModal('add', {
                 start_date: info.startStr,
                 end_date: info.endStr
             });
         },
         eventClick: function(info) {
-            // При клике на событие показываем детали
+            //
+
             showBookingDetails(info.event);
         },
         eventDrop: function(info) {
-            // При перетаскивании события обновляем даты
+            //
+
             updateBookingDates(info.event);
         },
         eventResize: function(info) {
-            // При изменении размера события обновляем даты
+            //
+
             updateBookingDates(info.event);
         }
     });
@@ -411,55 +416,65 @@ function initializeCalendar() {
 }
 
 function setupEventListeners() {
-    // Фильтр по продукту
+    //
+
     document.getElementById('product-filter').addEventListener('change', function() {
         refreshCalendar();
     });
     
-    // Кнопка добавления бронирования
+    //
+
     document.getElementById('add-booking-btn').addEventListener('click', function() {
         openBookingModal('add');
     });
     
-    // Кнопка обновления календаря
+    //
+
     document.getElementById('refresh-calendar').addEventListener('click', function() {
         refreshCalendar();
     });
     
-    // Форма бронирования
+    //
+
     document.getElementById('booking-form').addEventListener('submit', function(e) {
         e.preventDefault();
         saveBooking();
     });
     
-    // Кнопка отмены
+    //
+
     document.getElementById('cancel-booking').addEventListener('click', function() {
         closeModal('booking-modal');
     });
     
-    // Кнопка удаления
+    //
+
     document.getElementById('delete-booking').addEventListener('click', function() {
         deleteBooking();
     });
     
-    // Кнопка редактирования
+    //
+
     document.getElementById('edit-booking').addEventListener('click', function() {
         closeModal('details-modal');
         openBookingModal('edit', currentBookingData);
     });
     
-    // Закрытие модальных окон
+    //
+
     document.querySelectorAll('.close').forEach(closeBtn => {
         closeBtn.addEventListener('click', function() {
             this.closest('.modal').style.display = 'none';
         });
     });
     
-    // Обработчики для полей дат
+    //
+
     document.getElementById('start-date').addEventListener('change', updatePriceDisplay);
     document.getElementById('end-date').addEventListener('change', updatePriceDisplay);
     
-    // Закрытие модальных окон при клике вне их
+    //
+
     window.addEventListener('click', function(event) {
         if (event.target.classList.contains('modal')) {
             event.target.style.display = 'none';
@@ -494,12 +509,14 @@ function openBookingModal(mode, data = {}) {
         currentBookingId = null;
         deleteBtn.style.display = 'none';
         
-        // Сбрасываем отображение цены
+        //
+
         document.getElementById('price_per_day').textContent = '0€';
         document.getElementById('duration_days').textContent = '1';
         document.getElementById('calculated_total').textContent = '0€';
         
-        // Устанавливаем выбранные даты
+        //
+
         if (data.start_date) {
             document.getElementById('start-date').value = data.start_date;
         }
@@ -507,7 +524,8 @@ function openBookingModal(mode, data = {}) {
             document.getElementById('end-date').value = data.end_date;
         }
         
-        // Обновляем отображение цены после установки дат
+        //
+
         if (data.start_date && data.end_date) {
             updatePriceDisplay();
         }
@@ -516,7 +534,8 @@ function openBookingModal(mode, data = {}) {
         currentBookingId = data.id;
         deleteBtn.style.display = 'block';
         
-        // Заполняем форму данными
+        //
+
         fillBookingForm(data);
     }
     
@@ -533,7 +552,8 @@ function fillBookingForm(data) {
     document.getElementById('status').value = data.extendedProps.status || 'pending';
     document.getElementById('notes').value = data.extendedProps.notes || '';
     
-    // Обновляем отображение цены
+    //
+
     updatePriceDisplay();
 }
 
@@ -658,7 +678,8 @@ function showBookingDetails(event) {
     modal.style.display = 'block';
 }
 
-// Функция для расчета цены на основе выбранных дат
+//
+
 function updatePriceDisplay() {
     const startDate = document.getElementById('start-date').value;
     const endDate = document.getElementById('end-date').value;
@@ -682,7 +703,8 @@ function updatePriceDisplay() {
     }
 }
 
-// Функция для обновления цены при изменении продукта
+//
+
 function updateProductPrice() {
     const productSelect = document.getElementById('product-select');
     const selectedOption = productSelect.options[productSelect.selectedIndex];
@@ -722,13 +744,15 @@ function updateBookingDates(event) {
             showNotification('Buchung erfolgreich aktualisiert', 'success');
         } else {
             showNotification('Fehler: ' + result.error, 'error');
-            refreshCalendar(); // Восстанавливаем исходное состояние
+            refreshCalendar(); //
+
         }
     })
     .catch(error => {
         console.error('Error updating booking:', error);
         showNotification('Fehler beim Aktualisieren der Buchung', 'error');
-        refreshCalendar(); // Восстанавливаем исходное состояние
+        refreshCalendar(); //
+
     });
 }
 

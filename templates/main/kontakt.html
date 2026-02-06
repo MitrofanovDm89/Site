@@ -145,16 +145,19 @@ document.addEventListener('DOMContentLoaded', function() {
     contactForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        // Получаем данные формы
+        //
+
         const formData = new FormData(contactForm);
         
-        // Показываем индикатор загрузки
+        //
+
         const submitBtn = contactForm.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerHTML;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Wird gesendet...';
         submitBtn.disabled = true;
         
-        // Отправляем данные
+        //
+
         const data = {
             first_name: formData.get('first_name'),
             last_name: formData.get('last_name'),
@@ -174,11 +177,13 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Показываем сообщение об успехе
+                //
+
                 showNotification('Ihre Nachricht wurde erfolgreich gesendet!', 'success');
                 contactForm.reset();
             } else {
-                // Показываем ошибку
+                //
+
                 showNotification(data.message || 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.', 'error');
             }
         })
@@ -187,7 +192,8 @@ document.addEventListener('DOMContentLoaded', function() {
             showNotification('Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.', 'error');
         })
         .finally(() => {
-            // Восстанавливаем кнопку
+            //
+
             submitBtn.innerHTML = originalText;
             submitBtn.disabled = false;
         });

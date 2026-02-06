@@ -337,7 +337,7 @@ def remove_from_cart(request):
                 
                 return JsonResponse({
                     'success': True,
-                    'message': 'Товар удален из корзины',
+                    'message': 'Produkt wurde aus dem Warenkorb entfernt',
                     'cart_count': len(cart)
                 })
             
@@ -380,7 +380,7 @@ def update_cart_dates(request):
             
                 return JsonResponse({
                     'success': True,
-                    'message': 'Даты обновлены',
+                    'message': 'Daten wurden aktualisiert',
                     'new_subtotal': new_subtotal,
                     'duration_days': duration_days
                 })
@@ -433,7 +433,7 @@ def update_delivery_option(request):
             
             return JsonResponse({
                 'success': True,
-                'message': 'Способ доставки обновлен',
+                'message': 'Lieferoption wurde aktualisiert',
                 'delivery_cost': delivery_cost,
                 'final_total': final_total
             })
@@ -514,7 +514,7 @@ def send_inquiry(request):
             if not customer_email and not customer_phone:
                 return JsonResponse({
                     'success': False, 
-                    'error': 'Необходимо указать email или телефон'
+                    'error': 'Bitte geben Sie E-Mail oder Telefon an'
                 })
             
             # Проверка согласия на обработку персональных данных
@@ -574,7 +574,7 @@ def send_inquiry(request):
             if not products:
                 return JsonResponse({
                     'success': False, 
-                    'error': 'Корзина пуста'
+                    'error': 'Warenkorb ist leer'
                 })
             
             # Формируем сообщение с безопасным кодированием

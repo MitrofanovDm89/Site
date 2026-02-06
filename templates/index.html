@@ -9,7 +9,7 @@
   <!-- Background Image Slider -->
   <div class="absolute inset-0">
     <div class="hero-background-slider" id="heroSlider">
-      <!-- Динамически загружаемые картинки будут здесь -->
+      <!-- Hero background images loaded here -->
     </div>
     <!-- Overlay for better text readability -->
     <!-- <div class="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10"></div> -->
@@ -768,7 +768,8 @@ function toggleTestimonial(id) {
     const sliderContainer = document.getElementById('heroSlider');
     if (!sliderContainer) return;
     
-    // Список всех картинок из папки hero-backgrounds
+    //
+
     const heroImages = [
       '{% static "main/img/hero-backgrounds/2-1536x1024.jpg" %}',
       '{% static "main/img/hero-backgrounds/3-1536x1034.jpg" %}',
@@ -784,7 +785,8 @@ function toggleTestimonial(id) {
       '{% static "main/img/hero-backgrounds/13-1536x1024.jpg" %}'
     ];
     
-    // Перемешиваем массив картинок для случайного порядка
+    //
+
     function shuffleArray(array) {
       const shuffled = [...array];
       for (let i = shuffled.length - 1; i > 0; i--) {
@@ -796,13 +798,15 @@ function toggleTestimonial(id) {
     
     const shuffledImages = shuffleArray(heroImages);
     
-    // Создаем элементы для каждой картинки
+    //
+
     shuffledImages.forEach((imageUrl, index) => {
       const slide = document.createElement('div');
       slide.className = 'hero-bg-slide';
       slide.style.backgroundImage = `url('${imageUrl}')`;
       
-      // Первая картинка будет активной
+      //
+
       if (index === 0) {
         slide.classList.add('active');
       }
