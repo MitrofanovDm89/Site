@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
-from django.core.mail import send_mail, EmailMessage
+from django.core.mail import send_mail, EmailMessage, EmailMultiAlternatives
 from django.conf import settings
 from django.utils.encoding import force_str
 import json
@@ -656,59 +656,93 @@ Ausgewählte Produkte:
                 email.encoding = 'utf-8'
                 email.send(fail_silently=False)
                 
-                # Отправляем подтверждение клиенту (если указан email)
+                # Автоответ клиенту (корпоративное письмо: plain + HTML)
                 if customer_email:
-                    confirmation_message = f"""
-Hallo!
-
-Vielen Dank für Ihre Anfrage auf der Play & Jump Website.
-
-Wir haben Ihre Anfrage erhalten und werden uns in Kürze bei Ihnen melden.
-
-Anfrage-Details:
-"""
-                    
+                    from html import escape as html_escape
+                    anrede = f"Guten Tag, {customer_name_safe}," if (customer_name_safe and customer_name_safe != 'Nicht angegeben') else "Guten Tag,"
+                    # Строим строки по товарам и блок доставки один раз
+                    product_lines_plain = []
+                    product_lines_html = []
                     for product in products:
                         if product.get('start_date') and product.get('end_date'):
-                            start_date_formatted = format_date_dmy(product['start_date'])
-                            end_date_formatted = format_date_dmy(product['end_date'])
-                            subtotal_formatted = format_price(product['subtotal'])
-                            confirmation_message += f"- {product['title']} ({start_date_formatted} bis {end_date_formatted}, {product['duration_days']} Tage) = {subtotal_formatted}€\n"
+                            start_f = format_date_dmy(product['start_date'])
+                            end_f = format_date_dmy(product['end_date'])
+                            sub_f = format_price(product['subtotal'])
+                            product_lines_plain.append(f"  • {product['title']} ({start_f} bis {end_f}, {product['duration_days']} Tag(e)) = {sub_f} €")
+                            product_lines_html.append(f"<li>{html_escape(product['title'])} ({start_f} bis {end_f}, {product['duration_days']} Tag(e)) = {sub_f} €</li>")
                         else:
-                            subtotal_formatted = format_price(product['subtotal'])
-                            confirmation_message += f"- {product['title']} = {subtotal_formatted}€\n"
-                    
-                    confirmation_message += f"\nMietpreis: {format_price(total_price)}€"
+                            sub_f = format_price(product['subtotal'])
+                            product_lines_plain.append(f"  • {product['title']} = {sub_f} €")
+                            product_lines_html.append(f"<li>{html_escape(product['title'])} = {sub_f} €</li>")
+                    delivery_plain = f"\nMietpreis: {format_price(total_price)} €"
+                    delivery_html = f"<p><strong>Mietpreis:</strong> {format_price(total_price)} €</p>"
                     if delivery_option == 'delivery':
-                        confirmation_message += f"\nLieferung + Aufbau/Abbau: {format_price(delivery_cost)}€"
-                        
-                        # Добавляем детали доставки
-                        delivery_address = request.session.get('delivery_address', '')
-                        delivery_datetime = request.session.get('delivery_datetime', '')
-                        return_datetime = request.session.get('return_datetime', '')
-                        delivery_instructions = request.session.get('delivery_instructions', '')
-                        
-                        if delivery_address:
-                            confirmation_message += f"\n\nLieferdetails:"
-                            confirmation_message += f"\nAdresse: {delivery_address}"
-                            if delivery_datetime:
-                                delivery_datetime_formatted = format_datetime_dmy(delivery_datetime)
-                                confirmation_message += f"\nLieferung: {delivery_datetime_formatted}"
-                            if return_datetime:
-                                return_datetime_formatted = format_datetime_dmy(return_datetime)
-                                confirmation_message += f"\nRückgabe: {return_datetime_formatted}"
-                            if delivery_instructions:
-                                confirmation_message += f"\nAnweisungen: {delivery_instructions}"
-                        
-                    confirmation_message += f"\nGesamt: {format_price(final_total)}€"
-                    
-                    confirmation_email = EmailMessage(
-                        subject='Ihre Anfrage wurde erhalten - Play & Jump',
+                        delivery_plain += f"\nLieferung + Auf- und Abbau: {format_price(delivery_cost)} €"
+                        delivery_html += f"<p><strong>Lieferung + Auf- und Abbau:</strong> {format_price(delivery_cost)} €</p>"
+                        addr = request.session.get('delivery_address', '')
+                        dt_del = request.session.get('delivery_datetime', '')
+                        dt_ret = request.session.get('return_datetime', '')
+                        instr = request.session.get('delivery_instructions', '')
+                        if addr:
+                            delivery_plain += f"\n\nLieferdetails:\nAdresse: {addr}"
+                            delivery_html += f"<p><strong>Lieferdetails:</strong><br>Adresse: {html_escape(addr)}"
+                            if dt_del:
+                                delivery_plain += f"\nLieferung: {format_datetime_dmy(dt_del)}"
+                                delivery_html += f"<br>Lieferung: {format_datetime_dmy(dt_del)}"
+                            if dt_ret:
+                                delivery_plain += f"\nRückgabe: {format_datetime_dmy(dt_ret)}"
+                                delivery_html += f"<br>Rückgabe: {format_datetime_dmy(dt_ret)}"
+                            if instr:
+                                delivery_plain += f"\nAnweisungen: {instr}"
+                                delivery_html += f"<br>Anweisungen: {html_escape(instr)}"
+                            delivery_html += "</p>"
+                    delivery_plain += f"\nGesamt: {format_price(final_total)} €"
+                    delivery_html += f"<p><strong>Gesamt: {format_price(final_total)} €</strong></p>"
+                    # Plain
+                    confirmation_message = f"""{anrede}
+
+vielen Dank für Ihre Buchungsanfrage.
+
+Wir haben Ihre Anfrage erhalten. Unser Team wird sich in Kürze bei Ihnen melden, um die Details zu bestätigen.
+
+Zur Information – Ihre Anfrage im Überblick:
+
+"""
+                    confirmation_message += "\n".join(product_lines_plain) + delivery_plain + """
+
+---
+Mit freundlichen Grüßen
+
+Ihr Play & Jump Team
+www.playandjump.de
+"""
+                    # HTML
+                    html_body = f"""<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin:0; padding:0; font-family: Arial, sans-serif; font-size: 15px; line-height: 1.5; color: #333;">
+<div style="max-width: 600px; margin: 0 auto; padding: 24px;">
+  <p style="margin: 0 0 16px;">{html_escape(anrede)}</p>
+  <p style="margin: 0 0 16px;">vielen Dank für Ihre Buchungsanfrage.</p>
+  <p style="margin: 0 0 20px;">Wir haben Ihre Anfrage erhalten. Unser Team wird sich in Kürze bei Ihnen melden, um die Details zu bestätigen.</p>
+  <p style="margin: 0 0 8px;"><strong>Zur Information – Ihre Anfrage im Überblick:</strong></p>
+  <ul style="margin: 0 0 16px; padding-left: 20px;">{''.join(product_lines_html)}</ul>
+  {delivery_html}
+  <p style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #ddd; color: #555;">
+    Mit freundlichen Grüßen<br><br>
+    <strong>Ihr Play & Jump Team</strong><br>
+    <a href="https://www.playandjump.de" style="color: #0d9488;">www.playandjump.de</a>
+  </p>
+</div>
+</body>
+</html>"""
+                    confirmation_email = EmailMultiAlternatives(
+                        subject='Ihre Buchungsanfrage bei Play & Jump – wir haben sie erhalten',
                         body=confirmation_message,
                         from_email=settings.DEFAULT_FROM_EMAIL,
                         to=[customer_email],
                     )
-                    confirmation_email.content_subtype = 'plain'
+                    confirmation_email.attach_alternative(html_body, 'text/html')
                     confirmation_email.encoding = 'utf-8'
                     confirmation_email.send(fail_silently=True)
                 
