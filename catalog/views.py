@@ -129,13 +129,16 @@ def get_bookings_data(request):
     if start_date and end_date:
         try:
             from datetime import datetime
-            start_date_obj = datetime.strptime(start_date, '%Y-%m-%d').date()
-            end_date_obj = datetime.strptime(end_date, '%Y-%m-%d').date()
+            # FullCalendar передаёт ISO с временем (2026-06-01T00:00:00) — берём только дату
+            start_date_clean = start_date.split('T')[0].strip()[:10]
+            end_date_clean = end_date.split('T')[0].strip()[:10]
+            start_date_obj = datetime.strptime(start_date_clean, '%Y-%m-%d').date()
+            end_date_obj = datetime.strptime(end_date_clean, '%Y-%m-%d').date()
             bookings = bookings.filter(
-                start_date__gte=start_date_obj,
-                end_date__lte=end_date_obj
+                start_date__lte=end_date_obj,   # бронь началась до конца видимого диапазона
+                end_date__gte=start_date_obj    # бронь закончилась после начала видимого диапазона
             )
-        except ValueError:
+        except (ValueError, IndexError):
             pass
     
     # Формируем данные для календаря
@@ -154,6 +157,7 @@ def get_bookings_data(request):
             'title': f"{booking.customer_name} - {booking.product.title}",
             'start': booking.start_date.isoformat(),
             'end': (booking.end_date + timedelta(days=1)).isoformat(),  # +1 день для корректного отображения
+            'allDay': True,  # без времени — не сдвигается по часовому поясу
             'backgroundColor': color_map.get(booking.status, '#007bff'),
             'borderColor': color_map.get(booking.status, '#007bff'),
             'extendedProps': {
@@ -328,15 +332,15 @@ def product_detail(request, slug):
     # related_products содержит 4 случайных товара (без отсутствующих)
     related_products = list(additional_products)
 
-    # Get booked dates for the next 3 months
+    # Занятые даты для календаря товара: минимум год вперёд, чтобы июнь светился при просмотре с февраля
     today = date.today()
-    end_date = today + timedelta(days=90)
+    end_date = today + timedelta(days=365)
     
-    # Get confirmed and pending bookings
+    # Подтверждённые и ожидающие брони по этому товару
     bookings = Booking.objects.filter(
         product=product,
-        start_date__gte=today,
-        end_date__lte=end_date,
+        start_date__lte=end_date,   # бронь началась не позже конца окна
+        end_date__gte=today,       # бронь заканчивается не раньше сегодня
         status__in=['confirmed', 'pending']
     ).order_by('start_date')
     
