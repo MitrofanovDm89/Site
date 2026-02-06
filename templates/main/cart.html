@@ -977,13 +977,27 @@ function setupDeliveryDateConstraints() {
 
 function openDeliveryDetailsModal() {
     document.getElementById('delivery-details-modal').classList.remove('hidden');
-    
-    //
 
     setupDeliveryDateConstraints();
-    
-    //
 
+    var cartItems = document.querySelectorAll('[data-start-date][data-end-date]');
+    if (cartItems.length === 0) return;
+    var earliestStart = null;
+    var latestEnd = null;
+    for (var i = 0; i < cartItems.length; i++) {
+        var s = cartItems[i].getAttribute('data-start-date');
+        var e = cartItems[i].getAttribute('data-end-date');
+        if (s && (!earliestStart || s < earliestStart)) earliestStart = s;
+        if (e && (!latestEnd || e > latestEnd)) latestEnd = e;
+    }
+    var deliveryInput = document.getElementById('delivery-datetime');
+    var returnInput = document.getElementById('return-datetime');
+    if (deliveryInput && !deliveryInput.value && earliestStart) {
+        deliveryInput.value = earliestStart + 'T10:00';
+    }
+    if (returnInput && !returnInput.value && latestEnd) {
+        returnInput.value = latestEnd + 'T18:00';
+    }
 }
 
 function closeDeliveryDetailsModal() {
