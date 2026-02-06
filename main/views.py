@@ -225,10 +225,15 @@ def add_to_cart(request):
     """Добавление товара в корзину для аренды"""
     if request.method == 'POST':
         try:
+            # Логируем сырой запрос для отладки
+            logger.debug(f"add_to_cart request.body: {request.body}")
+            
             data = json.loads(request.body)
             product_id = data.get('product_id')
             start_date = data.get('start_date')
             end_date = data.get('end_date')
+            
+            logger.debug(f"add_to_cart: product_id={product_id}, start_date={start_date}, end_date={end_date}")
             
             if not product_id:
                 return JsonResponse({'success': False, 'error': 'Product ID is required'})
@@ -240,11 +245,16 @@ def add_to_cart(request):
             try:
                 product = Product.objects.get(id=product_id, is_active=True)
             except Product.DoesNotExist:
+                logger.error(f"Product not found: id={product_id}")
                 return JsonResponse({'success': False, 'error': 'Product not found'})
             
             # Проверяем даты
-            start = datetime.strptime(start_date, '%Y-%m-%d').date()
-            end = datetime.strptime(end_date, '%Y-%m-%d').date()
+            try:
+                start = datetime.strptime(start_date, '%Y-%m-%d').date()
+                end = datetime.strptime(end_date, '%Y-%m-%d').date()
+            except ValueError as e:
+                logger.error(f"Date parsing error: {e}, start_date={start_date}, end_date={end_date}")
+                return JsonResponse({'success': False, 'error': f'Invalid date format: {str(e)}'})
             
             if end < start:
                 return JsonResponse({'success': False, 'error': 'End date must be after start date'})
@@ -261,15 +271,23 @@ def add_to_cart(request):
             cart_key = f"{product_id}_{start_date}_{end_date}"
             
             # Добавляем товар в корзину
+            try:
+                price_per_day = float(product.price) if product.price else 0
+            except (ValueError, TypeError) as e:
+                logger.error(f"Price conversion error: {e}, product.price={product.price}")
+                price_per_day = 0
+            
             cart = request.session['cart']
             cart[cart_key] = {
                 'product_id': product_id,
                 'start_date': start_date,
                 'end_date': end_date,
-                'price_per_day': float(product.price) if product.price else 0
+                'price_per_day': price_per_day
             }
                 
             request.session.modified = True
+            
+            logger.debug(f"Product added to cart: {product.title}, cart_key={cart_key}")
             
             return JsonResponse({
                 'success': True,
@@ -277,7 +295,11 @@ def add_to_cart(request):
                 'cart_count': len(cart)
             })
             
+        except json.JSONDecodeError as e:
+            logger.error(f"JSON decode error: {e}, request.body: {request.body}")
+            return JsonResponse({'success': False, 'error': f'Invalid JSON: {str(e)}'})
         except Exception as e:
+            logger.error(f"Unexpected error in add_to_cart: {str(e)}", exc_info=True)
             return JsonResponse({'success': False, 'error': str(e)})
     
     return JsonResponse({'success': False, 'error': 'Method not allowed'})

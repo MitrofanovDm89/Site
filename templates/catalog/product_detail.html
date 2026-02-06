@@ -870,19 +870,27 @@ function addToCartWithDates() {
             end_date: endDate
         })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            return response.text().then(text => {
+                throw new Error(`HTTP ${response.status}: ${text}`);
+            });
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.success) {
             showNotification(data.message, 'success');
             closeDateSelectionModal();
             updateCartCount(data.cart_count);
         } else {
-            showNotification(data.error, 'error');
+            showNotification(data.error || 'Fehler beim Hinzufügen zur Warenkorb', 'error');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        showNotification('Fehler beim Hinzufügen zur Warenkorb', 'error');
+        const errorMessage = error.message || 'Fehler beim Hinzufügen zur Warenkorb';
+        showNotification(errorMessage, 'error');
     });
 }
 

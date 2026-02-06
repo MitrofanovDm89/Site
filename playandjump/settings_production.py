@@ -59,12 +59,48 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
 # Database - используем SQLite для PythonAnywhere (бесплатный план)
+# Включаем WAL mode для поддержки параллельных чтений и записей
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        'OPTIONS': {
+            'timeout': 20,  # Увеличиваем timeout до 20 секунд
+            # WAL mode будет включен автоматически при первом подключении через init_command
+        },
     }
 }
+
+# Включаем WAL mode для SQLite при первом подключении
+# Это позволяет параллельные чтения и записи
+from django.db.backends.signals import connection_created
+import threading
+
+_wal_mode_activated = threading.Lock()
+
+def activate_sqlite_wal_mode(sender, connection, **kwargs):
+    """Включает WAL mode для SQLite, чтобы разрешить параллельные операции"""
+    if connection.vendor == 'sqlite':
+        # Используем lock, чтобы избежать одновременных попыток включить WAL
+        if _wal_mode_activated.acquire(blocking=False):
+            try:
+                # Проверяем, включен ли уже WAL mode
+                with connection.cursor() as cursor:
+                    cursor.execute("PRAGMA journal_mode;")
+                    current_mode = cursor.fetchone()[0].upper()
+                    
+                    if current_mode != 'WAL':
+                        # Пытаемся включить WAL mode только если он не включен
+                        cursor.execute("PRAGMA journal_mode=WAL;")
+                        cursor.execute("PRAGMA synchronous=NORMAL;")
+                        cursor.execute("PRAGMA busy_timeout=20000;")
+            except Exception:
+                # Если не удалось включить WAL (база заблокирована), просто пропускаем
+                pass
+            finally:
+                _wal_mode_activated.release()
+
+connection_created.connect(activate_sqlite_wal_mode)
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
@@ -111,6 +147,14 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
     }
 }
+
+# Sessions - используем файловое хранилище вместо базы данных
+# Это решает проблему блокировки SQLite при одновременных запросах
+SESSION_ENGINE = 'django.contrib.sessions.backends.file'
+# Путь для хранения файлов сессий
+SESSION_FILE_PATH = str(BASE_DIR / 'sessions')
+# Создаем папку для сессий, если её нет (безопасный способ)
+os.makedirs(SESSION_FILE_PATH, exist_ok=True)
 
 # Email settings (настройте под ваш хостинг)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
