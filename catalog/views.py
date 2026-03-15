@@ -85,22 +85,30 @@ def booking_management(request):
     # Получаем все товары для фильтрации с ценой
     products = Product.objects.filter(is_active=True).values('id', 'title', 'price')
     
-    # Получаем все бронирования
-    bookings = Booking.objects.select_related('product').all()
-    
     # Получаем выбранный товар (если указан)
     selected_product = request.GET.get('product')
-    if selected_product:
-        bookings = bookings.filter(product_id=selected_product)
     
-    # Получаем выбранный месяц (если указан)
-    selected_month = request.GET.get('month')
+    # Ближайшие брони (по умолчанию на 14 дней вперед)
+    today = date.today()
+    upcoming_end = today + timedelta(days=14)
+    
+    upcoming_bookings = Booking.objects.select_related('product').filter(
+        start_date__gte=today,
+        start_date__lte=upcoming_end
+    ).order_by('start_date', 'product__title')
+    
+    if selected_product:
+        try:
+            product_id_int = int(selected_product)
+            upcoming_bookings = upcoming_bookings.filter(product_id=product_id_int)
+        except ValueError:
+            pass
     
     context = {
         'products': products,
-        'bookings': bookings,
         'selected_product': selected_product,
-        'selected_month': selected_month,
+        'upcoming_bookings': upcoming_bookings,
+        'upcoming_days': 14,
     }
     
     return render(request, 'catalog/booking_management.html', context)
